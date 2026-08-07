@@ -1,0 +1,154 @@
+classDiagram
+
+%% ==========================
+%% USERS
+%% ==========================
+
+class User {
+    +UUID id
+    +String fullName
+    +String email
+    +String passwordHash
+    +String avatar
+    +String language
+    +Date createdAt
+    +register()
+    +login()
+    +updateProfile()
+}
+
+%% ==========================
+%% SPECIES
+%% ==========================
+
+class Species {
+    +UUID id
+    +String commonName
+    +String scientificName
+    +String family
+    +String genus
+    +String description
+    +String habitat
+    +String distribution
+    +String diet
+    +String lifespan
+    +String activityPeriod
+    +String venomLevel
+    +String conservationStatus
+    +String imageUrl
+}
+
+class SpeciesImage {
+    +UUID id
+    +String imageUrl
+    +String photographer
+}
+
+Species "1" --> "*" SpeciesImage
+
+%% ==========================
+%% OBSERVATIONS
+%% ==========================
+
+class Observation {
+    +UUID id
+    +String imageUrl
+    +double latitude
+    +double longitude
+    +String notes
+    +Date observationDate
+    +String weather
+}
+
+User "1" --> "*" Observation
+Species "1" --> "*" Observation
+
+%% ==========================
+%% AI IDENTIFICATION
+%% ==========================
+
+class AIIdentification {
+    +UUID id
+    +String uploadedImage
+    +float confidence
+    +Date identifiedAt
+}
+
+Observation "1" --> "1" AIIdentification
+
+class Prediction {
+    +UUID id
+    +float confidence
+}
+
+AIIdentification "1" --> "*" Prediction
+Prediction "*" --> "1" Species
+
+%% ==========================
+%% MAP
+%% ==========================
+
+class Location {
+    +double latitude
+    +double longitude
+    +String country
+    +String region
+}
+
+Observation --> Location
+
+%% ==========================
+%% LEARNING
+%% ==========================
+
+class LearningModule {
+    +UUID id
+    +String title
+    +String content
+    +String category
+}
+
+%% ==========================
+%% SERVICES
+%% ==========================
+
+class AIService {
+    +identifySpider()
+    +detectSpider()
+    +generateSummary()
+}
+
+class SpeciesService {
+    +searchSpecies()
+    +filterSpecies()
+    +getSpeciesDetails()
+}
+
+class ObservationService {
+    +saveObservation()
+    +getHistory()
+    +deleteObservation()
+}
+
+class AuthService {
+    +login()
+    +register()
+    +refreshToken()
+}
+
+class StorageService {
+    +uploadImage()
+    +deleteImage()
+}
+
+class MapService {
+    +getNearbySpecies()
+    +getDistribution()
+}
+
+AIService --> AIIdentification
+SpeciesService --> Species
+ObservationService --> Observation
+StorageService --> Observation
+MapService --> Location
+AuthService --> User
