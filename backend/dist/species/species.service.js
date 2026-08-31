@@ -21,11 +21,44 @@ let SpeciesService = class SpeciesService {
     constructor(speciesModel) {
         this.speciesModel = speciesModel;
     }
-    async findAll() {
+    async create(createSpeciesDto) {
+        const createdSpecies = new this.speciesModel(createSpeciesDto);
+        return createdSpecies.save();
+    }
+    async findAll(query) {
+        if (query) {
+            return this.speciesModel.find({
+                $or: [
+                    { scientificName: { $regex: query, $options: 'i' } },
+                    { commonName: { $regex: query, $options: 'i' } },
+                    { family: { $regex: query, $options: 'i' } },
+                ],
+            }).exec();
+        }
         return this.speciesModel.find().exec();
     }
     async findById(id) {
-        return this.speciesModel.findById(id).exec();
+        const species = await this.speciesModel.findById(id).exec();
+        if (!species) {
+            throw new common_1.NotFoundException(`Species with ID ${id} not found`);
+        }
+        return species;
+    }
+    async update(id, updateSpeciesDto) {
+        const updated = await this.speciesModel
+            .findByIdAndUpdate(id, updateSpeciesDto, { new: true })
+            .exec();
+        if (!updated) {
+            throw new common_1.NotFoundException(`Species with ID ${id} not found`);
+        }
+        return updated;
+    }
+    async remove(id) {
+        const deleted = await this.speciesModel.findByIdAndDelete(id).exec();
+        if (!deleted) {
+            throw new common_1.NotFoundException(`Species with ID ${id} not found`);
+        }
+        return { message: `Species with ID ${id} successfully deleted` };
     }
 };
 exports.SpeciesService = SpeciesService;

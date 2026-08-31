@@ -15,31 +15,65 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SpeciesController = void 0;
 const common_1 = require("@nestjs/common");
 const species_service_1 = require("./species.service");
+const create_species_dto_1 = require("./dto/create-species.dto");
+const update_species_dto_1 = require("./dto/update-species.dto");
 let SpeciesController = class SpeciesController {
     constructor(speciesService) {
         this.speciesService = speciesService;
     }
-    async getAllSpecies() {
-        return this.speciesService.findAll();
+    async create(createSpeciesDto) {
+        return this.speciesService.create(createSpeciesDto);
     }
-    async getSpeciesById(id) {
+    async findAll(search) {
+        return this.speciesService.findAll(search);
+    }
+    async findById(id) {
         return this.speciesService.findById(id);
+    }
+    async update(id, updateSpeciesDto) {
+        return this.speciesService.update(id, updateSpeciesDto);
+    }
+    async remove(id) {
+        return this.speciesService.remove(id);
     }
 };
 exports.SpeciesController = SpeciesController;
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Post)(),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [create_species_dto_1.CreateSpeciesDto]),
     __metadata("design:returntype", Promise)
-], SpeciesController.prototype, "getAllSpecies", null);
+], SpeciesController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)('search')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], SpeciesController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], SpeciesController.prototype, "getSpeciesById", null);
+], SpeciesController.prototype, "findById", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, update_species_dto_1.UpdateSpeciesDto]),
+    __metadata("design:returntype", Promise)
+], SpeciesController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], SpeciesController.prototype, "remove", null);
 exports.SpeciesController = SpeciesController = __decorate([
     (0, common_1.Controller)('species'),
     __metadata("design:paramtypes", [species_service_1.SpeciesService])

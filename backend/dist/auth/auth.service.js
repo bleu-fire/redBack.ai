@@ -16,10 +16,44 @@ exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
+const bcrypt = require("bcrypt");
 const user_schema_1 = require("../schemas/user.schema");
 let AuthService = class AuthService {
     constructor(userModel) {
         this.userModel = userModel;
+    }
+    async register(registerDto) {
+        const existing = await this.userModel.findOne({ email: registerDto.email }).exec();
+        if (existing) {
+            throw new common_1.ConflictException('User with this email already exists');
+        }
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(registerDto.password, salt);
+        const user = new this.userModel({
+            fullname: registerDto.fullname,
+            email: registerDto.email,
+            passwordHash,
+            avatarUrl: registerDto.avatarUrl,
+        });
+        return user.save();
+    }
+    async login(loginDto) {
+        const user = await this.userModel.findOne({ email: loginDto.email }).exec();
+        if (!user) {
+            throw new common_1.UnauthorizedException('Invalid credentials');
+        }
+        const isPasswordValid = await bcrypt.compare(loginDto.password, user.passwordHash);
+        if (!isPasswordValid) {
+            throw new common_1.UnauthorizedException('Invalid credentials');
+        }
+        return {
+            message: 'Login successful',
+            user: {
+                fullname: user.fullname,
+                email: user.email,
+                avatarUrl: user.avatarUrl,
+            },
+        };
     }
     async findByEmail(email) {
         return this.userModel.findOne({ email }).exec();
