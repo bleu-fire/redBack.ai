@@ -1,0 +1,28 @@
+{
+  "appName": "redback.ai",
+  "tagline": "Spider Explorer AI",
+  "common": {
+    "welcome": "Welcome",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "search": "Search",
+    "settings": "Settings",
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next"
+  },
+  "navigation": {
+    "home": "Home",
+    "explore": "Explore",
+    "learn": "Learn",
+    "profile": "Profile"
+  },
+  "scanner": {
+    "title": "Camera Scanner",
+    "capture": "Capture Photo",
+    "upload": "Upload Image",
+    "analyzing": "Analyzing Spider..."
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "appName": "redback.ai",
+  "tagline": "مستكشف العناكب الذكي",
+  "common": {
+    "welcome": "مرحباً بك",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "search": "بحث",
+    "settings": "الإعدادات",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "back": "رجوع",
+    "next": "التالي"
+  },
+  "navigation": {
+    "home": "الرئيسية",
+    "explore": "استكشاف",
+    "learn": "التعلم",
+    "profile": "الملف الشخصي"
+  },
+  "scanner": {
+    "title": "ماسح الكاميرا",
+    "capture": "التقاط صورة",
+    "upload": "تحميل صورة",
+    "analyzing": "جاري تحليل العنكبوت..."
+  }
+}

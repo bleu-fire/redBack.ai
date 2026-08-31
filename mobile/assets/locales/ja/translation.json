@@ -1,0 +1,28 @@
+{
+  "appName": "redback.ai",
+  "tagline": "クモ識別AI探検家",
+  "common": {
+    "welcome": "ようこそ",
+    "login": "ログイン",
+    "register": "新規登録",
+    "logout": "ログアウト",
+    "search": "検索",
+    "settings": "設定",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "back": "戻る",
+    "next": "次へ"
+  },
+  "navigation": {
+    "home": "ホーム",
+    "explore": "探索",
+    "learn": "学習",
+    "profile": "プロフィール"
+  },
+  "scanner": {
+    "title": "カメラ・スキャナー",
+    "capture": "写真を撮影",
+    "upload": "画像をアップロード",
+    "analyzing": "クモを解析中..."
+  }
+}
