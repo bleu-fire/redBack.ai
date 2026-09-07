@@ -1,84 +1,68 @@
 # Database Schema
 
-PostgreSQL is the source of truth for structured application and species metadata.
+MongoDB (via Mongoose) is the source of truth for structured application, species metadata, identifications, and educational content.
 
-## Core tables
+## Core Collections & Mongoose Models
 
-### users
-- `id` UUID PK
-- `fullname` VARCHAR
-- `email` VARCHAR UNIQUE
-- `password_hash` VARCHAR
-- `created_at` TIMESTAMP
-- `updated_at` TIMESTAMP
+### `users` (`UserModel`)
+- `_id`: ObjectId (PK)
+- `fullname`: String (required, trimmed)
+- `email`: String (required, unique, lowercase, trimmed)
+- `passwordHash`: String (required)
+- `avatarUrl`: String (optional)
+- `createdAt`: Date (timestamp)
+- `updatedAt`: Date (timestamp)
 
-### species
-- `id` UUID PK
-- `scientific_name` VARCHAR UNIQUE
-- `common_name` VARCHAR nullable
-- `kingdom` VARCHAR
-- `phylum` VARCHAR
-- `class_name` VARCHAR
-- `order_name` VARCHAR
-- `family` VARCHAR
-- `genus` VARCHAR
-- `species_epithet` VARCHAR nullable
-- `description` TEXT
-- `habitat` TEXT
-- `distribution` TEXT
-- `behavior` TEXT
-- `venom_info` TEXT
-- `conservation_status` VARCHAR nullable
-- `created_at` TIMESTAMP
-- `updated_at` TIMESTAMP
+### `species` (`SpeciesModel`)
+- `_id`: ObjectId (PK)
+- `scientificName`: String (required, unique, trimmed)
+- `commonName`: String (optional, trimmed)
+- `family`: String (optional, trimmed)
+- `genus`: String (optional, trimmed)
+- `description`: String (optional)
+- `habitat`: String (optional)
+- `distribution`: String (optional)
+- `behavior`: String (optional)
+- `venomInfo`: String (optional)
+- `conservationStatus`: String (optional)
+- `imageUrls`: Array of Strings (default: `[]`)
+- `createdAt`: Date (timestamp)
+- `updatedAt`: Date (timestamp)
 
-### species_sources
-- `id` UUID PK
-- `species_id` FK
-- `source_name`
-- `source_url`
-- `source_type`
-- `retrieved_at`
+### `identifications` (`IdentificationModel`)
+- `_id`: ObjectId (PK)
+- `userId`: ObjectId (ref: `User`, optional)
+- `imageUrl`: String (required)
+- `status`: String (enum: `['pending', 'completed', 'failed']`, default: `'pending'`)
+- `predictions`: Array of Embedded Subdocuments (`PredictionSchema`):
+  - `speciesId`: ObjectId (ref: `Species`, optional)
+  - `scientificName`: String (required)
+  - `commonName`: String (optional)
+  - `confidence`: Number (required, 0.0 - 1.0)
+  - `confidenceBand`: String (enum: `['high', 'medium', 'low']`, default: `'medium'`)
+- `createdAt`: Date (timestamp)
+- `updatedAt`: Date (timestamp)
 
-### identifications
-- `id` UUID PK
-- `user_id` FK nullable
-- `image_object_key`
-- `status`
-- `model_provider`
-- `model_name`
-- `created_at`
-- `completed_at` nullable
+### `learningtopics` (`LearningTopicModel`)
+- `_id`: ObjectId (PK)
+- `slug`: String (required, unique, lowercase, trimmed)
+- `title`: String (required, trimmed)
+- `content`: String (required)
+- `category`: String (optional, trimmed)
+- `sourceUrl`: String (optional, trimmed)
+- `createdAt`: Date (timestamp)
+- `updatedAt`: Date (timestamp)
 
-### identification_predictions
-- `id` UUID PK
-- `identification_id` FK
-- `species_id` FK nullable
-- `raw_label` VARCHAR
-- `confidence` DECIMAL
-- `rank` INTEGER
+## Document Relationships
 
-### learning_topics
-- `id` UUID PK
-- `slug` VARCHAR UNIQUE
-- `title` VARCHAR
-- `content` TEXT
-- `source_id` FK nullable
-
-## Relationships
-
-`users 1—N identifications`
-
-`identifications 1—N identification_predictions`
-
-`species 1—N identification_predictions`
-
-`species 1—N species_sources`
+- `User 1 — N Identification` (via `userId` reference on `Identification`)
+- `Identification 1 — N Prediction` (embedded subdocument array within `Identification`)
+- `Prediction N — 1 Species` (via `speciesId` reference inside prediction items)
 
 ## Indexes
 
-- `users(email)` unique.
-- `species(scientific_name)` unique.
-- Trigram/full-text indexes for species search.
-- `identifications(user_id, created_at)`.
-- `identification_predictions(identification_id, rank)`.
+- `users`: `{ email: 1 }` (unique)
+- `species`: `{ scientificName: 1 }` (unique)
+- `species`: `{ scientificName: "text", commonName: "text", family: "text" }` (compound text index for catalog search)
+- `learningtopics`: `{ slug: 1 }` (unique)
+- `identifications`: `{ userId: 1, createdAt: -1 }`

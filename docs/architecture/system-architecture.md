@@ -8,7 +8,7 @@
             │ HTTPS
             ▼
 ┌───────────────────────┐
-│ NestJS API            │
+│ Express.js API        │
 │ Auth / Species / Scan │
 │ Search / Learning     │
 └───────┬───────┬───────┘
@@ -16,7 +16,7 @@
         │       ├──────────────┐
         ▼                      ▼
 ┌───────────────┐      ┌─────────────────┐
-│ PostgreSQL    │      │ Object Storage  │
+│ MongoDB       │      │ Object Storage  │
 │ Users/Species │      │ Uploaded images │
 └───────────────┘      └─────────────────┘
         │
@@ -44,32 +44,30 @@
 - Search and profile UI.
 - Never store provider API keys.
 
-### NestJS API
-- Authentication and authorization.
-- Request validation.
-- Image upload orchestration.
+### Express.js API
+- Authentication and authorization (JWT + bcrypt).
+- Request validation and error handling middleware.
+- Image upload orchestration (Multer).
 - AI adapter invocation.
-- Species catalog queries.
+- Species catalog queries and text search.
 - Result normalization.
 - Rate limiting and audit logging.
 
-### PostgreSQL
-Stores users, species, taxonomy, sources, scans, predictions, and educational metadata.
+### MongoDB
+Stores users, species, taxonomy, sources, identifications, predictions, and educational metadata using Mongoose schemas.
 
 ### AI adapter
 A provider-neutral service such as `VisionIdentificationService` keeps provider-specific SDKs out of domain logic.
 
-## Recommended NestJS modules
+## Express.js Modules & Routing Structure
 
-- `AuthModule`
-- `UsersModule`
-- `SpeciesModule`
-- `IdentificationModule`
-- `SearchModule`
-- `LearningModule`
-- `UploadsModule`
-- `HealthModule`
-- `CommonModule`
+- `routes/auth.routes.ts` & `controllers/auth.controller.ts` (Authentication & Profile)
+- `routes/species.routes.ts` & `controllers/species.controller.ts` (Species Catalog & Search)
+- `routes/identifications.routes.ts` & `controllers/identifications.controller.ts` (Image Upload & Predictions)
+- `routes/learning.routes.ts` & `controllers/learning.controller.ts` (Learning Center Topics)
+- `middlewares/auth.middleware.ts` & `middlewares/error.middleware.ts` (Security & Centralized Errors)
+- `middlewares/upload.middleware.ts` (Multer file intake)
+- `config/db.ts` & `config/env.ts` (MongoDB Connection & Environment Variables)
 
 ## Request flow
 

@@ -39,7 +39,7 @@ Notification, quiz, favorite, and standalone learning-module features were remov
 ## Suggested stack
 
 - Mobile: React Native + Expo + Expo Router
-- Backend: NestJS + PostgreSQL
+- Backend: Express.js (TypeScript) + MongoDB (Mongoose)
 - Auth: JWT + bcrypt/argon2-equivalent password hashing
 - AI integration: external vision-capable AI API, abstracted behind the backend
 - Scientific/search data: curated database plus external/open biodiversity sources where licensing and reliability permit

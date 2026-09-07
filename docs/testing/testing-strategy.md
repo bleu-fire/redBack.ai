@@ -44,7 +44,7 @@ Track top-1 accuracy, top-k accuracy, abstention quality, false confidence, and 
 - File upload validation.
 - Malicious payload handling.
 - Token expiry.
-- SQL injection/ORM misuse checks.
+- NoSQL/Mongoose query injection checks.
 
 ## Definition of done
 

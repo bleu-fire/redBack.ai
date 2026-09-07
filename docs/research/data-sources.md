@@ -34,4 +34,4 @@ The project should be designed for a very large catalog (tens of thousands of sp
 
 ## Search strategy
 
-Use PostgreSQL full-text/trigram search for initial scale. Add a dedicated search engine only if real-world traffic demonstrates the need.
+Use MongoDB text indexes across `scientificName`, `commonName`, and `family` for catalog scale. Add a dedicated search engine (e.g., Elasticsearch or Atlas Search) only if real-world traffic and fuzzy requirements demonstrate the need.

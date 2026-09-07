@@ -1,6 +1,6 @@
 # Project Structure Guidelines & Map
 
-This document outlines the official file and folder structure for **redback.ai** (NestJS + Mongoose backend & Expo / React Native mobile app).
+This document outlines the official file and folder structure for **redback.ai** (Express.js + Mongoose backend & Expo / React Native mobile app).
 
 ---
 
@@ -14,34 +14,35 @@ redBack.ai/
 │   └── skills/
 │       └── redback-dev/
 │           └── SKILL.md                  # Development skill & runbook
-├── backend/                               # NestJS REST API + Mongoose (MongoDB)
+├── backend/                               # Express.js REST API + Mongoose (MongoDB)
 │   ├── src/
-│   │   ├── main.ts                       # Entrypoint (Prefix: /api/v1)
-│   │   ├── app.module.ts                 # Main root NestJS module
-│   │   ├── schemas/                      # Mongoose data schemas
-│   │   │   ├── user.schema.ts
-│   │   │   ├── species.schema.ts
-│   │   │   ├── identification.schema.ts
-│   │   │   └── learning-topic.schema.ts
-│   │   ├── auth/                         # Authentication module (JWT + bcrypt)
-│   │   │   ├── auth.module.ts
+│   │   ├── server.ts                     # Server entrypoint (Prefix: /api/v1)
+│   │   ├── app.ts                        # Express application setup
+│   │   ├── config/                       # DB and env configurations
+│   │   │   ├── db.ts
+│   │   │   └── env.ts
+│   │   ├── models/                       # Mongoose models
+│   │   │   ├── user.model.ts
+│   │   │   ├── species.model.ts
+│   │   │   ├── identification.model.ts
+│   │   │   └── learning-topic.model.ts
+│   │   ├── controllers/                  # Route controllers
 │   │   │   ├── auth.controller.ts
-│   │   │   └── auth.service.ts
-│   │   ├── species/                      # Species catalog & search module
-│   │   │   ├── species.module.ts
 │   │   │   ├── species.controller.ts
-│   │   │   └── species.service.ts
-│   │   ├── identifications/              # AI Identification scanner module
-│   │   │   ├── identifications.module.ts
 │   │   │   ├── identifications.controller.ts
-│   │   │   └── identifications.service.ts
-│   │   └── learning/                     # Educational content module
-│   │       ├── learning.module.ts
-│   │       ├── learning.controller.ts
-│   │       └── learning.service.ts
+│   │   │   └── learning.controller.ts
+│   │   ├── routes/                       # Express routes
+│   │   │   ├── index.ts
+│   │   │   ├── auth.routes.ts
+│   │   │   ├── species.routes.ts
+│   │   │   ├── identifications.routes.ts
+│   │   │   └── learning.routes.ts
+│   │   └── middlewares/                  # Auth, error, and upload middlewares
+│   │       ├── auth.middleware.ts
+│   │       ├── error.middleware.ts
+│   │       └── upload.middleware.ts
 │   ├── .env.example                      # Environment variables template
-│   ├── nest-cli.json                     # NestJS CLI configuration
-│   ├── package.json                      # Node.js dependencies (NestJS + Mongoose)
+│   ├── package.json                      # Node.js dependencies (Express + Mongoose)
 │   └── tsconfig.json                     # TypeScript compiler configuration
 ├── mobile/                                # React Native / Expo Mobile Application
 │   ├── app/                              # Expo Router file-based screens (13 screens)
@@ -78,6 +79,6 @@ redBack.ai/
 ---
 
 ## 🛠️ Stack Principles
-1. **Backend**: NestJS framework using `@nestjs/mongoose` with MongoDB.
+1. **Backend**: Express.js with TypeScript and Mongoose with MongoDB.
 2. **Mobile**: Expo SDK with Expo Router for file-based routing.
 3. **Database**: MongoDB running via Docker Compose (`docker-compose.yml`).

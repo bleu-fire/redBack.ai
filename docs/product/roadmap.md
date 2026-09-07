@@ -4,9 +4,9 @@
 
 - Repository setup.
 - Expo mobile shell.
-- NestJS API.
-- PostgreSQL schema.
-- Authentication.
+- Express.js REST API.
+- MongoDB / Mongoose schema.
+- Authentication (JWT & bcrypt).
 
 ## Phase 2 — Identification MVP
 

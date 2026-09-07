@@ -9,4 +9,4 @@ Structured species facts should be stored with source metadata. AI-generated exp
 
 ## Consequence
 
-The data model includes `species_sources`, and ingestion pipelines need source/version tracking.
+Species and learning models store source URLs/metadata, and ingestion pipelines need source and version tracking.

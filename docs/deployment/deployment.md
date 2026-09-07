@@ -9,8 +9,8 @@
 ## Production components
 
 - Mobile application distributed through the appropriate app stores.
-- NestJS API behind HTTPS/reverse proxy/load balancer.
-- Managed PostgreSQL or hardened PostgreSQL deployment.
+- Express.js API behind HTTPS/reverse proxy/load balancer.
+- Managed MongoDB (e.g. MongoDB Atlas) or hardened MongoDB replica set.
 - Private object storage.
 - Optional Redis/BullMQ for asynchronous identification jobs.
 
@@ -23,9 +23,9 @@ Pipeline stages:
 3. Type-check.
 4. Unit tests.
 5. Integration tests.
-6. Build API.
+6. Build API (`npm run build`).
 7. Build mobile app.
-8. Database migration check.
+8. Database index/seed validation.
 9. Deploy staging.
 10. Smoke tests.
 11. Production approval/deploy.
@@ -41,10 +41,10 @@ Monitor:
 - p95/p99 latency.
 - AI provider failures.
 - Identification completion rate.
-- Database health.
+- Database health & connection pool.
 - Storage failures.
 - Crash-free mobile sessions.
 
 ## Backups
 
-Enable automated PostgreSQL backups and periodically test restoration.
+Enable automated MongoDB snapshots/backups and periodically test restoration.

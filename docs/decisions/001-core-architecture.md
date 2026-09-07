@@ -5,14 +5,14 @@ Accepted
 
 ## Decision
 
-Use React Native + Expo for the mobile client and NestJS + PostgreSQL for the backend. Integrate external vision AI through a provider abstraction in the backend.
+Use React Native + Expo for the mobile client and Express.js (TypeScript) + MongoDB (Mongoose) for the backend. Integrate external vision AI through a provider abstraction in the backend.
 
 ## Reasons
 
-- TypeScript across the main application stack.
+- TypeScript across the entire application stack.
 - Strong mobile development workflow through Expo.
-- NestJS provides modular backend boundaries.
-- PostgreSQL is appropriate for relational user/species/source data.
+- Express.js provides lightweight, high-performance, and flexible REST API routing.
+- MongoDB and Mongoose provide flexible document modeling for rich species metadata, prediction arrays, and educational content.
 - Provider abstraction prevents AI vendor lock-in.
 - Keeping AI credentials server-side improves security.
 

@@ -2,53 +2,44 @@
 
 ## Prerequisites
 
-- Node.js LTS compatible with the selected NestJS/Expo versions.
+- Node.js LTS (v20+ recommended).
 - npm or pnpm.
-- PostgreSQL.
-- Expo tooling.
+- MongoDB (local instance or MongoDB Atlas).
+- Expo tooling (React Native).
 - Git.
 
 ## Repository layout
 
 ```text
 redback.ai/
-├── apps/
-│   ├── mobile/
-│   └── api/
-├── services/
-│   └── ai/
-├── packages/
-│   ├── types/
-│   ├── validation/
-│   └── config/
-├── docs/
-├── scripts/
+├── backend/            # Express.js REST API with TypeScript & Mongoose
+├── mobile/             # React Native / Expo mobile application
+├── ai-service/         # External AI vision service abstraction layer
+├── docs/               # System & Product documentation
 └── README.md
 ```
 
-## Environment variables
+## Environment variables (`backend/.env`)
 
 ```env
-DATABASE_URL=
-JWT_SECRET=
-AI_PROVIDER=
+PORT=3000
+NODE_ENV=development
+MONGO_URI=mongodb://localhost:27017/redback_db
+JWT_SECRET=super-secret-jwt-key-change-in-production
+JWT_EXPIRES_IN=7d
 AI_API_KEY=
-OBJECT_STORAGE_ENDPOINT=
-OBJECT_STORAGE_BUCKET=
-OBJECT_STORAGE_ACCESS_KEY=
-OBJECT_STORAGE_SECRET_KEY=
 ```
 
 Never commit `.env` files containing secrets.
 
 ## Local workflow
 
-1. Start PostgreSQL.
-2. Run migrations.
-3. Seed a small development species dataset.
-4. Start NestJS API.
-5. Start Expo mobile app.
-6. Configure the mobile app to use the local API URL reachable from the device/emulator.
+1. Start MongoDB (e.g. `mongod` or Docker container).
+2. Install backend dependencies: `cd backend && npm install`.
+3. Start Express.js API in development: `npm run dev` (or `npm run start:dev`).
+4. Build backend for production check: `npm run build`.
+5. Start Expo mobile app: `cd mobile && npx expo start`.
+6. Configure the mobile app to point to the local Express API URL reachable from your device or emulator.
 
 ## Code conventions
 

@@ -7,7 +7,7 @@ This document maps out the full repository tree and technical specification for 
 ## 🏛 Architecture Summary
 
 * **Frontend / Mobile Client**: React Native + Expo (Expo Router) in `mobile/`.
-* **Backend API**: NestJS + `@nestjs/mongoose` (MongoDB) in `backend/`.
+* **Backend API**: Express.js + Mongoose (MongoDB) with TypeScript in `backend/`.
 * **Database**: MongoDB running via Docker Compose (`docker-compose.yml`).
 
 ---
@@ -25,31 +25,32 @@ redBack.ai/
 │           └── SKILL.md                  # Development procedures & guidelines
 ├── backend/
 │   ├── src/
-│   │   ├── main.ts                       # NestJS bootstrap script
-│   │   ├── app.module.ts                 # Main application module
-│   │   ├── schemas/                      # Mongoose data schemas
-│   │   │   ├── user.schema.ts
-│   │   │   ├── species.schema.ts
-│   │   │   ├── identification.schema.ts
-│   │   │   └── learning-topic.schema.ts
-│   │   ├── auth/                         # Authentication module
-│   │   │   ├── auth.module.ts
+│   │   ├── server.ts                     # Express server bootstrap
+│   │   ├── app.ts                        # Express application instance
+│   │   ├── config/                       # Configuration modules
+│   │   │   ├── db.ts                     # Mongoose connection
+│   │   │   └── env.ts                    # Env config variables
+│   │   ├── models/                       # Mongoose data models
+│   │   │   ├── user.model.ts
+│   │   │   ├── species.model.ts
+│   │   │   ├── identification.model.ts
+│   │   │   └── learning-topic.model.ts
+│   │   ├── controllers/                  # Route handlers
 │   │   │   ├── auth.controller.ts
-│   │   │   └── auth.service.ts
-│   │   ├── species/                      # Species search & catalog module
-│   │   │   ├── species.module.ts
 │   │   │   ├── species.controller.ts
-│   │   │   └── species.service.ts
-│   │   ├── identifications/              # AI image identification module
-│   │   │   ├── identifications.module.ts
 │   │   │   ├── identifications.controller.ts
-│   │   │   └── identifications.service.ts
-│   │   └── learning/                     # Learning topics module
-│   │       ├── learning.module.ts
-│   │       ├── learning.controller.ts
-│   │       └── learning.service.ts
+│   │   │   └── learning.controller.ts
+│   │   ├── routes/                       # Express route modules
+│   │   │   ├── index.ts                  # /api/v1 router aggregation
+│   │   │   ├── auth.routes.ts
+│   │   │   ├── species.routes.ts
+│   │   │   ├── identifications.routes.ts
+│   │   │   └── learning.routes.ts
+│   │   └── middlewares/                  # Express middlewares
+│   │       ├── auth.middleware.ts
+│   │       ├── error.middleware.ts
+│   │       └── upload.middleware.ts
 │   ├── .env.example
-│   ├── nest-cli.json
 │   ├── package.json
 │   └── tsconfig.json
 ├── mobile/
