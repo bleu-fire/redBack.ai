@@ -20,7 +20,7 @@ export default function RootLayout() {
         <Stack.Protected guard ={IsAuth}>
           <Stack.Screen name="(tabs)" />
         </Stack.Protected>
-        <Stack.Protected>
+        <Stack.Protected  guard ={IsAuth} >
           <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
         </Stack.Protected>
       </Stack>

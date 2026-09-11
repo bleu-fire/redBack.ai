@@ -46,6 +46,7 @@ export async function getAllSpecies(req: Request, res: Response, next: NextFunct
 
 export async function searchSpecies(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
+    //query
     const q = (req.query.q || req.query.search || '') as string;
     const page = parseInt(req.query.page as string, 10) || 1;
     const limit = parseInt(req.query.limit as string, 10) || 20;
@@ -110,7 +111,7 @@ export async function updateSpecies(req: Request, res: Response, next: NextFunct
     next(error);
   }
 }
-
+//delete the species
 export async function deleteSpecies(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const { id } = req.params;

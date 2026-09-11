@@ -1,6 +1,7 @@
 # ADR-001: Core Architecture
 
 ## Status
+
 Accepted
 
 ## Decision

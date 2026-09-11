@@ -13,7 +13,8 @@ async function bootstrap() {
   });
 }
 
-bootstrap().catch((err) => {
-  console.error('Fatal bootstrap error:', err);
-  process.exit(1);
-});
+// i need to know what is this is to start use it 
+// bootstrap().catch((err) => {
+//   console.error('Fatal bootstrap error:', err);
+//   process.exit(1);
+// });

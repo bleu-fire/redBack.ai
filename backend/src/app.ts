@@ -1,5 +1,4 @@
 import express, { Application } from 'express';
-import cors from 'cors';
 import path from 'path';
 import apiRouter from './routes';
 import { errorHandler, notFoundHandler } from './middlewares/error.middleware';
@@ -8,7 +7,7 @@ export function createApp(): Application {
   const app = express();
 
   // Global Middlewares
-  app.use(cors());
+
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 

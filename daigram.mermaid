@@ -1,154 +1,103 @@
 classDiagram
 
 %% ==========================
-%% USERS
+%% MODELS
 %% ==========================
 
 class User {
-    +UUID id
-    +String fullName
+    +ObjectId _id
+    +String fullname
     +String email
     +String passwordHash
-    +String avatar
-    +String language
+    +String avatarUrl
     +Date createdAt
-    +register()
-    +login()
-    +updateProfile()
+    +Date updatedAt
 }
 
-%% ==========================
-%% SPECIES
-%% ==========================
-
 class Species {
-    +UUID id
-    +String commonName
+    +ObjectId _id
     +String scientificName
+    +String commonName
     +String family
     +String genus
     +String description
     +String habitat
     +String distribution
-    +String diet
-    +String lifespan
-    +String activityPeriod
-    +String venomLevel
+    +String behavior
+    +String venomInfo
     +String conservationStatus
+    +String[] imageUrls
+    +Date createdAt
+    +Date updatedAt
+}
+
+class Identification {
+    +ObjectId _id
+    +ObjectId userId
     +String imageUrl
+    +String status
+    +Date createdAt
+    +Date updatedAt
 }
-
-class SpeciesImage {
-    +UUID id
-    +String imageUrl
-    +String photographer
-}
-
-Species "1" --> "*" SpeciesImage
-
-%% ==========================
-%% OBSERVATIONS
-%% ==========================
-
-class Observation {
-    +UUID id
-    +String imageUrl
-    +double latitude
-    +double longitude
-    +String notes
-    +Date observationDate
-    +String weather
-}
-
-User "1" --> "*" Observation
-Species "1" --> "*" Observation
-
-%% ==========================
-%% AI IDENTIFICATION
-%% ==========================
-
-class AIIdentification {
-    +UUID id
-    +String uploadedImage
-    +float confidence
-    +Date identifiedAt
-}
-
-Observation "1" --> "1" AIIdentification
 
 class Prediction {
-    +UUID id
-    +float confidence
+    +ObjectId speciesId
+    +String scientificName
+    +String commonName
+    +Number confidence
+    +String confidenceBand
 }
 
-AIIdentification "1" --> "*" Prediction
-Prediction "*" --> "1" Species
-
-%% ==========================
-%% MAP
-%% ==========================
-
-class Location {
-    +double latitude
-    +double longitude
-    +String country
-    +String region
-}
-
-Observation --> Location
-
-%% ==========================
-%% LEARNING
-%% ==========================
-
-class LearningModule {
-    +UUID id
+class LearningTopic {
+    +ObjectId _id
+    +String slug
     +String title
     +String content
     +String category
+    +String sourceUrl
+    +Date createdAt
+    +Date updatedAt
 }
+
+%% Relationships
+User "1" --> "*" Identification : creates
+Identification "1" *-- "*" Prediction : contains
+Prediction "*" --> "1" Species : references
 
 %% ==========================
-%% SERVICES
+%% CONTROLLERS / SERVICES
 %% ==========================
 
-class AIService {
-    +identifySpider()
-    +detectSpider()
-    +generateSummary()
+class AuthController {
+    +register(fullname, email, password, avatarUrl)
+    +login(email, password)
+    +getMe()
+    +getStatus()
 }
 
-class SpeciesService {
-    +searchSpecies()
-    +filterSpecies()
-    +getSpeciesDetails()
+class SpeciesController {
+    +createSpecies(data)
+    +getAllSpecies(searchQuery)
+    +searchSpecies(q, page, limit)
+    +getSpeciesById(id)
+    +updateSpecies(id, data)
+    +deleteSpecies(id)
 }
 
-class ObservationService {
-    +saveObservation()
-    +getHistory()
-    +deleteObservation()
+class IdentificationsController {
+    +createIdentification(imageUrl)
+    +getAllIdentifications()
+    +getIdentificationById(id)
 }
 
-class AuthService {
-    +login()
-    +register()
-    +refreshToken()
+class LearningController {
+    +getAllTopics(category)
+    +getTopicBySlug(slug)
+    +createTopic(slug, title, content)
 }
 
-class StorageService {
-    +uploadImage()
-    +deleteImage()
-}
-
-class MapService {
-    +getNearbySpecies()
-    +getDistribution()
-}
-
-AIService --> AIIdentification
-SpeciesService --> Species
-ObservationService --> Observation
-StorageService --> Observation
-MapService --> Location
-AuthService --> User
+%% Controller to Model Dependencies
+AuthController --> User
+SpeciesController --> Species
+IdentificationsController --> Identification
+LearningController --> LearningTopic

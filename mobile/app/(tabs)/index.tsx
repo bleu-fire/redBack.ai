@@ -13,10 +13,9 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   titleContainer: {
-    flex:1,
-    justifyContent: 'bott',
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-
   },
   stepContainer: {
     gap: 8,

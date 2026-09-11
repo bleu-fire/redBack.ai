@@ -1,34 +1,48 @@
-import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
+import { TouchableOpacity, Text, View, StyleSheet, TouchableOpacityProps } from "react-native";
+import { type Href, useRouter } from 'expo-router';
 
-
-
-export default function ButtonComponent({ name, path }: { name: string; path: string }) {
-  const router = useRouter();
-  return (
-    <View>
-      <TouchableOpacity style={styles.button} onPress={() => {router.replace(path)}}>
-
-        <View style={styles.text}>
-          <Text>{name}</Text>
-        </View>
-      </TouchableOpacity>
-    </View>
-  )
+interface ButtonComponentProps extends Omit<TouchableOpacityProps, 'onPress'> {
+  name: string;
+  path: Href;
+  onPress?: () => void;
 }
 
+export default function ButtonComponent({ name, path, onPress, ...rest }: ButtonComponentProps) {
+  const router = useRouter();
+  const handlePress = () => {
+    if (onPress) {
+      onPress();
+    } else {
+      router.replace(path);
+    }
+  };
+
+  return (
+    <TouchableOpacity style={styles.button} onPress={handlePress} {...rest}>
+      <View style={styles.textContainer}>
+        <Text style={styles.buttonText}>{name}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+}
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#31612a',
-    height:30,
-    width: 200,
-    borderRadius: 90
+    backgroundColor: '#0cc97b',
+    height: 50,
+    width: 300,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  text: {
-    color: '#fff',
-    flex: 1,
+  textContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-      },
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
 });
