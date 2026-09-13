@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { ImageBackground } from 'expo-image';
-import Buttons from '@/components/ui/buttons';
+import { Buttons } from '@/components/ui/buttons';
 
 export default function LoginScreen() {
   return (
