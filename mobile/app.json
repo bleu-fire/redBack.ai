@@ -1,10 +1,10 @@
 {
   "expo": {
     "name": "redback.ai",
-    "slug": "redback.ai",
+    "slug": "redback-ai",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "/home/bleufire/Desktop/projects/redBack.ai/mobile/assets/images/splash-icon.png",
+    "icon": "./assets/design/redback-logo.png",
     "scheme": "mobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -12,30 +12,23 @@
       "supportsTablet": true
     },
     "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#fff",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
-      },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "output": "static"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "/home/bleufire/Desktop/projects/redBack.ai/mobile/assets/images/splash-icon.png",
-          "imageWidth": 200,
+          "image": "./assets/design/redback-logo-white.png",
+          "imageWidth": 240,
           "resizeMode": "contain",
-          "backgroundColor": "#fff",
+          "backgroundColor": "#E84B3C",
           "dark": {
-            "backgroundColor": "#fff"
+            "backgroundColor": "#E84B3C"
           }
         }
       ]

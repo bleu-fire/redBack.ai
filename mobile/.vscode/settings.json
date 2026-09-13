@@ -3,5 +3,8 @@
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
-  }
+  },
+  "emulator.emulatorPathLinux": "/home/bleufire/Android/Sdk/emulator",
+  "emulator.androidColdBoot": true,
+  "emulator.androidExtraBootArgs": "-no-snapshot-load -no-snapshot-save -accel off -gpu swiftshader_indirect"
 }
