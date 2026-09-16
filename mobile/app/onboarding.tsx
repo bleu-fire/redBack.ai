@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { Camera, BookOpen, Compass } from "lucide-react-native";
-import { Image, ImageBackground } from "expo-image";
+import { Image } from "expo-image";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -10,7 +10,6 @@ import { OnboardingButton } from "@/components/ui/buttons";
 
 const slides = [
   {
-    eyebrow: "WELCOME TO redBack.ai",
     title: "Look closer.\nDiscover more.",
     body: "A curious field guide for the tiny creatures sharing your world.",
     icon: Compass,
@@ -35,18 +34,13 @@ const slides = [
 export default function OnboardingScreen() {
   const [step, setStep] = useState(0);
   const slide = slides[step];
-  const Icon = slide.icon;
   const isLast = step === slides.length - 1;
+
 
   const next = () =>
     isLast ? router.replace("/(auth)/login") : setStep((value) => value + 1);
 
   return (
-    <ImageBackground
-      source={require("@/assets/images/spider-bg.png")}
-      contentFit="cover"
-      style={styles.background}
-    >
       <View style={styles.overlay}>
         <SafeAreaView style={styles.safe}>
           <View style={styles.topbar}>
@@ -62,12 +56,8 @@ export default function OnboardingScreen() {
               contentFit="contain"
               style={styles.spider}
             />
-            <View style={styles.iconBadge}>
-              <Icon size={22} color={Palette.paper} />
-            </View>
           </View>
           <View style={styles.content}>
-            <Text style={styles.eyebrow}>{slide.eyebrow}</Text>
             <Text style={styles.title}>{slide.title}</Text>
             <Text style={styles.body}>{slide.body}</Text>
           </View>
@@ -83,7 +73,7 @@ export default function OnboardingScreen() {
           </View>
         </SafeAreaView>
       </View>
-    </ImageBackground>
+
   );
 }
 
@@ -111,20 +101,7 @@ const styles = StyleSheet.create({
     borderRadius: 150,
     backgroundColor: "rgba(232, 75, 60, 0.14)",
   },
-  spider: { width: 300, height: 300 },
-  iconBadge: {
-    position: "absolute",
-    right: 18,
-    bottom: 42,
-    width: 52,
-    height: 52,
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: Palette.coral,
-    borderWidth: 4,
-    borderColor: "#536A5C",
-  },
+  spider: { width: 300, height: 300 , borderRadius: 40, overflow: "hidden" },
   content: { paddingBottom: 28 },
   eyebrow: {
     color: "#E9A299",

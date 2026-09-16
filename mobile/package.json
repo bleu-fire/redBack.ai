@@ -3,14 +3,16 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start",
-    "reset-project": "node ./scripts/reset-project.js",
+    "start": "expo start -c",
+    "start:no-cache": "expo start -c",
     "android": "bash ./scripts/start-android.sh",
-    "android:expo": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
+    "android:expo": "expo start --android -c",
+    "ios": "expo start --ios -c",
+    "web": "expo start --web -c",
+    "clean:cache": "rm -rf .expo node_modules/.cache /tmp/metro-* /tmp/haste-map-* 2>/dev/null || true",
     "lint": "expo lint"
   },
+
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
     "@react-navigation/bottom-tabs": "^7.4.0",

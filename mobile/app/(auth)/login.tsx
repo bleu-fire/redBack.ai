@@ -1,18 +1,12 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { ImageBackground } from 'expo-image';
 import { Buttons } from '@/components/ui/buttons';
 
 export default function LoginScreen() {
   return (
-    <ImageBackground
-      source={require('@/assets/images/spider-bg.png')}
-      style={style.backgroundImage}
-      contentFit="cover"
-    >
       <View style={style.Overly}>
         <View style={style.headerContainer}>
           <Text style={style.textForUser}>
-            Hello explorer, create to get great experience
+           Welcome The Explorer .
           </Text>
         </View>
         <View style={style.button}>
@@ -21,16 +15,10 @@ export default function LoginScreen() {
           <Buttons name="login" path="/(auth)/login" />
         </View>
       </View>
-    </ImageBackground>
   );
 }
 
 export const style = StyleSheet.create({
-  backgroundImage: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-  },
 
   Overly: {
     flex: 1,
