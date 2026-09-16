@@ -9,4 +9,7 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET || 'super-secret-jwt-key-change-in-production',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   aiApiKey: process.env.AI_API_KEY || '',
+  pineconeApiKey: process.env.PINECONE_API_KEY || '',
+  pineconeEnvironment: process.env.PINECONE_ENVIRONMENT || '',
+  
 };

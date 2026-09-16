@@ -81,11 +81,20 @@ export async function processSpiderPdf(filePath: string): Promise<ChunkedDocumen
   return documents;
 }
 
-// Example usage:
+// Example runner (only executes when running this file directly):
 async function run() {
-  const chunks = await processSpiderPdf("./data/australian_spiders_guide.pdf");
-  console.log(`Generated ${chunks.length} chunks.`);
-  console.log("Sample chunk preview:", chunks[0]);
+  const pdfPath = process.env.PDF_PATH || "./searching/Spider-Guide-Wegner-BASF-Revised-12-2-14.pdf";
+  if (fs.existsSync(pdfPath)) {
+    const chunks = await processSpiderPdf(pdfPath);
+    console.log(`Generated ${chunks.length} chunks.`);
+    if (chunks.length > 0) {
+      console.log("Sample chunk preview:", chunks[0]);
+    }
+  } else {
+    console.log(`PDF not found at ${pdfPath}. Skipping standalone preview.`);
+  }
 }
 
-run().catch(console.error);
+if (require.main === module) {
+  run().catch(console.error);
+}
