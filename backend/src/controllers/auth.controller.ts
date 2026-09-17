@@ -1,125 +1,84 @@
 import { Request, Response, NextFunction } from 'express';
-import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { UserModel } from '../models/user.model';
+import { User } from '../models/user.model';
 import { config } from '../config/env';
 import { AppError } from '../middlewares/error.middleware';
-import { AuthRequest } from '../middlewares/auth.middleware';
 
-export async function register(req: Request, res: Response, next: NextFunction): Promise<void> {
+// Fonction kat-générer JWT token
+const signToken = (id: string): string => {
+  return jwt.sign({ id }, config.jwtSecret, {
+    expiresIn: config.jwtExpiresIn as any,
+  });
+};
+
+// 1. REGISTER (Tasjil jdid)
+export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { fullname, email, password, avatarUrl } = req.body;
+    const { name, email, password } = req.body;
 
-    if (!fullname || !email || !password) {
-      throw new AppError('Fullname, email, and password are required', 400, 'VALIDATION_ERROR');
-    }
-
-    if (password.length < 6) {
-      throw new AppError('Password must be at least 6 characters long', 400, 'VALIDATION_ERROR');
-    }
-
-    const existingUser = await UserModel.findOne({ email: email.toLowerCase() });
+    // Nchoufo wash l-email déjà kayn
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
-      throw new AppError('User with this email already exists', 409, 'CONFLICT');
+      return next(new AppError('Had l-email deja mste3mel!', 400));
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const passwordHash = await bcrypt.hash(password, salt);
-
-    const user = await UserModel.create({
-      fullname,
-      email: email.toLowerCase(),
-      passwordHash,
-      avatarUrl,
+    // Ncréer l-user
+    const newUser = await User.create({
+      name,
+      email,
+      password,
     });
 
-    const token = jwt.sign(
-      { id: user._id.toString(), email: user.email },
-      config.jwtSecret,
-      { expiresIn: config.jwtExpiresIn as any },
-    );
+    const token = signToken(newUser._id.toString());
 
     res.status(201).json({
-      message: 'User registered successfully',
-      user: {
-        id: user._id,
-        fullname: user.fullname,
-        email: user.email,
-        avatarUrl: user.avatarUrl,
-      },
+      status: 'success',
       token,
+      data: {
+        user: {
+          id: newUser._id,
+          name: newUser.name,
+          email: newUser.email,
+          role: newUser.role,
+        },
+      },
     });
   } catch (error) {
     next(error);
   }
-}
+};
 
-export async function login(req: Request, res: Response, next: NextFunction): Promise<void> {
+// 2. LOGIN (Dkhol)
+export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      throw new AppError('Email and password are required', 400, 'VALIDATION_ERROR');
+      return next(new AppError('3afak dakhil l-email w mot de passe!', 400));
     }
 
-    const user = await UserModel.findOne({ email: email.toLowerCase() });
-    if (!user) {
-      throw new AppError('Invalid credentials', 401, 'UNAUTHORIZED');
+    // N9elbo 3la user w njibo m3ah l-password (hit dayrin lih select: false f l-model)
+    const user = await User.findOne({ email }).select('+password');
+
+    if (!user || !(await user.comparePassword(password))) {
+      return next(new AppError('L-email wlla l-mot de passe ghalat!', 401));
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-    if (!isPasswordValid) {
-      throw new AppError('Invalid credentials', 401, 'UNAUTHORIZED');
-    }
-
-    const token = jwt.sign(
-      { id: user._id.toString(), email: user.email },
-      config.jwtSecret,
-      { expiresIn: config.jwtExpiresIn as any },
-    );
+    const token = signToken(user._id.toString());
 
     res.status(200).json({
-      message: 'Login successful',
-      user: {
-        id: user._id,
-        fullname: user.fullname,
-        email: user.email,
-        avatarUrl: user.avatarUrl,
-      },
+      status: 'success',
       token,
-    });
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function getMe(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
-  try {
-    if (!req.user) {
-      throw new AppError('Unauthorized', 401, 'UNAUTHORIZED');
-    }
-
-    const user = await UserModel.findById(req.user.id).select('-passwordHash');
-    if (!user) {
-      throw new AppError('User not found', 404, 'NOT_FOUND');
-    }
-
-    res.status(200).json({
-      user: {
-        id: user._id,
-        fullname: user.fullname,
-        email: user.email,
-        avatarUrl: user.avatarUrl,
+      data: {
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
       },
     });
   } catch (error) {
     next(error);
   }
-}
-
-export function getStatus(_req: Request, res: Response): void {
-  res.status(200).json({
-    status: 'Auth service operational',
-    timestamp: new Date().toISOString(),
-  });
-}
+};

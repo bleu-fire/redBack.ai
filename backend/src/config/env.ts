@@ -1,15 +1,13 @@
 import dotenv from 'dotenv';
 
+// read the file in the  roo of backend env
 dotenv.config();
 
 export const config = {
-  port: parseInt(process.env.PORT || '3000', 10),
+  port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
   nodeEnv: process.env.NODE_ENV || 'development',
-  mongoUri: process.env.MONGO_URI || 'mongodb://localhost:27017/redback_db',
-  jwtSecret: process.env.JWT_SECRET || 'super-secret-jwt-key-change-in-production',
+  mongoUri: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/redback_db',
+  jwtSecret: process.env.JWT_SECRET || 'default-secret-change-it',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
-  aiApiKey: process.env.AI_API_KEY || '',
-  pineconeApiKey: process.env.PINECONE_API_KEY || '',
-  pineconeEnvironment: process.env.PINECONE_ENVIRONMENT || '',
-  
 };
+

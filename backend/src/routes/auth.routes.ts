@@ -1,12 +1,11 @@
 import { Router } from 'express';
-import { register, login, getMe, getStatus } from '../controllers/auth.controller';
-import { authenticate } from '../middlewares/auth.middleware';
+import { register, login } from '../controllers/auth.controller';
 
 const router = Router();
 
+// Endpoints d l'authentification
 router.post('/register', register);
 router.post('/login', login);
-router.get('/me', authenticate, getMe);
-router.get('/status', getStatus);
 
 export default router;
+

@@ -1,67 +1,27 @@
-import express, { Application } from 'express';
-import path from 'path';
-import apiRouter from './routes';
-import { apiReference } from '@scalar/express-api-reference';
-import { errorHandler, notFoundHandler } from './middlewares/error.middleware';
+import express, { Application, Request, Response } from 'express';
+import cors from 'cors';
+import authRoutes from './routes/auth.routes';
+import { errorHandler } from './middlewares/error.middleware';
 
-import { apiReference } from '@scalar/express-api-reference';
-import { openApiSpec } from './config/openapi';
+const app: Application = express();
 
-export function createApp(): Application {
-  const app = express();
+// 1. Middlewares global
+app.use(express.json());
 
-  // Global Middlewares
-
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
-
-  // Static uploads serving
-  app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
-
-  // Root health check
-  app.get('/health', (_req, res) => {
-    res.status(200).json({ status: 'ok', service: 'redback-backend-express' });
+// 2. Routes
+app.get('/health', (req: Request, res: Response) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'redBack.ai API khddama bikhir!',
+    timestamp: new Date().toISOString(),
   });
+});
 
-<<<<<<< Updated upstream
-  // OpenAPI JSON
-  app.get('/openapi.json', (_req, res) => {
-    res.status(200).json(openApiSpec);
-  });
+// Routes API  Auth
+app.use('/api/auth', authRoutes);
 
-  // Scalar API Reference & Interactive Testing UI
-  app.use(
-    '/reference',
-    apiReference({
-      spec: {
-        content: openApiSpec,
-      },
-    }),
-  );
-=======
-  // Scalar Interactive API Documentation
->>>>>>> Stashed changes
-  app.use(
-    '/docs',
-    apiReference({
-      spec: {
-<<<<<<< Updated upstream
-        content: openApiSpec,
-      },
-=======
-        content: require('./docs/openapi.json'),
-      },
-      theme: 'purple',
->>>>>>> Stashed changes
-    }),
-  );
 
-  // API v1 Routes
-  app.use('/api/v1', apiRouter);
+// 4. Global Error Handler (huwa l-kher ga3)
+app.use(errorHandler);
 
-  // 404 & Error Handlers
-  app.use(notFoundHandler);
-  app.use(errorHandler);
-
-  return app;
-}
+export default app;
