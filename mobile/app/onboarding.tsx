@@ -5,8 +5,6 @@ import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Palette } from "@/constants/theme";
-import { BrandLogo, ProgressDots } from "@/components/ui/branding";
-import { OnboardingButton } from "@/components/ui/buttons";
 
 const slides = [
   {
@@ -44,7 +42,7 @@ export default function OnboardingScreen() {
       <View style={styles.overlay}>
         <SafeAreaView style={styles.safe}>
           <View style={styles.topbar}>
-            <BrandLogo />
+
             <Pressable onPress={() => router.replace("/(auth)/login")}>
               <Text style={styles.skip}>Skip</Text>
             </Pressable>
@@ -62,11 +60,7 @@ export default function OnboardingScreen() {
             <Text style={styles.body}>{slide.body}</Text>
           </View>
           <View style={styles.footer}>
-            <ProgressDots total={slides.length} active={step} />
-            <OnboardingButton
-              label={isLast ? "Get started" : "Continue"}
-              onPress={next}
-            />
+
             <Text style={styles.legal}>
               Educational identification only. Stay curious, stay safe.
             </Text>

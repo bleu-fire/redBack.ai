@@ -14,9 +14,6 @@
     "seed": "tsx src/scripts/seed.ts"
   },
   "dependencies": {
-    "@langchain/textsplitters": "^1.0.1",
-    "@pinecone-database/pinecone": "^9.0.0",
-    "@scalar/express-api-reference": "^0.10.18",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

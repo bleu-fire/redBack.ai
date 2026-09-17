@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import * as fs from "fs";
 import pdf from "pdf-parse";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
@@ -98,3 +99,5 @@ async function run() {
 if (require.main === module) {
   run().catch(console.error);
 }
+=======
+>>>>>>> Stashed changes

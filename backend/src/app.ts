@@ -1,6 +1,7 @@
 import express, { Application } from 'express';
 import path from 'path';
 import apiRouter from './routes';
+import { apiReference } from '@scalar/express-api-reference';
 import { errorHandler, notFoundHandler } from './middlewares/error.middleware';
 
 import { apiReference } from '@scalar/express-api-reference';
@@ -22,6 +23,7 @@ export function createApp(): Application {
     res.status(200).json({ status: 'ok', service: 'redback-backend-express' });
   });
 
+<<<<<<< Updated upstream
   // OpenAPI JSON
   app.get('/openapi.json', (_req, res) => {
     res.status(200).json(openApiSpec);
@@ -36,12 +38,21 @@ export function createApp(): Application {
       },
     }),
   );
+=======
+  // Scalar Interactive API Documentation
+>>>>>>> Stashed changes
   app.use(
     '/docs',
     apiReference({
       spec: {
+<<<<<<< Updated upstream
         content: openApiSpec,
       },
+=======
+        content: require('./docs/openapi.json'),
+      },
+      theme: 'purple',
+>>>>>>> Stashed changes
     }),
   );
 

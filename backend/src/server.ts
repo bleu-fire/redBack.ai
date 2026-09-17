@@ -13,7 +13,15 @@ async function bootstrap() {
   });
 }
 
+<<<<<<< Updated upstream
+=======
+// تشغيل السيرفر والاتصال بقاعدة البيانات
+>>>>>>> Stashed changes
 bootstrap().catch((err) => {
   console.error('Fatal bootstrap error:', err);
   process.exit(1);
 });
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
