@@ -1,36 +1,43 @@
-import { View, Text, StyleSheet } from 'react-native';
-import { ImageBackground } from 'expo-image';
-import Buttons from '@/components/ui/buttons';
+
+import { View, Text, StyleSheet, TextInput } from 'react-native';
+import ButtonForLoginAndRegister from '@/components/ui/ButtonForLoginAndRegister';
+import { useEffect,useState } from 'react';
+
 
 export default function LoginScreen() {
+  const [email ,setemail] = useState('');
+  const [Password ,setPassord] = useState('');
+  useEffect(
+    ()=>{
+      alert('enter info  in now  to start fixin the app ')
+    },[]
+  )
+  const  handleInfo = ()=>{
+    alert(`${Password} and ${email}`)
+  }
   return (
-    <ImageBackground
-      source={require('@/assets/images/spider-bg.png')}
-      style={style.backgroundImage}
-      contentFit="cover"
-    >
       <View style={style.Overly}>
         <View style={style.headerContainer}>
           <Text style={style.textForUser}>
-            Hello explorer, create to get great experience
+           Welcome The Explorer .
           </Text>
-        </View>
-        <View style={style.button}>
-          <Buttons name="register" path="/(auth)/register" />
+          <View>
+          <TextInput placeholder='Enter the Email'  style={style.InputHolder}  value={email} onChangeText={setemail}/>
+          
+          </View>
 
-          <Buttons name="login" path="/(auth)/login" />
+          <View>
+          <TextInput placeholder='Enter the passowrd'  style={style.InputHolder} value={Password} onChangeText={setPassord} />
+          </View>
+          <View>
+          <ButtonForLoginAndRegister title='login' onPress={handleInfo}/>
+          </View>
         </View>
       </View>
-    </ImageBackground>
   );
 }
 
 export const style = StyleSheet.create({
-  backgroundImage: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-  },
 
   Overly: {
     flex: 1,
@@ -52,4 +59,14 @@ export const style = StyleSheet.create({
     color: '#ffffff',
     lineHeight: 30,
   },
+  InputHolder:{
+    backgroundColor:"#FCECD8",
+    borderRadius:10,
+    paddingVertical:15,
+    marginBottom:20,
+    textAlignVertical:'auto'
+    
+    
+
+  }
 });

@@ -16,13 +16,12 @@ export PATH="$SDK_ROOT/platform-tools:$SDK_ROOT/emulator:$PATH"
 
 "$ADB" start-server >/dev/null
 
+# Automatically clean any stale lock files from previous crashes
+rm -f "$HOME/.android/avd/${AVD_NAME}.avd/"*.lock 2>/dev/null || true
+
 if ! "$ADB" devices | awk 'NR > 1 && $2 == "device" { found=1 } END { exit found ? 0 : 1 }'; then
-  echo "Starting $AVD_NAME in stable software-rendered mode..."
-  nohup "$EMULATOR" "@$AVD_NAME" \
-    -no-snapshot-load \
-    -no-snapshot-save \
-    -no-boot-anim \
-    -accel off \
+  echo "Starting $AVD_NAME in stable mode..."
+  LIBGL_DRI3_DISABLE=1 nohup "$EMULATOR" "@$AVD_NAME" \
     -gpu swiftshader_indirect \
     >/tmp/redback-android-emulator.log 2>&1 &
 fi
@@ -33,5 +32,6 @@ until [[ "$("$ADB" shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" =
   sleep 2
 done
 
-echo "Android emulator is ready. Starting Expo..."
-exec npx expo start --android
+echo "Android emulator is ready. Starting Expo with clean cache..."
+exec npx expo start --android --clear
+

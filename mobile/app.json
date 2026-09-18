@@ -13,25 +13,14 @@
     },
     "android": {
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.anonymous.redbackai"
     },
     "web": {
       "output": "static"
     },
     "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/design/redback-logo-white.png",
-          "imageWidth": 240,
-          "resizeMode": "contain",
-          "backgroundColor": "#E84B3C",
-          "dark": {
-            "backgroundColor": "#E84B3C"
-          }
-        }
-      ]
+      "expo-router"
     ],
     "experiments": {
       "typedRoutes": true,

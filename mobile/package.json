@@ -3,19 +3,22 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start",
-    "reset-project": "node ./scripts/reset-project.js",
+    "start": "expo start -c",
+    "start:no-cache": "expo start -c",
     "android": "bash ./scripts/start-android.sh",
-    "android:expo": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
+    "android:expo": "expo start --android -c",
+    "ios": "expo start --ios -c",
+    "web": "expo start --web -c",
+    "clean:cache": "rm -rf .expo node_modules/.cache /tmp/metro-* /tmp/haste-map-* 2>/dev/null || true",
     "lint": "expo lint"
   },
+
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
+    "axios": "^1.20.0",
     "expo": "~54.0.36",
     "expo-constants": "~18.0.13",
     "expo-font": "~14.0.12",
@@ -42,6 +45,7 @@
     "react-native-worklets": "0.5.1"
   },
   "devDependencies": {
+    "@types/node": "^22.20.3",
     "@types/react": "~19.1.0",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",

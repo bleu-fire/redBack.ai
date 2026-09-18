@@ -1,30 +1,27 @@
-import express, { Application } from 'express';
-import path from 'path';
-import apiRouter from './routes';
-import { errorHandler, notFoundHandler } from './middlewares/error.middleware';
+import express, { Application, Request, Response } from 'express';
+import cors from 'cors';
+import authRoutes from './routes/auth.routes';
+import { errorHandler } from './middlewares/error.middleware';
 
-export function createApp(): Application {
-  const app = express();
+const app: Application = express();
 
-  // Global Middlewares
+// 1. Middlewares global
+app.use(express.json());
 
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
-
-  // Static uploads serving
-  app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
-
-  // Root health check
-  app.get('/health', (_req, res) => {
-    res.status(200).json({ status: 'ok', service: 'redback-backend-express' });
+// 2. Routes
+app.get('/health', (req: Request, res: Response) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'redBack.ai API khddama bikhir!',
+    timestamp: new Date().toISOString(),
   });
+});
 
-  // API v1 Routes
-  app.use('/api/v1', apiRouter);
+// Routes API  Auth
+app.use('/api/auth', authRoutes);
 
-  // 404 & Error Handlers
-  app.use(notFoundHandler);
-  app.use(errorHandler);
 
-  return app;
-}
+// 4. Global Error Handler (huwa l-kher ga3)
+app.use(errorHandler);
+
+export default app;

@@ -1,57 +1,52 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { User, IUser } from '../models/user.model';
 import { config } from '../config/env';
-import { UserModel } from '../models/user.model';
+import { AppError } from './error.middleware';
 
+// Bach n-typiw req.user f Express
 export interface AuthRequest extends Request {
-  user?: {
-    id: string;
-    email: string;
-    fullname: string;
-  };
+  user?: IUser;
 }
 
-export async function authenticate(
+export const protect = async (
   req: AuthRequest,
   res: Response,
-  next: NextFunction,
-): Promise<void> {
+  next: NextFunction
+) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      res.status(401).json({
-        statusCode: 401,
-        code: 'UNAUTHORIZED',
-        message: 'No authorization token provided',
-      });
-      return;
+    let token: string | undefined;
+
+    // check the token if in  Authorization header (Bearer <token>)
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+    ) {
+      token = req.headers.authorization.split(' ')[1];
     }
 
-    const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, config.jwtSecret) as { id: string; email: string };
-
-    const user = await UserModel.findById(decoded.id).select('-passwordHash');
-    if (!user) {
-      res.status(401).json({
-        statusCode: 401,
-        code: 'UNAUTHORIZED',
-        message: 'User no longer exists',
-      });
-      return;
+    if (!token) {
+      return next(
+        new AppError('Ma3ndekch l-haq t-acceder hna, khassek dir login l-oul!', 401)
+      );
     }
 
-    req.user = {
-      id: user._id.toString(),
-      email: user.email,
-      fullname: user.fullname,
-    };
+    // verifiw token is correct
+    const decoded = jwt.verify(token, config.jwtSecret) as { id: string };
 
+    // verify user if is in the data base
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) {
+      return next(
+        new AppError('Had l-user mol had l-token mabqash kayn!', 401)
+      );
+    }
+
+    // send user m3a req bach nkhdmo bih  les controllers
+    req.user = currentUser;
     next();
   } catch (error) {
-    res.status(401).json({
-      statusCode: 401,
-      code: 'INVALID_TOKEN',
-      message: 'Invalid or expired authentication token',
-    });
+    return next(new AppError('Token is wrong or expired', 401));
   }
-}
+};
+

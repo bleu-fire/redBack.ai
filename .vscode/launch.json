@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Expo: Attach to Packager (Hermes)",
+      "type": "node",
+      "request": "attach",
+      "port": 8081,
+      "address": "localhost",
+      "restart": true,
+      "sourceMaps": true,
+      "cwd": "${workspaceFolder}/mobile"
+    },
+    {
+      "name": "Debug Backend (Express)",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/backend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 9229,
+      "restart": true
+    }
+  ]
+}
+

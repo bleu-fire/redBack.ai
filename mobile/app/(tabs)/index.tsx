@@ -2,101 +2,15 @@ import { router } from "expo-router";
 import { Bell, Camera, ChevronRight } from "lucide-react-native";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { Palette } from "@/constants/theme";
-import { IconButton } from "@/components/ui/buttons";
-import { Pill, SectionTitle } from "@/components/ui/content";
-import { Screen } from "@/components/ui/layout";
+
 
 export default function HomeScreen() {
   return (
-    <Screen>
-      <View style={styles.topbar}>
-        <View>
-          <Text style={styles.kicker}>SATURDAY, 14 SEP</Text>
-          <Text style={styles.greeting}>
-            Good morning, Alex <Text>✦</Text>
-          </Text>
-        </View>
-        <IconButton icon={Bell} light />
-      </View>
-      <View style={styles.hero}>
-        <View style={styles.heroCopy}>
-          <Pill tone="coral">YOUR FIELD GUIDE</Pill>
-          <Text style={styles.heroTitle}>
-            See the tiny{`\n`}world differently.
-          </Text>
-          <Text style={styles.heroBody}>
-            Identify spiders, learn their stories, and explore nature with
-            confidence.
-          </Text>
-        </View>
-        <Image
-          source={require("@/assets/images/spider-3d.png")}
-          style={styles.heroSpider}
-          resizeMode="contain"
-        />
-      </View>
-      <Pressable
-        style={styles.scanCard}
-        onPress={() => router.push("/scanner")}
-      >
-        <View style={styles.scanIcon}>
-          <Camera color={Palette.paper} size={24} />
-        </View>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.scanTitle}>Identify a spider</Text>
-          <Text style={styles.scanSub}>Snap a photo to get started</Text>
-        </View>
-        <ChevronRight color={Palette.paper} size={22} />
-      </Pressable>
-      <SectionTitle
-        eyebrow="KEEP EXPLORING"
-        title="Your field notes"
-        action="See all"
-      />
-      <View style={styles.stats}>
-        <View>
-          <Text style={styles.statNumber}>08</Text>
-          <Text style={styles.statLabel}>species found</Text>
-        </View>
-        <View style={styles.statDivider} />
-        <View>
-          <Text style={styles.statNumber}>03</Text>
-          <Text style={styles.statLabel}>lessons finished</Text>
-        </View>
-        <View style={styles.statDivider} />
-        <View>
-          <Text style={styles.statNumber}>12</Text>
-          <Text style={styles.statLabel}>day streak</Text>
-        </View>
-      </View>
-      <SectionTitle eyebrow="TODAY'S DISCOVERY" title="Redback spider" />
-      <Pressable
-        style={styles.discovery}
-        onPress={() => router.push("/species/redback")}
-      >
-        <View style={styles.discoveryArt}>
-          <Text style={styles.artLabel}>LATRODECTUS{`\n`}HASSELTI</Text>
-          <Image
-            source={require("@/assets/images/spider-3d.png")}
-            style={styles.discoverySpider}
-            resizeMode="contain"
-          />
-        </View>
-        <View style={styles.discoveryCopy}>
-          <Pill tone="gold">NATIVE SPECIES</Pill>
-          <Text style={styles.discoveryTitle}>
-            A small spider with a big story.
-          </Text>
-          <Text style={styles.discoveryText}>
-            Learn how to spot the signature red stripe and where it lives.
-          </Text>
-          <View style={styles.learnLink}>
-            <Text style={styles.learnLinkText}>Explore species</Text>
-            <ChevronRight size={16} color={Palette.coral} />
-          </View>
-        </View>
-      </Pressable>
-    </Screen>
+
+     <View>
+      
+     </View>
+  
   );
 }
 
