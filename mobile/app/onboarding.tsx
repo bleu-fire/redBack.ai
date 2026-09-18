@@ -60,7 +60,9 @@ export default function OnboardingScreen() {
             <Text style={styles.body}>{slide.body}</Text>
           </View>
           <View style={styles.footer}>
-
+            <Pressable onPress={next} style={styles.nextBtn}>
+              <Text style={styles.nextText}>{isLast ? "Get Started" : "Next"}</Text>
+            </Pressable>
             <Text style={styles.legal}>
               Educational identification only. Stay curious, stay safe.
             </Text>
@@ -119,5 +121,17 @@ const styles = StyleSheet.create({
     maxWidth: 330,
   },
   footer: { paddingTop: 4 },
+  nextBtn: {
+    backgroundColor: Palette.coral,
+    paddingVertical: 14,
+    borderRadius: 16,
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  nextText: {
+    color: Palette.paper,
+    fontSize: 16,
+    fontWeight: "800",
+  },
   legal: { color: "#95A79B", textAlign: "center", fontSize: 10, marginTop: 15 },
 });

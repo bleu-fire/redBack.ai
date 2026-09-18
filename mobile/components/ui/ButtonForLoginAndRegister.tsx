@@ -1,23 +1,20 @@
 
-import { style } from "@/app/(auth)/login";
-import { Button } from "@react-navigation/elements";
-import { View , Text, Pressable, StyleSheet } from "react-native";
+import React from "react";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 
-type  BottonProp = {
-    title:string,
-    onPress: ()=> void
-}
+type BottonProp = {
+  title: string;
+  onPress: () => void;
+};
 
-export default  function ({title , onPress}:BottonProp){
-return(
-       <View>
-       <Pressable style={styles.ButtonStyleSheet} onPress={onPress}>
-            <Text style={styles.TextOFButton}>
-                {title}
-            </Text>
-       </Pressable>
+export default function ButtonForLoginAndRegister({ title, onPress }: BottonProp) {
+  return (
+    <View>
+      <Pressable style={styles.ButtonStyleSheet} onPress={onPress}>
+        <Text style={styles.TextOFButton}>{title}</Text>
+      </Pressable>
     </View>
-)
+  );
 }
 
 

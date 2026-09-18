@@ -1,9 +1,8 @@
 
 import { View, Text, StyleSheet, TextInput   } from 'react-native';
 import ButtonForLoginAndRegister from '@/components/ui/ButtonForLoginAndRegister';
-import { useEffect,useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'expo-router';
-import { styles } from './register';
 
 
 export default function LoginScreen() {
