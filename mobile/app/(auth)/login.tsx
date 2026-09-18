@@ -1,7 +1,9 @@
 
-import { View, Text, StyleSheet, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TextInput   } from 'react-native';
 import ButtonForLoginAndRegister from '@/components/ui/ButtonForLoginAndRegister';
 import { useEffect,useState } from 'react';
+import { Link } from 'expo-router';
+import { styles } from './register';
 
 
 export default function LoginScreen() {
@@ -16,38 +18,38 @@ export default function LoginScreen() {
     alert(`${Password} and ${email}`)
   }
   return (
-      <View style={style.Overly}>
-        <View style={style.headerContainer}>
-          <Text style={style.textForUser}>
+
+        <View style={styless.headerContainer}>
+          <Text style={styless.textForUser}>
            Welcome The Explorer .
           </Text>
           <View>
-          <TextInput placeholder='Enter the Email'  style={style.InputHolder}  value={email} onChangeText={setemail}/>
+          <TextInput placeholder='Enter the Email'  style={styless.InputHolder}  value={email} onChangeText={setemail} />
           
           </View>
 
           <View>
-          <TextInput placeholder='Enter the passowrd'  style={style.InputHolder} value={Password} onChangeText={setPassord} />
+          <TextInput placeholder='Enter the passowrd'  style={styless.InputHolder} value={Password} onChangeText={setPassord} />
           </View>
           <View>
           <ButtonForLoginAndRegister title='login' onPress={handleInfo}/>
           </View>
+          <View >
+              <Link href="/register" style={styless.LinkDircting}> go to the register</Link> 
+          </View>
         </View>
-      </View>
+
   );
 }
 
-export const style = StyleSheet.create({
+export const styless = StyleSheet.create({
 
-  Overly: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 30,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)', // dark overlay for readability
-  },
+
   headerContainer: {
-    marginBottom: 30,
+    flex:1,
+    paddingHorizontal:12,
+    justifyContent:"center",
+    backgroundColor:"#fefae0"
   },
   button: {
     gap: 15,
@@ -56,17 +58,24 @@ export const style = StyleSheet.create({
     textAlign: 'center',
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#5c1605',
     lineHeight: 30,
+    marginBottom:133
   },
   InputHolder:{
-    backgroundColor:"#FCECD8",
+    backgroundColor:"#f5ebe2",
     borderRadius:10,
     paddingVertical:15,
     marginBottom:20,
     textAlignVertical:'auto'
-    
-    
-
+  },
+    LinkDircting:{
+    borderRadius:10,
+    paddingVertical:15,
+    marginBottom:20,
+    textAlignVertical:'auto',
+    color:'#b13434',
+    textAlign:'center'
   }
+
 });

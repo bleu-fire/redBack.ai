@@ -12,7 +12,7 @@ export default  function ({title , onPress}:BottonProp){
 return(
        <View>
        <Pressable style={styles.ButtonStyleSheet} onPress={onPress}>
-            <Text>
+            <Text style={styles.TextOFButton}>
                 {title}
             </Text>
        </Pressable>
@@ -23,10 +23,13 @@ return(
 
 const styles = StyleSheet.create({
 ButtonStyleSheet :{
-    backgroundColor:"#A82020",
+    backgroundColor:"#E84B3C",
     paddingVertical:12,
     paddingHorizontal:20,
     borderRadius:8,
     alignItems:"center"
 },
+TextOFButton:{
+ fontSize:17
+}
 })

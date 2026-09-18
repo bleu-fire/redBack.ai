@@ -1,8 +1,7 @@
-import axios,{AxiosInstance} from 'axios'
+
+import axios  from 'axios'
 
 
-export default  function api (){
-
-    
-
-}
+const   Api =  axios.creat({
+    URL:''
+})
