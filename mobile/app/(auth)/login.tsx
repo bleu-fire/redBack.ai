@@ -1,6 +1,5 @@
 
 import { View, Text, StyleSheet, TextInput } from 'react-native';
-import { ImageBackground } from 'expo-image';
 import ButtonForLoginAndRegister from '@/components/ui/ButtonForLoginAndRegister';
 import { useEffect,useState } from 'react';
 

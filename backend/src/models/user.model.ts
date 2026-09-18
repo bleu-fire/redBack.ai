@@ -15,12 +15,12 @@ const userSchema = new Schema<IUser>(
   {
     name: {
       type: String,
-      required: [true, 'Smiya darouria'],
+      required: [true, 'name'],
       trim: true,
     },
     email: {
       type: String,
-      required: [true, 'L-email darouri'],
+      required: [true, 'email'],
       unique: true,
       lowercase: true,
       trim: true,
@@ -42,7 +42,7 @@ const userSchema = new Schema<IUser>(
     },
   },
   {
-    timestamps: true, // Kaydir createdAt w updatedAt automatiquement
+    timestamps: true, // createdAt w updatedAt 
   }
 );
 

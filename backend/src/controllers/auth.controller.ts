@@ -11,24 +11,24 @@ const signToken = (id: string): string => {
   });
 };
 
-// 1. REGISTER (Tasjil jdid)
+// 1. REGISTER 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, email, password } = req.body;
 
-    // Nchoufo wash l-email déjà kayn
+    // check if email already exist
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return next(new AppError('Had l-email deja mste3mel!', 400));
     }
 
-    // Ncréer l-user
+    // creat user if  email not use befor
     const newUser = await User.create({
       name,
       email,
       password,
     });
-
+    // creat token 
     const token = signToken(newUser._id.toString());
 
     res.status(201).json({
@@ -48,20 +48,20 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
-// 2. LOGIN (Dkhol)
+// 2. LOGIN 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return next(new AppError('3afak dakhil l-email w mot de passe!', 400));
+      return next(new AppError('pleas enter the password 400', 400));
     }
 
-    // N9elbo 3la user w njibo m3ah l-password (hit dayrin lih select: false f l-model)
-    const user = await User.findOne({ email }).select('+password');
+    // search for the email and get password with it 
+    const user = await User.findOne({ email })
 
     if (!user || !(await user.comparePassword(password))) {
-      return next(new AppError('L-email wlla l-mot de passe ghalat!', 401));
+      return next(new AppError('email or the password is wrong', 401));
     }
 
     const token = signToken(user._id.toString());

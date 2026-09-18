@@ -31,10 +31,10 @@ export const protect = async (
       );
     }
 
-    // N-verifiw token wash s7i7
+    // verifiw token is correct
     const decoded = jwt.verify(token, config.jwtSecret) as { id: string };
 
-    // N-verifiw wash l-user baqi kayn f database
+    // verify user if is in the data base
     const currentUser = await User.findById(decoded.id);
     if (!currentUser) {
       return next(
@@ -42,11 +42,11 @@ export const protect = async (
       );
     }
 
-    // Nsiftou l-user m3a req bach nkhdmo bih f les controllers
+    // send user m3a req bach nkhdmo bih  les controllers
     req.user = currentUser;
     next();
   } catch (error) {
-    return next(new AppError('Token ghalat wlla expiré!', 401));
+    return next(new AppError('Token is wrong or expired', 401));
   }
 };
 
