@@ -1,14 +1,9 @@
-<<<<<<< Updated upstream
-import { View, Text, StyleSheet } from 'react-native';
-import { Buttons } from '@/components/ui/buttons';
-=======
+
 import { View, Text, StyleSheet, TextInput } from 'react-native';
 import { ImageBackground } from 'expo-image';
 import ButtonForLoginAndRegister from '@/components/ui/ButtonForLoginAndRegister';
 import { useEffect,useState } from 'react';
 
-
->>>>>>> Stashed changes
 
 export default function LoginScreen() {
   const [email ,setemail] = useState('');
