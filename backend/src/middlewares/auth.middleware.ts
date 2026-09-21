@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { User, IUser } from '../models/user.model';
+import { User, IUser } from '../modules/auth/user.model';
 import { config } from '../config/env';
 import { AppError } from './error.middleware';
 

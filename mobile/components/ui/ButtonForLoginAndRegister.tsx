@@ -19,14 +19,23 @@ export default function ButtonForLoginAndRegister({ title, onPress }: BottonProp
 
 
 const styles = StyleSheet.create({
-ButtonStyleSheet :{
-    backgroundColor:"#E84B3C",
-    paddingVertical:12,
-    paddingHorizontal:20,
-    borderRadius:8,
-    alignItems:"center"
-},
-TextOFButton:{
- fontSize:17
-}
-})
+  ButtonStyleSheet: {
+    backgroundColor: '#E84B3C',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#E84B3C',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  TextOFButton: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+});

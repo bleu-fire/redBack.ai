@@ -1,11 +1,11 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
-import authRoutes from './routes/auth.routes';
+import authRoutes from './modules/auth/auth.routes';
+import speciesRoutes from './modules/species/species.routes';
 import { errorHandler } from './middlewares/error.middleware';
 
 const app: Application = express();
 
-// 1. Middlewares global
 app.use(express.json());
 
 // 2. Routes
@@ -17,11 +17,12 @@ app.get('/health', (req: Request, res: Response) => {
   });
 });
 
-// Routes API  Auth
+// Routes API
 app.use('/api/auth', authRoutes);
+app.use('/api/species', speciesRoutes);
 
 
-// 4. Global Error Handler (huwa l-kher ga3)
+// 4. Global 
 app.use(errorHandler);
 
 export default app;

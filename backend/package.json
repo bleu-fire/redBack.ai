@@ -11,7 +11,8 @@
     "start": "node dist/server.js",
     "start:dev": "tsx watch src/server.ts",
     "dev": "tsx watch src/server.ts",
-    "seed": "tsx src/scripts/seed.ts"
+    "seed": "tsx src/scripts/seed.ts",
+    "test": "tsx src/modules/auth/auth.service.test.ts"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

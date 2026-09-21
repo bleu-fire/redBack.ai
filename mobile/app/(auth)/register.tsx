@@ -41,7 +41,7 @@ export default function RegisterScreen() {
           <ButtonForLoginAndRegister title='login' onPress={handleInfo}/>
           </View>
                     <View >
-                        <Link href="/login" style={styles.LinkDircting}> go to the register</Link> 
+                        <Link href="/login" style={styles.LinkDircting}> go to the login </Link> 
                     </View>
 
         </View>
@@ -50,41 +50,40 @@ export default function RegisterScreen() {
 }
 
 export const styles = StyleSheet.create({
-
-
   headerContainer: {
-    flex:1,
-    paddingHorizontal:10,
-    justifyContent:"center",
-    backgroundColor:"#fefae0"
+    flex: 1,
+    paddingHorizontal: 24,
+    justifyContent: "center",
+    backgroundColor: "#F7F5F0", // Canvas naqi w calme
   },
   button: {
     gap: 15,
   },
   textForUser: {
-    textAlign: 'center',
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#5c1605',
-    lineHeight: 30,
-    marginBottom:133
+    textAlign: "center",
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#17211F", // Dark Ink
+    lineHeight: 34,
+    marginBottom: 48,
   },
-  InputHolder:{
-    backgroundColor:"#f5ebe2",
-    borderRadius:10,
-    paddingVertical:15,
-    marginBottom:20,
-    textAlignVertical:'auto'
+  InputHolder: {
+    backgroundColor: "#FFFFFF", // Abyad naqi
+    borderWidth: 1.5,
+    borderColor: "#E7E5DF", // Border r9iqa m9ada
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    marginBottom: 16,
+    fontSize: 16,
+    color: "#17211F",
   },
-    LinkDircting:{
-    borderRadius:10,
-    paddingVertical:15,
-    marginBottom:20,
-    textAlignVertical:'auto',
-    color:'#b13434',
-    textAlign:'center'
-  }
-
-
+  LinkDircting: {
+    paddingVertical: 14,
+    color: "#E84B3C", // L-Hmar dial redBack.ai
+    textAlign: "center",
+    fontWeight: "700",
+    fontSize: 15,
+  },
 });
  
