@@ -1,5 +1,7 @@
 import api from "./api";
 
+
+// auth Api 
 export interface GetAllUser  {
     id_:string;
     name:string;

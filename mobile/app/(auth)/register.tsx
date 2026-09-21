@@ -7,11 +7,7 @@ import { Link } from 'expo-router';
 export default function RegisterScreen() {
   const [email ,setemail] = useState('');
   const [Password ,setPassord] = useState('');
-  useEffect(
-    ()=>{
-      alert('enter info  in now  to start fixin the app ')
-    },[]
-  )
+
   const  handleInfo = ()=>{
     alert(`${Password} and ${email}`)
   }

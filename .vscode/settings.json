@@ -1,3 +1,11 @@
 {
-    "antigravity.enableInlineDiff": false
+    "antigravity.enableInlineDiff": false,
+    "docker.dockerPath": "C:\\Users\\user\\AppData\\Local\\Programs\\Podman\\podman.exe",
+    "docker.environment": {
+        "DOCKER_HOST": "npipe:////./pipe/podman-machine-default"
+    },
+    "containers.environment": {
+        "DOCKER_HOST": "npipe:////./pipe/podman-machine-default"
+    },
+    "containers.containerCommand": "C:\\Users\\user\\AppData\\Local\\Programs\\Podman\\podman.exe"
 }

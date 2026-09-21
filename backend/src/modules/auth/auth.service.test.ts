@@ -1,6 +1,6 @@
 import { authService } from './auth.service';
 import { User } from './user.model';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 // Helper بسيط للـ Testing
 let passed = 0;
@@ -141,7 +141,7 @@ async function runTests() {
     }
   });
 
-  console.log(`\n📊 Results: ${passed} passed, ${failed} failed\n`);
+  console.log(`\nResults: ${passed} passed, ${failed} failed\n`);
   if (failed > 0) process.exit(1);
 }
 

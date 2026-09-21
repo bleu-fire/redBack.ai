@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { User, IUser } from './user.model';
 import { config } from '../../config/env';
 import { AppError } from '../../middlewares/error.middleware';
