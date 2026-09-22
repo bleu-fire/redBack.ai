@@ -2,141 +2,141 @@ classDiagram
 direction TB
 
 %% ==========================================
-%% 1. MODELS / ENTITIES (Properties & Methods)
+%% 1. MODELS / ENTITIES (UML: property: Type)
 %% ==========================================
 
 class User {
     %% --- Properties (Attributes) ---
-    +ObjectId _id
-    +String name
-    +String email
-    +String password
-    +String avatar
-    +String role
-    +Date createdAt
-    +Date updatedAt
+    +_id: ObjectId
+    +name: String
+    +email: String
+    +password: String
+    +avatar: String
+    +role: String
+    +createdAt: Date
+    +updatedAt: Date
 
     %% --- Methods (Operations) ---
-    +comparePassword(String candidatePassword) Boolean
-    +generateAuthToken() String
-    +toSafeObject() Object
+    +comparePassword(candidatePassword: String): Boolean
+    +generateAuthToken(): String
+    +toSafeObject(): Object
 }
 
 class Species {
     %% --- Properties (Attributes) ---
-    +ObjectId _id
-    +String scientificName
-    +String commonName
-    +String family
-    +String genus
-    +String description
-    +String habitat
-    +String distribution
-    +String behavior
-    +String venomInfo
-    +String conservationStatus
-    +Array~String~ imageUrls
-    +Date createdAt
-    +Date updatedAt
+    +_id: ObjectId
+    +scientificName: String
+    +commonName: String
+    +family: String
+    +genus: String
+    +description: String
+    +habitat: String
+    +distribution: String
+    +behavior: String
+    +venomInfo: String
+    +conservationStatus: String
+    +imageUrls: Array~String~
+    +createdAt: Date
+    +updatedAt: Date
 
     %% --- Methods (Operations) ---
-    +isVenomous() Boolean
-    +getPrimaryImage() String
-    +getSummary() String
+    +isVenomous(): Boolean
+    +getPrimaryImage(): String
+    +getSummary(): String
 }
 
 class Identification {
     %% --- Properties (Attributes) ---
-    +ObjectId _id
-    +ObjectId userId
-    +String imageUrl
-    +String status
-    +String uncertaintyLevel
-    +Date createdAt
-    +Date updatedAt
+    +_id: ObjectId
+    +userId: ObjectId
+    +imageUrl: String
+    +status: String
+    +uncertaintyLevel: String
+    +createdAt: Date
+    +updatedAt: Date
 
     %% --- Methods (Operations) ---
-    +getTopPrediction() Prediction
-    +isConfirmed() Boolean
-    +addPrediction(Prediction prediction) void
+    +getTopPrediction(): Prediction
+    +isConfirmed(): Boolean
+    +addPrediction(prediction: Prediction): void
 }
 
 class Prediction {
     %% --- Properties (Attributes) ---
-    +ObjectId speciesId
-    +String scientificName
-    +String commonName
-    +Number confidence
-    +Number rank
-    +String confidenceBand
+    +speciesId: ObjectId
+    +scientificName: String
+    +commonName: String
+    +confidence: Number
+    +rank: Number
+    +confidenceBand: String
 
     %% --- Methods (Operations) ---
-    +isHighConfidence() Boolean
-    +getConfidencePercentage() String
+    +isHighConfidence(): Boolean
+    +getConfidencePercentage(): String
 }
 
 class LearningTopic {
     %% --- Properties (Attributes) ---
-    +ObjectId _id
-    +String slug
-    +String title
-    +String content
-    +String category
-    +String sourceUrl
-    +Date createdAt
-    +Date updatedAt
+    +_id: ObjectId
+    +slug: String
+    +title: String
+    +content: String
+    +category: String
+    +sourceUrl: String
+    +createdAt: Date
+    +updatedAt: Date
 
     %% --- Methods (Operations) ---
-    +getReadingTime() Number
-    +getSummary() String
+    +getReadingTime(): Number
+    +getSummary(): String
 }
 
 %% ==========================================
-%% 2. CONTROLLERS (Properties & Methods)
+%% 2. CONTROLLERS (UML: property: Type)
 %% ==========================================
 
 class AuthController {
     %% --- Properties (Dependencies) ---
-    -AuthService authService
+    -authService: AuthService
 
     %% --- Methods (API Handlers) ---
-    +register(Request req, Response res, NextFunction next) Promise
-    +login(Request req, Response res, NextFunction next) Promise
-    +getAllUsers(Request req, Response res, NextFunction next) Promise
+    +register(req: Request, res: Response, next: NextFunction): Promise
+    +login(req: Request, res: Response, next: NextFunction): Promise
+    +getAllUsers(req: Request, res: Response, next: NextFunction): Promise
 }
 
 class SpeciesController {
     %% --- Properties (Dependencies) ---
-    -SpeciesModel speciesModel
+    -speciesModel: SpeciesModel
 
     %% --- Methods (API Handlers) ---
-    +createSpecies(Request req, Response res, NextFunction next) Promise
-    +getAllSpecies(Request req, Response res, NextFunction next) Promise
-    +searchSpecies(Request req, Response res, NextFunction next) Promise
-    +getSpeciesById(Request req, Response res, NextFunction next) Promise
-    +updateSpecies(Request req, Response res, NextFunction next) Promise
-    +deleteSpecies(Request req, Response res, NextFunction next) Promise
+    +createSpecies(req: Request, res: Response, next: NextFunction): Promise
+    +getAllSpecies(req: Request, res: Response, next: NextFunction): Promise
+    +searchSpecies(req: Request, res: Response, next: NextFunction): Promise
+    +getSpeciesById(req: Request, res: Response, next: NextFunction): Promise
+    +updateSpecies(req: Request, res: Response, next: NextFunction): Promise
+    +deleteSpecies(req: Request, res: Response, next: NextFunction): Promise
 }
 
 class IdentificationsController {
     %% --- Properties (Dependencies) ---
-    -AIService aiService
-    -IdentificationModel idModel
+    -aiService: AIService
+    -idModel: IdentificationModel
 
     %% --- Methods (API Handlers) ---
-    +createIdentification(Request req, Response res, NextFunction next) Promise
-    +getAllIdentifications(Request req, Response res, NextFunction next) Promise
-    +getIdentificationById(Request req, Response res, NextFunction next) Promise
+    +createIdentification(req: Request, res: Response, next: NextFunction): Promise
+    +getAllIdentifications(req: Request, res: Response, next: NextFunction): Promise
+    +getIdentificationById(req: Request, res: Response, next: NextFunction): Promise
 }
 
 class LearningController {
     %% --- Properties (Dependencies) ---
-    -LearningModel learningModel
+    -learningModel: LearningModel
 
     %% --- Methods (API Handlers) ---
-    +getAllTopics(Request req, Response res, NextFunction next) Promise
-    +getTopicBySlug(Request req, Response res, NextFunction next) Promise
-    +createTopic(Request req, Response res, NextFunction next) Promise
+    +getAllTopics(req: Request, res: Response, next: NextFunction): Promise
+    +getTopicBySlug(req: Request, res: Response, next: NextFunction): Promise
+    +createTopic(req: Request, res: Response, next: NextFunction): Promise
 }
 
 %% ==========================================

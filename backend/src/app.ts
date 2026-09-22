@@ -12,7 +12,7 @@ app.use(express.json());
 app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({
     status: 'success',
-    message: 'redBack.ai API khddama bikhir!',
+    message: 'redBack.ai API!',
     timestamp: new Date().toISOString(),
   });
 });
