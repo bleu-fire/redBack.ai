@@ -21,11 +21,8 @@ export class IdentificationController {
     }
     getAllIdentification = async(req:Request,res:Response,next:NextFunction)=>{
         try{
-            const getAllIdentification = await IdentificationModel.find()
-            if(!getAllIdentification){
-                throw new AppError('error in identifaction',404)
-            }
-            res.status(200).json({status:'success' , data:getAllIdentification})
+            const getAllIdentification = await IdentificationModel.find().populate('userId','name email').sort('-createdAt')
+            res.status(200).json({status:'success' ,resulet:getAllIdentification.length, data:getAllIdentification})
         }
         catch(err){
             next(err);

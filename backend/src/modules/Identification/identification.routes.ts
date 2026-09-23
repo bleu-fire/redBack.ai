@@ -10,3 +10,4 @@ router.get('/',identificationController.getAllIdentification)
 router.get('/:id',identificationController.getIdentificationById)
 
 
+export default  router
