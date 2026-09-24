@@ -1,209 +1,150 @@
-# redback.ai — Spider Explorer AI
+# 🕷️ redBack.ai — AI Spider Explorer & Taxonomy Ecosystem
 
-redback.ai is a mobile-first AI application for identifying spider species from photographs and presenting reliable scientific and educational information about the identified species.
+<div align="center">
 
-## Documentation
+[![License: MIT](https://img.shields.io/badge/License-MIT-coral.svg?style=for-the-badge&color=E04836)](LICENSE)
+[![Expo SDK](https://img.shields.io/badge/Expo-SDK_54-2C4A3E.svg?style=for-the-badge&logo=expo&logoColor=white)](https://expo.dev)
+[![React Native](https://img.shields.io/badge/React_Native-0.81-61DAFB.svg?style=for-the-badge&logo=react&logoColor=black)](https://reactnative.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6.svg?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Vector DB](https://img.shields.io/badge/Vector_DB-Pinecone-000000.svg?style=for-the-badge&logo=pinecone&logoColor=white)](https://www.pinecone.io)
+[![Backend](https://img.shields.io/badge/Backend-Modern_Modular_Monolith-17211F.svg?style=for-the-badge)](docs/02-ARCHITECTURE.md)
+[![Database](https://img.shields.io/badge/Database-MongoDB-47A248.svg?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com)
 
-- **PRD (Product Requirements):** [`docs/01-PRD.md`](docs/01-PRD.md)
-- **System Architecture & Stack:** [`docs/02-ARCHITECTURE.md`](docs/02-ARCHITECTURE.md)
-- **API Specifications & Endpoints:** [`docs/03-API-SPECS.md`](docs/03-API-SPECS.md)
-- **Mobile Screen Map (Expo Router):** [`docs/04-SCREEN-MAP.md`](docs/04-SCREEN-MAP.md)
+**An open-source, mobile-first AI ecosystem for instant spider species identification, arachnid taxonomy education, and venom safety awareness.**
 
-## Current product scope
+[Explore Docs](docs/02-ARCHITECTURE.md) • [API Specs](docs/03-API-SPECS.md) • [AI Pipeline](docs/05-AI-VISION-PIPELINE.md) • [Design System](.agents/skills/redback-dev/references/design-system.md) • [llms.txt](llms.txt)
 
-The current Redback screen list contains 13 screens:
-1. Splash
-2. Onboarding
-3. Login
-4. Register
-5. Home
-6. Camera Scanner
-7. Upload Image
-8. AI Results
-9. Species Details
-10. Search
-11. Learning Center
-12. User Profile
-13. Settings
+</div>
 
-Notification, quiz, favorite, and standalone learning-module features were removed from the earlier class-diagram scope. Learning content remains represented by the Learning Center screen and can be powered through the AI/API approach.
+---
 
-## System Architecture & Class Diagram
+## 📸 Visual Showcase
 
-The core architecture follows the MVC pattern separating Mongoose domain models from API controllers:
+### Naturalist Mobile UI & Explorer Experience
+<div align="center">
+  <img src="mobile/assets/design/explorer-ui-concept.png" alt="redBack.ai Explorer Flow" width="95%" />
+</div>
 
-```mermaid
-classDiagram
-direction TB
+<br />
 
-%% ==========================================
-%% 1. MODELS / ENTITIES (UML: property: Type)
-%% ==========================================
+### Mobile UI Kit & Design System
+<div align="center">
+  <img src="mobile/assets/design/ui-components-kit.png" alt="redBack.ai UI Kit & Components" width="95%" />
+</div>
 
-class User {
-    %% --- Properties (Attributes) ---
-    +_id: ObjectId
-    +name: String
-    +email: String
-    +password: String
-    +avatar: String
-    +role: String
-    +createdAt: Date
-    +updatedAt: Date
+<br />
 
-    %% --- Methods (Operations) ---
-    +comparePassword(candidatePassword: String): Boolean
-    +generateAuthToken(): String
-    +toSafeObject(): Object
-}
+### 4-Tier System Architecture Poster
+<div align="center">
+  <img src="mobile/assets/design/system-design.png" alt="redBack.ai System Architecture" width="95%" />
+</div>
 
-class Species {
-    %% --- Properties (Attributes) ---
-    +_id: ObjectId
-    +scientificName: String
-    +commonName: String
-    +family: String
-    +genus: String
-    +description: String
-    +habitat: String
-    +distribution: String
-    +behavior: String
-    +venomInfo: String
-    +conservationStatus: String
-    +imageUrls: Array~String~
-    +createdAt: Date
-    +updatedAt: Date
+---
 
-    %% --- Methods (Operations) ---
-    +isVenomous(): Boolean
-    +getPrimaryImage(): String
-    +getSummary(): String
-}
+## ✨ Key Features
 
-class Identification {
-    %% --- Properties (Attributes) ---
-    +_id: ObjectId
-    +userId: ObjectId
-    +imageUrl: String
-    +status: String
-    +uncertaintyLevel: String
-    +createdAt: Date
-    +updatedAt: Date
+- **⚡ Dual-Stage AI Vision & Pinecone Vector Search**: Generates dense visual embeddings (CLIP/SigLIP) and queries the **Pinecone Vector Database** for sub-50ms K-NN similarity rankings, verified by multimodal vision models.
+- **🔬 Curated Arachnid Taxonomy**: Rich scientific catalog spanning Order, Family, Genus, and Species (*Latrodectus*, *Atrax*, *Missulena*, *Eriophora*, etc.) with distribution maps and behavioral notes.
+- **🛡️ Strict Medical & Venom Safeguards**: Enforces mandatory medical disclaimers on every API payload. Never provides DIY bite self-treatment; prioritizes immediate emergency medical advice.
+- **🌿 Naturalist Field-Journal Design System**: Warm editorial interface combining classical Serif display typography with modern clean Sans-serif controls and an authentic palette (`#E04836` Coral, `#2C4A3E` Forest Moss, `#FBF9F4` Canvas).
+- **📉 AI Uncertainty Fallback (<70%)**: If combined model confidence drops below 70%, the system falls back to Genus or Family level (*Latrodectus sp.*) and prompts for better lighting or angles.
+- **📔 Citizen Science Field Notes**: Local offline observation queue and personal sighting history.
 
-    %% --- Methods (Operations) ---
-    +getTopPrediction(): Prediction
-    +isConfirmed(): Boolean
-    +addPrediction(prediction: Prediction): void
-}
+---
 
-class Prediction {
-    %% --- Properties (Attributes) ---
-    +speciesId: ObjectId
-    +scientificName: String
-    +commonName: String
-    +confidence: Number
-    +rank: Number
-    +confidenceBand: String
+## 🏛️ System Architecture: Modern Modular Monolith
 
-    %% --- Methods (Operations) ---
-    +isHighConfidence(): Boolean
-    +getConfidencePercentage(): String
-}
+redBack.ai organizes backend business logic into domain-driven bounded contexts rather than layered MVC:
 
-class LearningTopic {
-    %% --- Properties (Attributes) ---
-    +_id: ObjectId
-    +slug: String
-    +title: String
-    +content: String
-    +category: String
-    +sourceUrl: String
-    +createdAt: Date
-    +updatedAt: Date
-
-    %% --- Methods (Operations) ---
-    +getReadingTime(): Number
-    +getSummary(): String
-}
-
-%% ==========================================
-%% 2. CONTROLLERS (UML: property: Type)
-%% ==========================================
-
-class AuthController {
-    %% --- Properties (Dependencies) ---
-    -authService: AuthService
-
-    %% --- Methods (API Handlers) ---
-    +register(req: Request, res: Response, next: NextFunction): Promise
-    +login(req: Request, res: Response, next: NextFunction): Promise
-    +getAllUsers(req: Request, res: Response, next: NextFunction): Promise
-}
-
-class SpeciesController {
-    %% --- Properties (Dependencies) ---
-    -speciesModel: SpeciesModel
-
-    %% --- Methods (API Handlers) ---
-    +createSpecies(req: Request, res: Response, next: NextFunction): Promise
-    +getAllSpecies(req: Request, res: Response, next: NextFunction): Promise
-    +searchSpecies(req: Request, res: Response, next: NextFunction): Promise
-    +getSpeciesById(req: Request, res: Response, next: NextFunction): Promise
-    +updateSpecies(req: Request, res: Response, next: NextFunction): Promise
-    +deleteSpecies(req: Request, res: Response, next: NextFunction): Promise
-}
-
-class IdentificationsController {
-    %% --- Properties (Dependencies) ---
-    -aiService: AIService
-    -idModel: IdentificationModel
-
-    %% --- Methods (API Handlers) ---
-    +createIdentification(req: Request, res: Response, next: NextFunction): Promise
-    +getAllIdentifications(req: Request, res: Response, next: NextFunction): Promise
-    +getIdentificationById(req: Request, res: Response, next: NextFunction): Promise
-}
-
-class LearningController {
-    %% --- Properties (Dependencies) ---
-    -learningModel: LearningModel
-
-    %% --- Methods (API Handlers) ---
-    +getAllTopics(req: Request, res: Response, next: NextFunction): Promise
-    +getTopicBySlug(req: Request, res: Response, next: NextFunction): Promise
-    +createTopic(req: Request, res: Response, next: NextFunction): Promise
-}
-
-%% ==========================================
-%% 3. RELATIONSHIPS
-%% ==========================================
-
-%% Model Relationships
-User "1" --> "*" Identification : creates
-Identification "1" *-- "*" Prediction : contains
-Prediction "*" --> "1" Species : references
-
-%% Controller to Model Dependencies
-AuthController ..> User : manages
-SpeciesController ..> Species : manages
-IdentificationsController ..> Identification : processes
-LearningController ..> LearningTopic : manages
+```text
+backend/src/
+├── app.ts                         # Express app assembly & global middleware
+├── server.ts                      # HTTP listener & process lifecycle
+├── config/                        # Core configurations (db.ts, env.ts, pinecone.ts)
+├── modules/                       # Domain Modules (Modular Monolith)
+│   ├── auth/                      # Authentication domain (routes, controller, service, model)
+│   ├── species/                   # Species catalog domain (routes, controller, service, model)
+│   ├── identification/            # AI Vision & Pinecone Vector Search domain
+│   └── learning/                  # Citizen science education & quizzes domain
+└── shared/                        # Shared Kernel
+    ├── errors/                    # Centralized AppError & error middleware
+    ├── middlewares/               # auth.middleware, error.middleware, upload.middleware
+    └── utils/                     # Cross-cutting helpers & logger
 ```
 
-## Suggested stack
+---
 
-- Mobile: React Native + Expo + Expo Router
-- Backend: Express.js (TypeScript) + MongoDB (Mongoose)
-- Auth: JWT + bcrypt/argon2-equivalent password hashing
-- AI integration: external vision-capable AI API, abstracted behind the backend
-- Scientific/search data: curated database plus external/open biodiversity sources where licensing and reliability permit
-- Storage: object storage for uploaded images
-- Optional async jobs: Redis + BullMQ
+## 🚀 60-Second Quickstart
 
-## Principles
+### Prerequisites
+- Node.js 20+ & npm
+- Docker & Docker Compose
 
-1. AI predictions are probabilistic, not absolute.
-2. Venom/toxicity information must be presented conservatively and with source attribution.
-3. Scientific names and taxonomy should be traceable to authoritative sources.
-4. User images are private by default.
-5. API keys and model credentials never live in the mobile client.
+### 1. Clone the repository
+```bash
+git clone https://github.com/bleu-fire/redBack.ai.git
+cd redBack.ai
+```
+
+### 2. Start Database (MongoDB)
+```bash
+docker compose up -d
+```
+
+### 3. Start Backend API (Modern Modular Monolith)
+```bash
+cd backend
+npm install
+npm run dev
+# API running at http://localhost:3000/api
+```
+
+### 4. Start Mobile Client (Expo SDK 54)
+```bash
+cd ../mobile
+npm install
+npx expo start
+```
+Scan the QR code with the **Expo Go** app on iOS or Android.
+
+---
+
+## 📡 API Endpoints Overview
+
+| Method | Endpoint | Auth | Purpose |
+|---|---|---|---|
+| `POST` | `/api/v1/auth/register` | Public | Create new explorer account |
+| `POST` | `/api/v1/auth/login` | Public | Authenticate & receive JWT |
+| `GET` | `/api/v1/species` | Public | Search species catalog (`?q=&family=&region=`) |
+| `GET` | `/api/v1/species/:id` | Public | Retrieve full taxonomic profile & venom data |
+| `POST` | `/api/v1/identifications/detect` | Bearer | Upload spider image for Pinecone vector query & AI inference |
+| `GET` | `/api/v1/identifications` | Bearer | Get user observation journal history |
+| `GET` | `/api/v1/learning` | Public | List educational taxonomy articles & quizzes |
+| `GET` | `/health` | Public | Service health & uptime verification |
+
+---
+
+## ⚠️ Medical & Venom Safety Disclaimer
+
+> [!IMPORTANT]
+> **redBack.ai provides educational species identification assistance only.** Never handle wild spiders. If bitten by a spider or experiencing severe symptoms (pain, diaphoresis, muscle spasms, nausea, difficulty breathing), **seek immediate emergency medical care**.
+
+---
+
+## 🤖 AI Crawler & LLM Indexing
+
+This repository implements the [llms.txt standard](llms.txt) to provide machine-readable architectural manifests for AI search engines (Perplexity, ChatGPT, Gemini, Claude, Cursor):
+- Machine-readable manifest: [`llms.txt`](llms.txt)
+- Citation metadata: [`CITATION.cff`](CITATION.cff)
+
+---
+
+## 🤝 Contributing
+
+Contributions to taxonomy records, identification algorithms, and design components are warmly welcomed! Please read our guidelines in [docs/](docs/) before submitting a Pull Request.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE) - see the [LICENSE](LICENSE) file for details.

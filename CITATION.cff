@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use redBack.ai in your research, citizen science project, or software, please cite it as below."
+authors:
+  - name: "redBack.ai Contributors"
+title: "redBack.ai: AI-Powered Spider Identification and Biodiversity Platform"
+version: 1.0.0
+date-released: 2026-09-24
+url: "https://github.com/bleu-fire/redBack.ai"
+keywords:
+  - "spider-identification"
+  - "computer-vision"
+  - "pinecone"
+  - "vector-database"
+  - "arachnology"
+  - "biodiversity"
+  - "react-native"
+  - "expo"
+  - "citizen-science"
+license: "MIT"

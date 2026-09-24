@@ -1,0 +1,41 @@
+# redBack.ai
+
+> redBack.ai is an open-source, mobile-first AI ecosystem for spider species identification, arachnid taxonomy education, and citizen science observation tracking. Built with React Native / Expo SDK 54, Express.js / TypeScript Modern Modular Monolith, MongoDB, and Pinecone Vector Database.
+
+## Core Capabilities
+
+- **AI Vision & Pinecone Vector Search**: Dual-stage identification pipeline combining dense visual embeddings (CLIP/SigLIP) indexed in Pinecone Vector Database with Multimodal AI Vision Models for morphology verification, returning sub-50ms K-NN similarity rankings with visual evidence explanations.
+- **Scientific Taxonomy & Biodiversity**: Curated arachnid database with Order, Family, Genus, Species hierarchy, habitat data, distribution maps, and conservation status.
+- **Venom Safety & Medical Disclaimers**: Strict server-side safeguards. Mandatory legal/medical disclaimers on every identification payload. Prohibits emergency self-treatment advice; emphasizes immediate medical care for dangerous bites (*Latrodectus hasselti*, *Atrax robustus*).
+- **Uncertainty Fallback Policy**: When combined confidence is below 70%, the system falls back to Genus or Family level (*Latrodectus sp.* / *Theridiidae*) and prompts the user for clearer photo angles.
+- **Naturalist Field-Journal Design System**: Warm editorial UI with Serif display headings, crisp Sans-serif body, and authentic botanical palette (Coral `#E04836`, Forest Moss `#2C4A3E`, Canvas `#FBF9F4`, Slate Ink `#17211F`, Solar Gold `#E59824`).
+
+## Technical Stack & Architecture
+
+- **Mobile Client**: React Native 0.81, Expo SDK 54, Expo Router (file-based routing, 13 core screens), Lucide icons.
+- **Backend Architecture**: Modern Modular Monolith in TypeScript with domain-driven bounded contexts (`src/modules/auth`, `src/modules/species`, `src/modules/identification`, `src/modules/learning`) and a shared kernel (`src/shared/`).
+- **AI & Vector DB**: Pinecone Vector Database (Cosine similarity, metadata filtering by region/habitat) + Multimodal Vision Model.
+- **Database & Storage**: MongoDB with Mongoose schemas + Cloud Object Storage for optimized spider photography.
+
+## Key Documentation & References
+
+- [System Architecture](docs/02-ARCHITECTURE.md): Full-stack Modern Modular Monolith architecture and data flow.
+- [API Specifications](docs/03-API-SPECS.md): REST endpoints, request/response contracts, and disclaimer payloads.
+- [AI Vision & Vector Pipeline](docs/05-AI-VISION-PIPELINE.md): Dual-stage Pinecone vector similarity and vision inference.
+- [Design System Guide](.agents/skills/redback-dev/references/design-system.md): Color tokens, typography pairings, and UI component blueprints.
+- [System Design Deep-Dive](.agents/skills/redback-dev/references/system-design.md): 4-tier topology, vector indexing, and domain safety rules.
+- [Screen Map](.agents/skills/redback-dev/references/screen-map.md): Comprehensive routing table for all 13 mobile screens.
+- [Troubleshooting Runbook](.agents/skills/redback-dev/references/troubleshooting.md): Metro resolver fixes and common setup solutions.
+
+## Developer Quickstart
+
+```bash
+# 1. Start local MongoDB
+docker compose up -d
+
+# 2. Run backend dev server (Modular Monolith)
+cd backend && npm run dev
+
+# 3. Run Expo mobile client
+cd mobile && npx expo start
+```
