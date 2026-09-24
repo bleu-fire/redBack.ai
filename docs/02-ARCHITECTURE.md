@@ -1,45 +1,55 @@
 # System Architecture — redBack.ai
 
-## 1. High-Level Architecture
+## 1. High-Level Architecture: Modern Modular Monolith
 
 ```text
 +-------------------------------------------------------------+
 |                      Mobile Client                          |
 |             (React Native / Expo SDK 54)                    |
-|             - Expo Router (File-based)                      |
-|             - Camera & ImagePicker API                      |
-|             - Axios HTTP Client                             |
+|             - Expo Router (File-based routing)              |
+|             - Naturalist Field-Journal Design System        |
+|             - Camera Scanner & Photo Picker                 |
+|             - Offline Sightings Cache (AsyncStorage)        |
 +------------------------------+------------------------------+
                                | HTTPS / JSON
                                v
 +-------------------------------------------------------------+
-|                      Backend API                            |
+|               Modern Modular Monolith Backend               |
 |             (Node.js / Express.js / TypeScript)             |
 |                                                             |
 |   +-------------------+              +------------------+   |
 |   |  modules/auth     |              |  modules/species |   |
-|   |  - user.model.ts  |              |  - model.ts      |   |
-|   |  - auth.service.ts|              |  - controller.ts |   |
-|   |  - controller.ts  |              |  - routes.ts     |   |
+|   |  - user.model.ts  |              |  - species.model |   |
+|   |  - auth.service.ts|              |  - service.ts    |   |
+|   |  - controller.ts  |              |  - controller.ts |   |
+|   |  - routes.ts      |              |  - routes.ts     |   |
 |   +-------------------+              +------------------+   |
+|                                                             |
+|   +-------------------------+        +------------------+   |
+|   |  modules/identification |        | modules/learning |   |
+|   |  - identification.model |        | - learning.model |   |
+|   |  - pinecone.service.ts  |        | - service.ts     |   |
+|   |  - vision-adapter.ts    |        | - controller.ts  |   |
+|   |  - controller & routes  |        | - routes.ts      |   |
+|   +-------------------------+        +------------------+   |
 |               |                                |            |
 |               +----------------+---------------+            |
 |                                |                            |
 |                                v                            |
 |                    +-----------------------+                |
-|                    |     Middlewares       |                |
-|                    |  (auth, error, cors)  |                |
+|                    |     Shared Kernel     |                |
+|                    | (auth, error, upload) |                |
 |                    +-----------------------+                |
 +------------------------------+------------------------------+
                                |
                +---------------+---------------+
-               |                               |
-               v                               v
-    +--------------------+           +--------------------+
-    |  MongoDB Database  |           | AI Vision Provider |
-    |  (Users, Species,  |           | (Gemini Vision /   |
-    |   Observations)    |           |  Custom Model API) |
-    +--------------------+           +--------------------+
+               |               |               |
+               v               v               v
+    +--------------------+ +--------------------+ +--------------------+
+    |  MongoDB Database  | | Pinecone Vector DB | | Multimodal AI Model|
+    |  (Users, Species,  | | (Visual Embeddings | | (Vision Validation |
+    |   Observations)    | |  Fast K-NN Search) | |   & Explanations)  |
+    +--------------------+ +--------------------+ +--------------------+
 ```
 
 ---
@@ -49,16 +59,17 @@
 ### Mobile Client
 - **Framework:** React Native with Expo (SDK 54)
 - **Routing:** Expo Router (`app/` directory, lowercase routes)
-- **State & Networking:** Axios with configured `baseURL`
-- **UI Components:** Custom themed dark/light components with lucide icons
+- **UI Design System:** Naturalist Field-Journal theme tokens (`mobile/constants/theme.ts`) with custom UI components (`Button`, `Badge`, `SafetyCard`, `StatCounter`)
+- **State & Networking:** Axios client with token interceptors
+- **Icons:** Lucide React Native
 
-### Backend API
-- **Runtime:** Node.js (v20+) with TypeScript (ES2021)
+### Backend API: Modern Modular Monolith
+- **Runtime:** Node.js (v20+) with TypeScript
 - **Framework:** Express.js 4.x
-- **Architecture:** Feature-Based / Vertical Slice (`src/modules/`)
-- **Database ODM:** Mongoose 8.x (MongoDB)
-- **Authentication:** JWT (JSON Web Tokens) + Bcrypt password hashing
-- **Testing:** Unit tests via tsx test runner
+- **Architecture:** **Modern Modular Monolith** with domain-driven bounded contexts in `src/modules/` and a `src/shared/` kernel.
+- **Vector Database for AI:** **Pinecone Vector Database** for dense image embedding similarity search and instant nearest-neighbor taxonomic candidate retrieval.
+- **Relational / Document DB:** MongoDB (via Mongoose 8.x) for curated taxonomy, user accounts, and observations.
+- **Authentication:** Stateless JWT + Bcrypt password hashing.
 
 ---
 
@@ -68,21 +79,30 @@
 redBack.ai/
 ├── mobile/                  # Frontend Expo application
 │   ├── app/                 # Expo Router screens (13 core screens)
-│   ├── assets/              # Logos, 3D assets, translations
-│   ├── components/          # Reusable UI components
-│   └── data/                # API client (api.ts, logic.ts)
+│   ├── assets/              # Logos, design posters, 3D assets
+│   │   └── design/          # system-design.png, ui-components-kit.png
+│   ├── components/          # Reusable UI components & design system modules
+│   │   └── ui/              # Button, Badge, SafetyCard, StatCounter
+│   ├── constants/           # Theme tokens (theme.ts)
+│   └── data/                # API client
 │
-├── backend/                 # Backend REST API
+├── backend/                 # Modern Modular Monolith API
 │   ├── src/
-│   │   ├── config/          # DB connection & environment variables
-│   │   ├── middlewares/     # Auth guard & global error handler
-│   │   ├── modules/         # Feature modules
+│   │   ├── config/          # DB connection, env, and Pinecone vector config
+│   │   │   ├── db.ts
+│   │   │   ├── env.ts
+│   │   │   └── pinecone.ts
+│   │   ├── modules/         # Domain Feature Modules (Modular Monolith)
 │   │   │   ├── auth/        # Model, Service, Controller, Routes
-│   │   │   └── species/     # Model, Controller, Routes
-│   │   ├── scripts/         # DB seed scripts
+│   │   │   ├── species/     # Model, Service, Controller, Routes
+│   │   │   ├── identification/ # Pinecone vector search, vision model, controller, routes
+│   │   │   └── learning/    # Learning topics, quizzes, controller, routes
+│   │   ├── shared/          # Shared Kernel across modules
+│   │   │   ├── errors/      # AppError & centralized error formatting
+│   │   │   ├── middlewares/ # Auth guard, Multer upload, and error handling
+│   │   │   └── utils/       # Helpers and logger
 │   │   ├── app.ts           # Express application setup
 │   │   └── server.ts        # Server entrypoint & port listener
 │
 └── docs/                    # Official Project Documentation
 ```
-

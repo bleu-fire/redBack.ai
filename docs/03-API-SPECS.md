@@ -11,8 +11,8 @@ Base URL: `http://<host>:3000/api`
   ```json
   {
     "status": "success",
-    "message": "redBack.ai API khddama bikhir!",
-    "timestamp": "2026-09-20T14:20:00.000Z"
+    "message": "redBack.ai API running successfully",
+    "timestamp": "2026-09-24T12:00:00.000Z"
   }
   ```
 
@@ -111,3 +111,44 @@ Base URL: `http://<host>:3000/api`
 ### `POST /api/species`
 - **Description:** Create a new species entry (Admin protected).
 
+---
+
+## 4. Identification & Pinecone Vector Search Module (`/api/identifications`)
+
+### `POST /api/identifications/detect`
+- **Headers:** `Authorization: Bearer <token>`, `Content-Type: multipart/form-data`
+- **Body:** `image` (JPEG/PNG/WEBP binary buffer, max 5MB)
+- **Workflow:**
+  1. Image feature extraction generates dense embedding vector.
+  2. **Pinecone Vector Database** executes K-NN cosine similarity search against species index.
+  3. Multimodal Vision Model evaluates morphology and produces visual evidence explanation.
+  4. Species profile and venom safety metadata enriched from MongoDB.
+- **Response (200 OK):**
+  ```json
+  {
+    "status": "success",
+    "disclaimer": "redBack.ai provides educational species identification assistance only. If bitten by a spider or experiencing severe symptoms, seek immediate emergency medical care.",
+    "data": {
+      "topMatch": {
+        "scientificName": "Latrodectus hasselti",
+        "commonName": "Redback Spider",
+        "confidence": 0.96,
+        "confidenceBand": "high",
+        "vectorSimilarity": 0.94,
+        "toxicityLevel": "medically_significant",
+        "visualEvidence": ["distinctive dorsal red stripe", "globular abdomen"]
+      },
+      "candidates": [
+        {
+          "scientificName": "Steatoda capensis",
+          "commonName": "False Katipo",
+          "confidence": 0.03
+        }
+      ]
+    }
+  }
+  ```
+
+### `GET /api/identifications`
+- **Headers:** `Authorization: Bearer <token>`
+- **Description:** Returns authenticated user's observation journal history.
