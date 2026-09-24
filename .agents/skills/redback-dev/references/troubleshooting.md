@@ -1,6 +1,6 @@
 # redBack.ai Troubleshooting Guide
 
-Common issues encountered across the redBack.ai mobile (Expo) and backend (Express/MongoDB) environments.
+Common issues encountered across the redBack.ai mobile (Expo SDK 54 / React 19) and backend (Express / TypeScript / MongoDB) environments.
 
 ---
 
@@ -21,34 +21,29 @@ Common issues encountered across the redBack.ai mobile (Expo) and backend (Expre
 - **Cause**: Having both `login.tsx` and `LoginScreen.tsx` (or PascalCase route files) in `app/`.
 - **Fix**: Use only lowercase/kebab-case filenames (`login.tsx`, `register.tsx`). Delete any PascalCase route files.
 
+### Issue: Safe Area & Dynamic Island Inset Clipping
+- **Cause**: Screen content rendering behind the status bar or dynamic island on iOS.
+- **Fix**: Always import and wrap screens with `SafeAreaView` from `react-native-safe-area-context` or use `useSafeAreaInsets()`:
+  ```tsx
+  import { useSafeAreaInsets } from 'react-native-safe-area-context';
+  const insets = useSafeAreaInsets();
+  <View style={{ paddingTop: insets.top, paddingBottom: insets.bottom, flex: 1 }}>
+  ```
+
+### Issue: Lucide Icon Prop Warnings
+- **Cause**: Passing incorrect color or size props to `lucide-react-native` icons.
+- **Fix**: Always pass explicit `size={number}` and `color={string}`:
+  ```tsx
+  import { Camera } from 'lucide-react-native';
+  import { Palette } from '@/constants/theme';
+
+  <Camera size={24} color={Palette.coral} />
+  ```
+
 ### Issue: Invalid Flexbox Values (`justifyContent: 'bott'`)
 - **Cause**: React Native `justifyContent` accepts only:
   - `'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around' | 'space-evenly'`
-- **Fix**: Ensure valid flexbox properties:
-  ```tsx
-  titleContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  }
-  ```
-
-### Issue: Full-Screen Background Image Sizing
-- **Cause**: Wrapping individual buttons or child elements instead of the screen root container.
-- **Fix**: Wrap the screen component's root in `ImageBackground`:
-  ```tsx
-  import { ImageBackground } from 'expo-image';
-
-  <ImageBackground
-    source={require('@/assets/images/spider-bg.png')}
-    style={{ flex: 1, width: '100%', height: '100%' }}
-    contentFit="cover"
-  >
-    <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' }}>
-      {/* Screen contents */}
-    </View>
-  </ImageBackground>
-  ```
+- **Fix**: Ensure valid flexbox properties.
 
 ---
 
@@ -71,4 +66,3 @@ Common issues encountered across the redBack.ai mobile (Expo) and backend (Expre
   ```bash
   cd backend && cp .env.example .env
   ```
-

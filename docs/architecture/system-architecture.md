@@ -1,82 +1,70 @@
-# System Architecture
+# System Architecture — redBack.ai
 
 ```text
-┌───────────────────────┐
-│ React Native / Expo   │
-│ Mobile App            │
-└───────────┬───────────┘
-            │ HTTPS
-            ▼
-┌───────────────────────┐
-│ Express.js API        │
-│ Auth / Species / Scan │
-│ Search / Learning     │
-└───────┬───────┬───────┘
-        │       │
-        │       ├──────────────┐
-        ▼                      ▼
-┌───────────────┐      ┌─────────────────┐
-│ MongoDB       │      │ Object Storage  │
-│ Users/Species │      │ Uploaded images │
-└───────────────┘      └─────────────────┘
-        │
-        │ species context
-        ▼
-┌───────────────────────┐
-│ AI Adapter            │
-│ Vision Model Provider │
-└───────────┬───────────┘
-            │
-            ▼
-┌───────────────────────┐
-│ Structured Result     │
-│ validation + ranking  │
-└───────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                      Mobile Client                          │
+│             (React Native / Expo SDK 54)                    │
+│             - Expo Router (File-based)                      │
+│             - Naturalist Field-Journal Design System        │
+│             - Camera Scanner & Photo Picker                 │
+│             - Offline Sightings Cache (AsyncStorage)        │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ HTTPS / JSON
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│               Modern Modular Monolith Backend               │
+│             (Node.js / Express.js / TypeScript)             │
+│                                                             │
+│   ┌───────────────────┐              ┌──────────────────┐   │
+│   │  modules/auth     │              │  modules/species │   │
+│   │  - user.model.ts  │              │  - species.model │   │
+│   │  - auth.service.ts│              │  - service.ts    │   │
+│   │  - controller.ts  │              │  - controller.ts │   │
+│   │  - routes.ts      │              │  - routes.ts     │   │
+│   └───────────────────┘              └──────────────────┘   │
+│                                                             │
+│   ┌─────────────────────────┐        ┌──────────────────┐   │
+│   │  modules/identification │        │ modules/learning │   │
+│   │  - identification.model │        │ - learning.model │   │
+│   │  - pinecone.service.ts  │        │ - service.ts     │   │
+│   │  - vision-adapter.ts    │        │ - controller.ts  │   │
+│   │  - controller & routes  │        │ - routes.ts      │   │
+│   └─────────────────────────┘        └──────────────────┘   │
+│               │                                │            │
+│               └────────────────┬───────────────┘            │
+│                                │                            │
+│                                ▼                            │
+│                    ┌───────────────────────┐                │
+│                    │     Shared Kernel     │                │
+│                    │ (auth, error, upload) │                │
+│                    └───────────────────────┘                │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+               ┌───────────────┼───────────────┐
+               │               │               │
+               ▼               ▼               ▼
+    ┌────────────────────┐ ┌────────────────────┐ ┌────────────────────┐
+    │  MongoDB Database  │ │ Pinecone Vector DB │ │ Multimodal AI Model│
+    │  (Users, Species,  │ │ (Visual Embeddings │ │ (Vision Validation │
+    │   Observations)    │ │  Fast K-NN Search) │ │   & Explanations)  │
+    └────────────────────┘ └────────────────────┘ └────────────────────┘
 ```
 
 ## Responsibilities
 
 ### Mobile
-- Camera/gallery access.
-- Authentication UX.
-- Upload UX.
-- Results rendering.
+- Camera/gallery access with live viewfinder framing reticle.
+- Authentication UX (Login, Register).
+- Results rendering with confidence badges and medical disclaimer.
 - Search and profile UI.
 - Never store provider API keys.
 
-### Express.js API
-- Authentication and authorization (JWT + bcrypt).
-- Request validation and error handling middleware.
-- Image upload orchestration (Multer).
-- AI adapter invocation.
-- Species catalog queries and text search.
-- Result normalization.
-- Rate limiting and audit logging.
+### Express.js API: Modern Modular Monolith
+- **Modular Monolith Organization:** Feature-based bounded contexts inside `src/modules/` (`auth`, `species`, `identification`, `learning`).
+- **Pinecone Vector Database:** High-dimensional visual similarity search and K-NN classification against reference species catalog embeddings.
+- **Multimodal AI Vision:** Provider-neutral vision verification producing morphological visual evidence.
+- **Shared Kernel:** Centralized `AppError`, rate limiting, and Multer file upload in `src/shared/`.
+- **Medical Disclaimer:** Strict server-side enforcement of mandatory safety disclaimers on every identification payload.
 
 ### MongoDB
-Stores users, species, taxonomy, sources, identifications, predictions, and educational metadata using Mongoose schemas.
-
-### AI adapter
-A provider-neutral service such as `VisionIdentificationService` keeps provider-specific SDKs out of domain logic.
-
-## Express.js Modules & Routing Structure
-
-- `routes/auth.routes.ts` & `controllers/auth.controller.ts` (Authentication & Profile)
-- `routes/species.routes.ts` & `controllers/species.controller.ts` (Species Catalog & Search)
-- `routes/identifications.routes.ts` & `controllers/identifications.controller.ts` (Image Upload & Predictions)
-- `routes/learning.routes.ts` & `controllers/learning.controller.ts` (Learning Center Topics)
-- `middlewares/auth.middleware.ts` & `middlewares/error.middleware.ts` (Security & Centralized Errors)
-- `middlewares/upload.middleware.ts` (Multer file intake)
-- `config/db.ts` & `config/env.ts` (MongoDB Connection & Environment Variables)
-
-## Request flow
-
-1. Client authenticates.
-2. Client requests an identification.
-3. API validates JWT and image metadata.
-4. Image is stored temporarily/private.
-5. AI adapter sends the image with a constrained identification prompt/schema.
-6. Backend validates model output.
-7. Predictions are resolved against canonical species records.
-8. Backend returns normalized results.
-9. Mobile renders confidence, details, and sources.
+Stores users, species taxonomy, sources, identifications, and citizen science educational topics.
