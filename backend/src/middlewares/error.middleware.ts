@@ -28,7 +28,7 @@ export const errorHandler = (
 
   res.status(err.statusCode).json({
     status: err.status,
-    message: err.message || 'Wqe3 mochkil f le serveur',
+    message: err.message || 'erorr in f le serveur',
   });
 };
 

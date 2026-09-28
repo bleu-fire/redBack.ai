@@ -27,6 +27,15 @@ export const LoginUser = async (email: string, password: string) => {
   return response.data;
 };
 
+export const registerUser = async (name: string, email: string, password: string) => {
+  const response = await api.post('/auth/register', {
+    name,
+    email,
+    password,
+  });
+  return response.data;
+};
+
 // --- Species API ---
 export interface ISpecies {
   _id: string;

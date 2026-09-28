@@ -1,7 +1,5 @@
 
-import { style } from "@/app/(auth)/login";
-import { Button } from "@react-navigation/elements";
-import { View , Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 
 type  BottonProp = {
     title:string,

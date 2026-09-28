@@ -20,7 +20,7 @@ export interface IQuiz extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
-
+ //  one of  quiz
 const quizQuestionSchema = new Schema<IQuizQuestion>(
   {
     question: {

@@ -1,106 +1,211 @@
-import { View, Text, StyleSheet, TextInput } from 'react-native';
-import ButtonForLoginAndRegister from '@/components/ui/ButtonForLoginAndRegister';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, router } from 'expo-router';
+import { Lock, Mail, Eye, EyeOff } from 'lucide-react-native';
+import { Palette, Radii, Spacing, Typography } from '@/constants/theme';
+import { Button } from '@/components/ui';
 import { LoginUser } from '@/data/logic';
 
-
-
 export default function LoginScreen() {
-  const [email, setemail] = useState('');
-  const [password, setpassord] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleInfo =  async () => {
-    //check if user is correct 
-     if(!email || !password){
-      alert("plase enter the info to start")
-      return
-     }
-    try{
-      const data = await LoginUser(email,password);
-      console.log(`login NJA7 ${data}`);
-      alert(`ma7ba bik ${data.data.user.name}`)
-      
-      router.replace('/(tabs)')
-    }
-    catch(err){
-         console.error(err)
-    }
-     
-  }
+  const handleLogin = async () => {
+    
+  };
 
   return (
-    <View style={styless.headerContainer}>
-      <Text style={styless.textForUser}>
-        Welcome The Explorer .
-      </Text>
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        style={styles.keyboardView}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          
+          {/* Hero Editorial Heading */}
+          <View style={styles.heroSection}>
+            <Text style={styles.heroTitle}>Welcome back,{'\n'}explorer.</Text>
+            <Text style={styles.heroSubtitle}>
+              Spiders help healthy ecosystems.{'\n'}Let’s keep discovering together.
+            </Text>
+            <Text style={styles.heroScript}>Small creatures big stories.</Text>
+          </View>
 
-      <View>
-        <TextInput
-          placeholder="Enter the Email"
-          style={styless.InputHolder}
-          value={email}
-          onChangeText={setemail}
-        />
-      </View>
+          {/* Input Fields */}
+          <View style={styles.formContainer}>
+            {/* Email Field */}
+            <View style={styles.inputCard}>
+              <Mail size={20} color={Palette.muted} style={styles.inputIcon} />
+              <TextInput
+                style={styles.textInput}
+                placeholder="Email"
+                placeholderTextColor={Palette.mutedLight}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
 
-      <View>
-        <TextInput
-          placeholder="Enter the password"
-          style={styless.InputHolder}
-          secureTextEntry
-          value={password}
-          onChangeText={setpassord}
-        />
-      </View>
+            {/* Password Field */}
+            <View style={styles.inputCard}>
+              <Lock size={20} color={Palette.muted} style={styles.inputIcon} />
+              <TextInput
+                style={styles.textInput}
+                placeholder="Password"
+                placeholderTextColor={Palette.mutedLight}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+              />
+              <Pressable
+                onPress={() => setShowPassword((prev) => !prev)}
+                hitSlop={12}
+                style={styles.eyeToggle}
+              >
+                {showPassword ? (
+                  <EyeOff size={20} color={Palette.muted} />
+                ) : (
+                  <Eye size={20} color={Palette.muted} />
+                )}
+              </Pressable>
+            </View>
 
-      <View>
-        <ButtonForLoginAndRegister title="login" onPress={handleInfo} />
-      </View>
+            {/* Primary Action Button */}
+            <Button
+              title="Log in"
+              variant="primary"
+              size="lg"
+              showArrow={false}
+              loading={loading}
+              onPress={handleLogin}
+              style={styles.loginButton}
+            />
+          </View>
 
-      <View>
-        <Link href="/register" style={styless.LinkDircting}>
-          go to the register
-        </Link>
-      </View>
-    </View>
+          {/* Footer Navigation */}
+          <View style={styles.footerRow}>
+            <Text style={styles.footerText}>New here? </Text>
+            <Link href="/(auth)/register" asChild>
+              <Pressable hitSlop={10}>
+                <Text style={styles.footerLink}>Create account</Text>
+              </Pressable>
+            </Link>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
-export const styless = StyleSheet.create({
-  headerContainer: {
+const styles = StyleSheet.create({
+  safeArea: {
     flex: 1,
-    paddingHorizontal: 24,
-    justifyContent: "center",
-    backgroundColor: "#F7F5F0", // Canvas naqi w calme
+    backgroundColor: Palette.canvas,
   },
-  button: {
-    gap: 15,
+  keyboardView: {
+    flex: 1,
   },
-  textForUser: {
-    textAlign: "center",
-    fontSize: 26,
-    fontWeight: "bold",
-    color: "#17211F", // Dark Ink pro
-    lineHeight: 34,
-    marginBottom: 48,
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: Spacing.xxl,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.xl,
+    justifyContent: 'space-between',
   },
-  InputHolder: {
-    backgroundColor: "#FFFFFF", // Abyad naqi
-    borderWidth: 1.5,
-    borderColor: "#E7E5DF", // Border r9iqa m9ada
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    marginBottom: 16,
+  heroSection: {
+    marginBottom: Spacing.xxxl,
+  },
+  heroTitle: {
+    fontFamily: Typography.display,
+    fontSize: 34,
+    lineHeight: 40,
+    fontWeight: '800',
+    color: Palette.ink,
+    letterSpacing: -0.8,
+  },
+  heroSubtitle: {
+    fontFamily: Typography.body,
+    fontSize: 14,
+    lineHeight: 21,
+    color: Palette.muted,
+    marginTop: Spacing.sm,
+  },
+  heroScript: {
+    fontFamily: Typography.display,
+    fontSize: 14,
+    fontStyle: 'italic',
+    color: Palette.inkSecondary,
+    marginTop: Spacing.md,
+  },
+  formContainer: {
+    gap: Spacing.md,
+    marginBottom: Spacing.xxl,
+  },
+  inputCard: {
+    backgroundColor: Palette.paper,
+    borderWidth: 1,
+    borderColor: Palette.line,
+    borderRadius: Radii.md,
+    height: 56,
+    paddingHorizontal: Spacing.lg,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  inputIcon: {
+    marginRight: Spacing.md,
+  },
+  textInput: {
+    flex: 1,
+    fontFamily: Typography.body,
     fontSize: 16,
-    color: "#17211F",
+    color: Palette.ink,
   },
-  LinkDircting: {
-    paddingVertical: 14,
-    color: "#E84B3C", // L-Hmar dial redBack.ai
-    textAlign: "center",
-    fontWeight: "700",
-    fontSize: 15,
+  eyeToggle: {
+    padding: Spacing.xs,
+  },
+  loginButton: {
+    marginTop: Spacing.sm,
+    shadowColor: Palette.coral,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  footerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: Spacing.lg,
+  },
+  footerText: {
+    fontFamily: Typography.body,
+    fontSize: 14,
+    color: Palette.muted,
+  },
+  footerLink: {
+    fontFamily: Typography.body,
+    fontSize: 14,
+    fontWeight: '700',
+    color: Palette.coral,
   },
 });
