@@ -15,7 +15,9 @@ import { Link, router } from 'expo-router';
 import { Lock, Mail, Eye, EyeOff } from 'lucide-react-native';
 import { Palette, Radii, Spacing, Typography } from '@/constants/theme';
 import { Button } from '@/components/ui';
-import { LoginUser } from '@/data/logic';
+import {LoginUser} from  '@/data/api/logic'
+import AsyncStorageManagement  from "@/data/storage/asyncstorage"
+import { isLoaded } from 'expo-font';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -24,7 +26,30 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Champs requis', 'Veuillez entrer votre email et mot de passe.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await LoginUser(email.trim(), password);
+
+      // Save token and user details to storage
+      await AsyncStorageManagement.setToken(response.token);
+      if (response.data?.user) {
+        await AsyncStorageManagement.setUserData(response.data.user);
+      }
+
+      router.replace('/(tabs)');
+    } catch (err: any) {
+      console.error('Login error:', err);
+      const errorMessage =
+        err.response?.data?.message || 'Email ou mot de passe incorrect.';
+      Alert.alert('Erreur de connexion', errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

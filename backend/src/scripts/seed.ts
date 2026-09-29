@@ -43,14 +43,14 @@ const seedUsers = async () => {
         // Update password with hash if needed
         const hashedPassword = await bcrypt.hash(u.password, 10);
         await User.updateOne({ email: u.email }, { password: hashedPassword });
-        console.log(`ℹ️ Updated user password hash: ${u.email}`);
+        console.log(` Updated user password hash: ${u.email}`);
       }
     }
 
-    console.log('🎉 Seeding completed successfully!');
+    console.log(' Seeding completed successfully!');
     process.exit(0);
   } catch (err) {
-    console.error('❌ Error seeding users:', err);
+    console.error(' Error seeding users:', err);
     process.exit(1);
   }
 };

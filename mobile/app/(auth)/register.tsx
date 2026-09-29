@@ -15,7 +15,7 @@ import { Link, router } from 'expo-router';
 import { Lock, Mail, User, Eye, EyeOff } from 'lucide-react-native';
 import { Palette, Radii, Spacing, Typography } from '@/constants/theme';
 import { Button } from '@/components/ui';
-import { registerUser } from '@/data/logic';
+import { registerUser } from '@/data/api/logic';
 
 export default function RegisterScreen() {
   const [name, setName] = useState('');
