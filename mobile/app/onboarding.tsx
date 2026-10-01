@@ -19,8 +19,9 @@ import {
   ArrowRight,
 } from "lucide-react-native";
 import { Palette, Typography } from "@/constants/theme";
+import { LinearGradient } from "expo-linear-gradient";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 interface PillBadge {
   icon: any;
@@ -122,119 +123,137 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
-      {/* Top Bar with Step counter and Skip */}
-      <View style={styles.topBar}>
-        <View style={styles.stepIndicatorContainer}>
-          <Text style={styles.stepIndicatorText}>
-            {step + 1} / {slides.length}
-          </Text>
-        </View>
-        {!isLast ? (
-          <Pressable onPress={handleSkip} hitSlop={12} style={styles.skipBtn}>
-            <Text style={styles.skipText}>Skip</Text>
-          </Pressable>
-        ) : (
-          <View style={{ width: 40 }} />
+    <View style={styles.container}>
+      {/* 1. Full Top Background Artwork */}
+      <View style={styles.headerBackground}>
+        <Image
+          source={slide.image}
+          style={styles.backgroundImage}
+          contentFit="cover"
+          transition={300}
+        />
+
+        {/* Scanner Overlay for Step 3 */}
+        {slide.type === "identify" && (
+          <View style={styles.scannerReticleOverlay}>
+            <View style={[styles.corner, styles.cornerTL]} />
+            <View style={[styles.corner, styles.cornerTR]} />
+            <View style={[styles.corner, styles.cornerBL]} />
+            <View style={[styles.corner, styles.cornerBR]} />
+            <View style={styles.cameraShutterBadge}>
+              <Camera size={22} color="#FFFFFF" strokeWidth={2.4} />
+            </View>
+          </View>
         )}
+
+        {/* Step 4 Habitat Tag Badge */}
+        {slide.type === "learn" && (
+          <View style={styles.habitatPinBadge}>
+            <Text style={styles.habitatPinText}>Habitat</Text>
+          </View>
+        )}
+
+        {/* 2. Seamless Gradient Fade to Canvas Background */}
+        <LinearGradient
+          colors={[
+            "rgba(251, 249, 244, 0)",
+            "rgba(251, 249, 244, 0.2)",
+            "rgba(251, 249, 244, 0.7)",
+            "rgba(251, 249, 244, 0.95)",
+            "#FBF9F4",
+          ]}
+          locations={[0, 0.4, 0.68, 0.88, 1]}
+          style={styles.gradientOverlay}
+          pointerEvents="none"
+        />
       </View>
 
-      {/* Visual Canvas Card Area */}
-      <View style={styles.visualContainer}>
-        <View style={styles.heroCard}>
-          <Image
-            source={slide.image}
-            style={styles.heroImage}
-            contentFit="cover"
-            transition={300}
-          />
-
-          {/* Scanner Overlay for Step 3 */}
-          {slide.type === "identify" && (
-            <View style={styles.scannerReticleOverlay}>
-              <View style={[styles.corner, styles.cornerTL]} />
-              <View style={[styles.corner, styles.cornerTR]} />
-              <View style={[styles.corner, styles.cornerBL]} />
-              <View style={[styles.corner, styles.cornerBR]} />
-              <View style={styles.cameraShutterBadge}>
-                <Camera size={22} color="#FFFFFF" strokeWidth={2.4} />
-              </View>
-            </View>
-          )}
-
-          {/* Step 4 Habitat Tag Badge */}
-          {slide.type === "learn" && (
-            <View style={styles.habitatPinBadge}>
-              <Text style={styles.habitatPinText}>Habitat</Text>
-            </View>
+      {/* 3. Foreground Interactive Content */}
+      <SafeAreaView style={styles.foregroundContainer} edges={["top", "bottom"]}>
+        {/* Top Bar with Step counter and Skip */}
+        <View style={styles.topBar}>
+          <View style={styles.stepIndicatorContainer}>
+            <Text style={styles.stepIndicatorText}>
+              {step + 1} / {slides.length}
+            </Text>
+          </View>
+          {!isLast ? (
+            <Pressable onPress={handleSkip} hitSlop={12} style={styles.skipBtn}>
+              <Text style={styles.skipText}>Skip</Text>
+            </Pressable>
+          ) : (
+            <View style={{ width: 40 }} />
           )}
         </View>
 
-        {/* Callout Annotation Note */}
-        {slide.callout && (
-          <Text style={styles.calloutNoteText}>{slide.callout}</Text>
-        )}
-      </View>
+        {/* Spacer that reveals artwork focal area */}
+        <View style={styles.spacer} />
 
-      {/* Narrative & Information Content */}
-      <View style={styles.contentSection}>
-        <Text style={styles.titleText}>{slide.title}</Text>
-        <Text style={styles.subtitleText}>{slide.subtitle}</Text>
+        {/* Narrative & Information Content */}
+        <View style={styles.contentSection}>
+          {slide.callout && (
+            <Text style={styles.calloutNoteText}>{slide.callout}</Text>
+          )}
+          <Text style={styles.titleText}>{slide.title}</Text>
+          <Text style={styles.subtitleText}>{slide.subtitle}</Text>
 
-        {/* Feature Badges for Discover & Learn */}
-        {slide.badges && slide.badges.length > 0 && (
-          <View style={styles.badgesRow}>
-            {slide.badges.map((badge, idx) => {
-              const IconComponent = badge.icon;
-              return (
-                <View key={idx} style={styles.badgePill}>
-                  <View style={styles.badgeIconCircle}>
-                    <IconComponent size={14} color={Palette.moss} strokeWidth={2.2} />
+          {/* Feature Badges for Discover & Learn */}
+          {slide.badges && slide.badges.length > 0 && (
+            <View style={styles.badgesRow}>
+              {slide.badges.map((badge, idx) => {
+                const IconComponent = badge.icon;
+                return (
+                  <View key={idx} style={styles.badgePill}>
+                    <View style={styles.badgeIconCircle}>
+                      <IconComponent size={14} color={Palette.moss} strokeWidth={2.2} />
+                    </View>
+                    <Text style={styles.badgePrimaryText}>{badge.label}</Text>
+                    {badge.sublabel && (
+                      <Text style={styles.badgeSecondaryText}>{badge.sublabel}</Text>
+                    )}
                   </View>
-                  <Text style={styles.badgePrimaryText}>{badge.label}</Text>
-                  {badge.sublabel && (
-                    <Text style={styles.badgeSecondaryText}>{badge.sublabel}</Text>
-                  )}
-                </View>
+                );
+              })}
+            </View>
+          )}
+        </View>
+
+        {/* Footer: Numbered Step Pagination & Action Button */}
+        <View style={styles.footerSection}>
+          {/* Pagination Dots */}
+          <View style={styles.paginationRow}>
+            {slides.map((_, idx) => {
+              const isActive = idx === step;
+              return (
+                <Pressable
+                  key={idx}
+                  onPress={() => setStep(idx)}
+                  hitSlop={8}
+                  style={[
+                    styles.dot,
+                    isActive ? styles.dotActive : styles.dotInactive,
+                  ]}
+                />
               );
             })}
           </View>
-        )}
-      </View>
 
-      {/* Footer: Pagination Dots & Action Button */}
-      <View style={styles.footerSection}>
-        {/* Pagination Dots */}
-        <View style={styles.paginationRow}>
-          {slides.map((_, idx) => {
-            const isActive = idx === step;
-            return (
-              <View
-                key={idx}
-                style={[
-                  styles.dot,
-                  isActive ? styles.dotActive : styles.dotInactive,
-                ]}
-              />
-            );
-          })}
+          {/* Primary Action Button */}
+          <Pressable
+            onPress={handleNext}
+            style={({ pressed }) => [
+              styles.actionButton,
+              pressed && styles.actionButtonPressed,
+            ]}
+          >
+            <Text style={styles.actionButtonText}>
+              {isLast ? "Get started" : "Next"}
+            </Text>
+            <ArrowRight size={18} color="#FFFFFF" strokeWidth={2.5} style={{ marginLeft: 6 }} />
+          </Pressable>
         </View>
-
-        {/* Primary Action Button */}
-        <Pressable
-          onPress={handleNext}
-          style={({ pressed }) => [
-            styles.actionButton,
-            pressed && styles.actionButtonPressed,
-          ]}
-        >
-          <Text style={styles.actionButtonText}>
-            {isLast ? "Get started" : "Next"}
-          </Text>
-          <ArrowRight size={18} color="#FFFFFF" strokeWidth={2.5} style={{ marginLeft: 6 }} />
-        </Pressable>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
 
@@ -242,6 +261,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FBF9F4", // Naturalist Canvas Paper (#FBF9F4)
+    position: "relative",
+  },
+  headerBackground: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: height * 0.52,
+    overflow: "hidden",
+  },
+  backgroundImage: {
+    width: "100%",
+    height: "100%",
+  },
+  gradientOverlay: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: "70%",
+  },
+  foregroundContainer: {
+    flex: 1,
     justifyContent: "space-between",
   },
   topBar: {
@@ -253,10 +295,12 @@ const styles = StyleSheet.create({
     height: 44,
   },
   stepIndicatorContainer: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    backgroundColor: "#E6EFEA", // Sage tint
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 14,
+    backgroundColor: "rgba(255, 255, 255, 0.88)",
+    borderWidth: 1,
+    borderColor: "rgba(234, 230, 222, 0.7)",
   },
   stepIndicatorText: {
     fontSize: 12,
@@ -266,40 +310,20 @@ const styles = StyleSheet.create({
   },
   skipBtn: {
     paddingVertical: 6,
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+    backgroundColor: "rgba(255, 255, 255, 0.88)",
+    borderWidth: 1,
+    borderColor: "rgba(234, 230, 222, 0.7)",
   },
   skipText: {
     fontSize: 14,
     fontWeight: "700",
     color: "#6E7773",
   },
-
-  /* Visual Hero Card Area */
-  visualContainer: {
-    flex: 1.25,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    marginVertical: 4,
-  },
-  heroCard: {
-    width: width * 0.78,
-    height: 250,
-    borderRadius: 24,
-    backgroundColor: "#FFFFFF",
-    overflow: "hidden",
-    borderWidth: 1.5,
-    borderColor: "#EAE6DE",
-    shadowColor: "#17211F",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 5,
-    position: "relative",
-  },
-  heroImage: {
-    width: "100%",
-    height: "100%",
+  spacer: {
+    flex: 1,
+    minHeight: height * 0.18,
   },
 
   /* Scanner Reticle Overlay for Step 3 */
@@ -348,7 +372,7 @@ const styles = StyleSheet.create({
   },
   cameraShutterBadge: {
     position: "absolute",
-    bottom: 12,
+    bottom: 36,
     width: 44,
     height: 44,
     borderRadius: 22,
@@ -357,28 +381,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderWidth: 2,
     borderColor: "#FFFFFF",
-    shadowColor: "#E04836",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 4,
   },
 
   /* Step 4 Habitat Tag */
   habitatPinBadge: {
     position: "absolute",
-    bottom: 14,
-    right: 14,
+    bottom: 32,
+    right: 24,
     backgroundColor: "#FFF9EE",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#F0E4CE",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
   },
   habitatPinText: {
     fontSize: 11,
@@ -431,18 +446,9 @@ const styles = StyleSheet.create({
   badgePill: {
     flexDirection: "column",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: "#EAE6DE",
-    minWidth: 84,
-    shadowColor: "#17211F",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    minWidth: 80,
   },
   badgeIconCircle: {
     width: 26,
@@ -485,12 +491,12 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   dotActive: {
-    width: 24,
+    width: 20,
     backgroundColor: "#E04836", // Coral active capsule indicator
   },
   dotInactive: {
     width: 6,
-    backgroundColor: "#EAE6DE",
+    backgroundColor: "#D6D0C5", // Subtle dot indicator
   },
   actionButton: {
     backgroundColor: "#E04836", // Coral primary
@@ -499,11 +505,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#E04836",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    elevation: 5,
   },
   actionButtonPressed: {
     opacity: 0.88,
