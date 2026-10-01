@@ -17,7 +17,6 @@ import { Palette, Radii, Spacing, Typography } from '@/constants/theme';
 import { Button } from '@/components/ui';
 import {LoginUser} from  '@/data/api/logic'
 import AsyncStorageManagement  from "@/data/storage/asyncstorage"
-import { isLoaded } from 'expo-font';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -34,7 +33,6 @@ export default function LoginScreen() {
     try {
       setLoading(true);
       const response = await LoginUser(email.trim(), password);
-
       // Save token and user details to storage
       await AsyncStorageManagement.setToken(response.token);
       if (response.data?.user) {
@@ -45,7 +43,7 @@ export default function LoginScreen() {
     } catch (err: any) {
       console.error('Login error:', err);
       const errorMessage =
-        err.response?.data?.message || 'Email ou mot de passe incorrect.';
+      err.response?.data?.message;
       Alert.alert('Erreur de connexion', errorMessage);
     } finally {
       setLoading(false);

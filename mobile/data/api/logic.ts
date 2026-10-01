@@ -1,6 +1,4 @@
 import api from "./api";
-
-
 // auth Api 
 export interface GetAllUser  {
     id_:string;
@@ -8,35 +6,7 @@ export interface GetAllUser  {
     email:string;
     role:string;
 }
-export const fetchAllUser = async (): Promise<GetAllUser[]> => {
-  try {
-    const GetAll = await api.get("/auth/users");
-    return GetAll.data.data.users;
-  } catch (error: any) {
-    console.error("FetchAllUser error:", error.response?.data || error.message);
-    throw error;
-  }
-};
-
-
-export const LoginUser = async (email: string, password: string) => {
-  const response = await api.post('/auth/login', {
-    email: email,
-    password: password,
-  });
-  return response.data;
-};
-
-export const registerUser = async (name: string, email: string, password: string) => {
-  const response = await api.post('/auth/register', {
-    name,
-    email,
-    password,
-  });
-  return response.data;
-};
-
-// --- Species API ---
+//  intefaces Species API 
 export interface ISpecies {
   _id: string;
   scientificName: string;
@@ -72,6 +42,36 @@ export interface SpeciesResponse {
     totalPages: number;
   };
 }
+
+export const fetchAllUser = async (): Promise<GetAllUser[]> => {
+  try {
+    const GetAll = await api.get("/auth/users");
+    return GetAll.data.data.users;
+  } catch (error: any) {
+    console.error("FetchAllUser error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
+export const LoginUser = async (email: string, password: string) => {
+  const response = await api.post('/auth/login', {
+    email: email,
+    password: password,
+  });
+  return response.data;
+};
+
+export const registerUser = async (name: string, email: string, password: string) => {
+  const response = await api.post('/auth/register', {
+    name,
+    email,
+    password,
+  });
+  return response.data;
+};
+
+
 
 export const fetchAllSpecies = async (params?: FetchSpeciesParams): Promise<SpeciesResponse> => {
   try {

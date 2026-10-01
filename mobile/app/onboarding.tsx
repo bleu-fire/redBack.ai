@@ -4,7 +4,7 @@ import { Image } from "expo-image";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Palette } from "@/constants/theme";
+import { Palette, Typography } from "@/constants/theme";
 
 const slides = [
   {
@@ -75,14 +75,19 @@ export default function OnboardingScreen() {
 
 const styles = StyleSheet.create({
   background: { flex: 1 },
-  overlay: { flex: 1, backgroundColor: "rgba(23, 33, 31, 0.84)" },
+  overlay: { flex: 1, backgroundColor: Palette.canvas },
   safe: { flex: 1, paddingHorizontal: 24, paddingTop: 10, paddingBottom: 20 },
   topbar: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
   },
-  skip: { color: "#D6DED8", fontWeight: "700", fontSize: 14 },
+  skip: {
+    fontFamily: Typography.body,
+    color: Palette.muted,
+    fontWeight: "700",
+    fontSize: 14,
+  },
   artArea: {
     flex: 1,
     minHeight: 300,
@@ -95,26 +100,29 @@ const styles = StyleSheet.create({
     width: 290,
     height: 290,
     borderRadius: 150,
-    backgroundColor: "rgba(232, 75, 60, 0.14)",
+    backgroundColor: "rgba(232, 75, 60, 0.12)",
   },
-  spider: { width: 300, height: 300 , borderRadius: 40, overflow: "hidden" },
+  spider: { width: 300, height: 300, borderRadius: 40, overflow: "hidden" },
   content: { paddingBottom: 28 },
   eyebrow: {
-    color: "#E9A299",
+    fontFamily: Typography.body,
+    color: Palette.coral,
     fontSize: 11,
     fontWeight: "900",
     letterSpacing: 1.7,
     marginBottom: 14,
   },
   title: {
-    color: Palette.paper,
-    fontSize: 40,
-    lineHeight: 42,
+    fontFamily: Typography.display,
+    color: Palette.ink,
+    fontSize: 38,
+    lineHeight: 44,
     fontWeight: "900",
     letterSpacing: -1.2,
   },
   body: {
-    color: "#C7D1CA",
+    fontFamily: Typography.body,
+    color: Palette.muted,
     fontSize: 16,
     lineHeight: 24,
     marginTop: 16,
@@ -129,9 +137,16 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   nextText: {
+    fontFamily: Typography.body,
     color: Palette.paper,
     fontSize: 16,
     fontWeight: "800",
   },
-  legal: { color: "#95A79B", textAlign: "center", fontSize: 10, marginTop: 15 },
+  legal: {
+    fontFamily: Typography.body,
+    color: Palette.mutedLight,
+    textAlign: "center",
+    fontSize: 10,
+    marginTop: 15,
+  },
 });

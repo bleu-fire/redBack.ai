@@ -67,7 +67,7 @@ export class PineconeService {
         throw new Error(`Pinecone query failed with status: ${response.status}`);
       }
 
-      const result = await response.json();
+      const result:any = await response.json();
       return result.matches || [];
     } catch (error) {
       console.error('[Pinecone] Error querying vector index:', error);

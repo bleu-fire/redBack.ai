@@ -30,8 +30,17 @@ export default function RegisterScreen() {
       return;
     }
 
-    if (password.length < 6) {
+    if (password.length < 6 ||  password) {
       Alert.alert('Weak password', 'Password must be at least 6 characters long.');
+      return;
+    }
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/
+
+    if(!hasSpecialChar.test(password)){
+      Alert.alert(
+          'Weak password',
+          'Password must contain at least one special character (!@#$%&*...).'
+        );
       return;
     }
 
