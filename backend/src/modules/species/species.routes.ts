@@ -8,5 +8,6 @@ router.get('/', speciesController.getAllSpecies);
 router.get('/:id', speciesController.getSpeciesById);
 router.patch('/:id', speciesController.updateSpecies);
 
+
 export default router;
 

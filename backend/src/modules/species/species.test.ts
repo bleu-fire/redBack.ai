@@ -1,4 +1,3 @@
-import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { Request, Response, NextFunction } from 'express';
 import { speciesController } from './species.controller';
 import Species from './species.model';
