@@ -47,7 +47,7 @@ const slides: OnboardingSlide[] = [
     title: "Welcome,\nExplorer.",
     subtitle:
       "Discover the amazing world of spiders and help protect biodiversity.",
-    image: require("@/assets/images/onboarding/welcome_artwork.png"),
+    image: require("@/assets/images/onboarding/slide1_welcome_art.png"),
     type: "welcome",
   },
   // 2. Discover
@@ -58,7 +58,7 @@ const slides: OnboardingSlide[] = [
     subtitle:
       "Explore a diverse world of spiders from around you and across the globe.",
     callout: "Small creatures, big stories.",
-    image: require("@/assets/images/onboarding/discover_artwork.png"),
+    image: require("@/assets/images/onboarding/slide2_discover_art.png"),
     badges: [
       { icon: Leaf, label: "2,500+", sublabel: "Species" },
       { icon: Globe2, label: "Global", sublabel: "Habitats" },
@@ -73,7 +73,7 @@ const slides: OnboardingSlide[] = [
     title: "Identify with AI",
     subtitle:
       "Take a photo and let AI help you identify the spider in seconds.",
-    image: require("@/assets/images/onboarding/identify_artwork.png"),
+    image: require("@/assets/images/onboarding/slide3_identify_art.png"),
     type: "identify",
   },
   // 4. Learn & Protect
@@ -84,7 +84,7 @@ const slides: OnboardingSlide[] = [
     subtitle:
       "Get detailed information, explore habitats, and learn how to keep spiders and ecosystems safe.",
     callout: "Observe • Learn • Respect • Protect",
-    image: require("@/assets/images/onboarding/learn_artwork.png"),
+    image: require("@/assets/images/onboarding/slide4_learn_art.png"),
     badges: [
       { icon: BookMarked, label: "Field Guide" },
       { icon: Leaf, label: "Safe Living Tips" },
@@ -99,7 +99,7 @@ const slides: OnboardingSlide[] = [
     title: "You're all set!",
     subtitle:
       "Join a community of curious explorers and start your spider discovery journey.",
-    image: require("@/assets/images/onboarding/started_artwork.png"),
+    image: require("@/assets/images/onboarding/slide5_started_art.png"),
     type: "ready",
   },
 ];
@@ -276,15 +276,15 @@ const styles = StyleSheet.create({
 
   /* Visual Hero Card Area */
   visualContainer: {
-    flex: 1.15,
+    flex: 1.25,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
     marginVertical: 4,
   },
   heroCard: {
-    width: width * 0.82,
-    height: 230,
+    width: width * 0.78,
+    height: 250,
     borderRadius: 24,
     backgroundColor: "#FFFFFF",
     overflow: "hidden",
