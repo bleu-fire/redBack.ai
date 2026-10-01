@@ -10,15 +10,12 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import {
-  Compass,
   Globe2,
   BookOpen,
   Camera,
   BookMarked,
   ShieldCheck,
-  CheckCircle2,
   Leaf,
-  Scan,
   ArrowRight,
 } from "lucide-react-native";
 import { Palette, Typography } from "@/constants/theme";
@@ -37,6 +34,7 @@ interface OnboardingSlide {
   title: string;
   subtitle: string;
   callout?: string;
+  image: any;
   badges?: PillBadge[];
   type: "welcome" | "discover" | "identify" | "learn" | "ready";
 }
@@ -49,6 +47,7 @@ const slides: OnboardingSlide[] = [
     title: "Welcome,\nExplorer.",
     subtitle:
       "Discover the amazing world of spiders and help protect biodiversity.",
+    image: require("@/assets/images/onboarding/welcome_artwork.png"),
     type: "welcome",
   },
   // 2. Discover
@@ -59,6 +58,7 @@ const slides: OnboardingSlide[] = [
     subtitle:
       "Explore a diverse world of spiders from around you and across the globe.",
     callout: "Small creatures, big stories.",
+    image: require("@/assets/images/onboarding/discover_artwork.png"),
     badges: [
       { icon: Leaf, label: "2,500+", sublabel: "Species" },
       { icon: Globe2, label: "Global", sublabel: "Habitats" },
@@ -66,13 +66,14 @@ const slides: OnboardingSlide[] = [
     ],
     type: "discover",
   },
-  // 3. Identify
+  // 3. Identify (Camera Scanner)
   {
     id: 3,
     stepName: "Identify",
     title: "Identify with AI",
     subtitle:
       "Take a photo and let AI help you identify the spider in seconds.",
+    image: require("@/assets/images/onboarding/identify_artwork.png"),
     type: "identify",
   },
   // 4. Learn & Protect
@@ -83,6 +84,7 @@ const slides: OnboardingSlide[] = [
     subtitle:
       "Get detailed information, explore habitats, and learn how to keep spiders and ecosystems safe.",
     callout: "Observe • Learn • Respect • Protect",
+    image: require("@/assets/images/onboarding/learn_artwork.png"),
     badges: [
       { icon: BookMarked, label: "Field Guide" },
       { icon: Leaf, label: "Safe Living Tips" },
@@ -97,6 +99,7 @@ const slides: OnboardingSlide[] = [
     title: "You're all set!",
     subtitle:
       "Join a community of curious explorers and start your spider discovery journey.",
+    image: require("@/assets/images/onboarding/started_artwork.png"),
     type: "ready",
   },
 ];
@@ -120,7 +123,7 @@ export default function OnboardingScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
-      {/* Top Bar with Skip */}
+      {/* Top Bar with Step counter and Skip */}
       <View style={styles.topBar}>
         <View style={styles.stepIndicatorContainer}>
           <Text style={styles.stepIndicatorText}>
@@ -136,100 +139,40 @@ export default function OnboardingScreen() {
         )}
       </View>
 
-      {/* Visual Canvas Area */}
+      {/* Visual Canvas Card Area */}
       <View style={styles.visualContainer}>
-        {slide.type === "welcome" && (
-          <View style={styles.centerArtWrapper}>
-            <View style={styles.spiderEmblemCard}>
-              <Image
-                source={require("@/assets/design/redback-logo.png")}
-                style={styles.welcomeLogo}
-                contentFit="contain"
-              />
-            </View>
-            <View style={styles.brandRow}>
-              <Text style={styles.brandMain}>redBack</Text>
-              <Text style={styles.brandDot}>.ai</Text>
-            </View>
-            <Text style={styles.brandTagline}>DISCOVER • LEARN • PROTECT</Text>
-          </View>
-        )}
+        <View style={styles.heroCard}>
+          <Image
+            source={slide.image}
+            style={styles.heroImage}
+            contentFit="cover"
+            transition={300}
+          />
 
-        {slide.type === "discover" && (
-          <View style={styles.centerArtWrapper}>
-            <View style={styles.botanicalHeroCard}>
-              <Image
-                source={require("@/assets/images/spider-3d.png")}
-                style={styles.heroSpiderImage}
-                contentFit="contain"
-              />
-              {slide.callout && (
-                <View style={styles.speechBubble}>
-                  <Text style={styles.speechBubbleText}>{slide.callout}</Text>
-                </View>
-              )}
-            </View>
-          </View>
-        )}
-
-        {slide.type === "identify" && (
-          <View style={styles.centerArtWrapper}>
-            <View style={styles.scannerHeroCard}>
-              <Image
-                source={require("@/assets/images/spider-bg.png")}
-                style={styles.scannerBackground}
-                contentFit="cover"
-              />
-              {/* Camera Reticle Overlay */}
-              <View style={styles.scannerReticle}>
-                <View style={[styles.corner, styles.cornerTL]} />
-                <View style={[styles.corner, styles.cornerTR]} />
-                <View style={[styles.corner, styles.cornerBL]} />
-                <View style={[styles.corner, styles.cornerBR]} />
-              </View>
-
-              {/* Shutter Icon Badge */}
-              <View style={styles.shutterBadge}>
-                <Camera size={26} color="#FFFFFF" strokeWidth={2.2} />
+          {/* Scanner Overlay for Step 3 */}
+          {slide.type === "identify" && (
+            <View style={styles.scannerReticleOverlay}>
+              <View style={[styles.corner, styles.cornerTL]} />
+              <View style={[styles.corner, styles.cornerTR]} />
+              <View style={[styles.corner, styles.cornerBL]} />
+              <View style={[styles.corner, styles.cornerBR]} />
+              <View style={styles.cameraShutterBadge}>
+                <Camera size={22} color="#FFFFFF" strokeWidth={2.4} />
               </View>
             </View>
-          </View>
-        )}
+          )}
 
-        {slide.type === "learn" && (
-          <View style={styles.centerArtWrapper}>
-            <View style={styles.fieldJournalCard}>
-              <View style={styles.journalHeader}>
-                <Text style={styles.journalLabel}>FIELD NOTES</Text>
-                <View style={styles.journalPin} />
-              </View>
-              <Image
-                source={require("@/assets/images/spider-3d.png")}
-                style={styles.journalSpiderImage}
-                contentFit="contain"
-              />
-              <View style={styles.journalTag}>
-                <Text style={styles.journalTagText}>Habitat: Sheltered</Text>
-              </View>
+          {/* Step 4 Habitat Tag Badge */}
+          {slide.type === "learn" && (
+            <View style={styles.habitatPinBadge}>
+              <Text style={styles.habitatPinText}>Habitat</Text>
             </View>
-            {slide.callout && (
-              <Text style={styles.handwrittenNote}>{slide.callout}</Text>
-            )}
-          </View>
-        )}
+          )}
+        </View>
 
-        {slide.type === "ready" && (
-          <View style={styles.centerArtWrapper}>
-            <View style={styles.successCard}>
-              <View style={styles.successIconCircle}>
-                <CheckCircle2 size={54} color={Palette.coral} strokeWidth={2.4} />
-              </View>
-              <View style={styles.readyEmblem}>
-                <Compass size={28} color={Palette.moss} strokeWidth={2} />
-                <Text style={styles.readyEmblemText}>Ready to Explore</Text>
-              </View>
-            </View>
-          </View>
+        {/* Callout Annotation Note */}
+        {slide.callout && (
+          <Text style={styles.calloutNoteText}>{slide.callout}</Text>
         )}
       </View>
 
@@ -238,7 +181,7 @@ export default function OnboardingScreen() {
         <Text style={styles.titleText}>{slide.title}</Text>
         <Text style={styles.subtitleText}>{slide.subtitle}</Text>
 
-        {/* Feature Pill Badges for Discover & Learn */}
+        {/* Feature Badges for Discover & Learn */}
         {slide.badges && slide.badges.length > 0 && (
           <View style={styles.badgesRow}>
             {slide.badges.map((badge, idx) => {
@@ -259,7 +202,7 @@ export default function OnboardingScreen() {
         )}
       </View>
 
-      {/* Footer: Pagination Dots & Next Button */}
+      {/* Footer: Pagination Dots & Action Button */}
       <View style={styles.footerSection}>
         {/* Pagination Dots */}
         <View style={styles.paginationRow}>
@@ -277,7 +220,7 @@ export default function OnboardingScreen() {
           })}
         </View>
 
-        {/* Action Button */}
+        {/* Primary Action Button */}
         <Pressable
           onPress={handleNext}
           style={({ pressed }) => [
@@ -331,7 +274,7 @@ const styles = StyleSheet.create({
     color: "#6E7773",
   },
 
-  /* Visual Canvas Area */
+  /* Visual Hero Card Area */
   visualContainer: {
     flex: 1.15,
     justifyContent: "center",
@@ -339,124 +282,35 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginVertical: 4,
   },
-  centerArtWrapper: {
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  /* Slide 1 - Welcome / Brand */
-  spiderEmblemCard: {
-    width: 170,
-    height: 170,
-    borderRadius: 36,
+  heroCard: {
+    width: width * 0.82,
+    height: 230,
+    borderRadius: 24,
     backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
+    overflow: "hidden",
+    borderWidth: 1.5,
+    borderColor: "#EAE6DE",
     shadowColor: "#17211F",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.08,
-    shadowRadius: 18,
-    elevation: 4,
-    borderWidth: 1,
-    borderColor: "#EAE6DE",
-    marginBottom: 16,
-  },
-  welcomeLogo: {
-    width: 120,
-    height: 120,
-  },
-  brandRow: {
-    flexDirection: "row",
-    alignItems: "baseline",
-    marginTop: 4,
-  },
-  brandMain: {
-    fontSize: 28,
-    fontWeight: "900",
-    color: "#17211F",
-    letterSpacing: -0.8,
-    fontFamily: Typography.display,
-  },
-  brandDot: {
-    fontSize: 28,
-    fontWeight: "900",
-    color: "#E04836", // Coral red
-    fontFamily: Typography.display,
-  },
-  brandTagline: {
-    fontSize: 11,
-    fontWeight: "800",
-    color: "#6E7773",
-    letterSpacing: 2.2,
-    marginTop: 6,
-  },
-
-  /* Slide 2 - Discover */
-  botanicalHeroCard: {
-    width: width * 0.78,
-    height: 220,
-    borderRadius: 28,
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "#EAE6DE",
-    shadowColor: "#2C4A3E",
     shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.1,
     shadowRadius: 20,
     elevation: 5,
     position: "relative",
   },
-  heroSpiderImage: {
-    width: 210,
-    height: 180,
-  },
-  speechBubble: {
-    position: "absolute",
-    top: 14,
-    right: 14,
-    backgroundColor: "#E6EFEA",
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#D2E2D8",
-  },
-  speechBubbleText: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#2C4A3E",
-    fontStyle: "italic",
-  },
-
-  /* Slide 3 - Identify (Camera) */
-  scannerHeroCard: {
-    width: width * 0.78,
-    height: 220,
-    borderRadius: 28,
-    overflow: "hidden",
-    position: "relative",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.15,
-    shadowRadius: 24,
-    elevation: 6,
-    borderWidth: 1.5,
-    borderColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  scannerBackground: {
+  heroImage: {
     width: "100%",
     height: "100%",
-    position: "absolute",
   },
-  scannerReticle: {
-    width: 130,
-    height: 130,
-    position: "relative",
+
+  /* Scanner Reticle Overlay for Step 3 */
+  scannerReticleOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
   },
   corner: {
     position: "absolute",
@@ -465,156 +319,80 @@ const styles = StyleSheet.create({
     borderColor: "#FFFFFF",
   },
   cornerTL: {
-    top: 0,
-    left: 0,
+    top: 35,
+    left: 45,
     borderTopWidth: 3.5,
     borderLeftWidth: 3.5,
     borderTopLeftRadius: 6,
   },
   cornerTR: {
-    top: 0,
-    right: 0,
+    top: 35,
+    right: 45,
     borderTopWidth: 3.5,
     borderRightWidth: 3.5,
     borderTopRightRadius: 6,
   },
   cornerBL: {
-    bottom: 0,
-    left: 0,
+    bottom: 50,
+    left: 45,
     borderBottomWidth: 3.5,
     borderLeftWidth: 3.5,
     borderBottomLeftRadius: 6,
   },
   cornerBR: {
-    bottom: 0,
-    right: 0,
+    bottom: 50,
+    right: 45,
     borderBottomWidth: 3.5,
     borderRightWidth: 3.5,
     borderBottomRightRadius: 6,
   },
-  shutterBadge: {
+  cameraShutterBadge: {
     position: "absolute",
-    bottom: 14,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    bottom: 12,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: "#E04836",
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
     shadowColor: "#E04836",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 8,
     elevation: 4,
-    borderWidth: 2,
-    borderColor: "#FFFFFF",
   },
 
-  /* Slide 4 - Learn */
-  fieldJournalCard: {
-    width: width * 0.78,
-    height: 210,
-    borderRadius: 24,
-    backgroundColor: "#FFFFFF",
-    padding: 14,
-    borderWidth: 1,
-    borderColor: "#EAE6DE",
-    shadowColor: "#17211F",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.08,
-    shadowRadius: 18,
-    elevation: 4,
-    alignItems: "center",
-    position: "relative",
-  },
-  journalHeader: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#F0ECE4",
-    paddingBottom: 6,
-  },
-  journalLabel: {
-    fontSize: 10,
-    fontWeight: "800",
-    letterSpacing: 1.5,
-    color: "#6E7773",
-  },
-  journalPin: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#E04836",
-  },
-  journalSpiderImage: {
-    width: 140,
-    height: 120,
-    marginTop: 4,
-  },
-  journalTag: {
+  /* Step 4 Habitat Tag */
+  habitatPinBadge: {
     position: "absolute",
-    bottom: 12,
+    bottom: 14,
     right: 14,
-    backgroundColor: "#FBF9F4",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    backgroundColor: "#FFF9EE",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#EAE6DE",
+    borderColor: "#F0E4CE",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
   },
-  journalTagText: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: "#3C4543",
+  habitatPinText: {
+    fontSize: 11,
+    fontWeight: "800",
+    color: "#6E5B3E",
   },
-  handwrittenNote: {
-    marginTop: 10,
+
+  calloutNoteText: {
+    marginTop: 8,
     fontSize: 12,
     fontWeight: "700",
     color: "#2C4A3E",
-    letterSpacing: 0.8,
-  },
-
-  /* Slide 5 - Ready */
-  successCard: {
-    width: width * 0.78,
-    height: 220,
-    borderRadius: 28,
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "#EAE6DE",
-    shadowColor: "#17211F",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.08,
-    shadowRadius: 20,
-    elevation: 4,
-    gap: 16,
-  },
-  successIconCircle: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: "#FDEBE7",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  readyEmblem: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#E6EFEA",
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 16,
-    gap: 6,
-  },
-  readyEmblemText: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#2C4A3E",
+    letterSpacing: 0.5,
+    fontStyle: "italic",
   },
 
   /* Narrative & Content Section */
@@ -624,20 +402,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   titleText: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: "900",
     color: "#17211F",
     textAlign: "center",
-    lineHeight: 38,
+    lineHeight: 36,
     letterSpacing: -0.8,
     fontFamily: Typography.display,
   },
   subtitleText: {
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 14,
+    lineHeight: 21,
     color: "#6E7773",
     textAlign: "center",
-    marginTop: 10,
+    marginTop: 8,
     maxWidth: 320,
   },
 
@@ -647,16 +425,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     gap: 10,
-    marginTop: 18,
+    marginTop: 14,
     width: "100%",
   },
   badgePill: {
     flexDirection: "column",
     alignItems: "center",
     backgroundColor: "#FFFFFF",
-    paddingVertical: 10,
+    paddingVertical: 8,
     paddingHorizontal: 12,
-    borderRadius: 16,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: "#EAE6DE",
     minWidth: 84,
@@ -667,22 +445,22 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   badgeIconCircle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     backgroundColor: "#E6EFEA",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 6,
+    marginBottom: 4,
   },
   badgePrimaryText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "800",
     color: "#17211F",
     textAlign: "center",
   },
   badgeSecondaryText: {
-    fontSize: 11,
+    fontSize: 10,
     color: "#6E7773",
     fontWeight: "500",
     marginTop: 1,
@@ -694,7 +472,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
     paddingBottom: 24,
     paddingTop: 10,
-    gap: 16,
+    gap: 14,
   },
   paginationRow: {
     flexDirection: "row",
