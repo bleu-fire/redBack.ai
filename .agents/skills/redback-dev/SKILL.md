@@ -98,7 +98,9 @@ backend/src/
 
 ## 3. Naturalist Field-Journal Design System
 
-Visual Reference: [`mobile/assets/design/ui-components-kit.png`](file:///c:/Users/user/Desktop/redBack.ai/mobile/assets/design/ui-components-kit.png)  
+Visual References:
+- **Master UI Design Sheet (12 Screens)**: [`mobile/assets/design/redBack.ai_Spider_Discovery_App_UI-1.png`](file:///c:/Users/user/Desktop/redBack.ai/mobile/assets/design/redBack.ai_Spider_Discovery_App_UI-1.png)
+- **UI Kit & Components**: [`mobile/assets/design/ui-components-kit.png`](file:///c:/Users/user/Desktop/redBack.ai/mobile/assets/design/ui-components-kit.png)  
 Detailed Guide: [`references/design-system.md`](file:///c:/Users/user/Desktop/redBack.ai/.agents/skills/redback-dev/references/design-system.md)
 
 ### Color Tokens ([`mobile/constants/theme.ts`](file:///c:/Users/user/Desktop/redBack.ai/mobile/constants/theme.ts))
@@ -107,19 +109,36 @@ Detailed Guide: [`references/design-system.md`](file:///c:/Users/user/Desktop/re
 | `Palette.coral` | `#E04836` | Signature Redback Crimson | Primary CTA buttons, camera shutter, active tab icons |
 | `Palette.coralSoft` | `#FDEBE7` | Coral Mist | Venom alert backgrounds, warning badges |
 | `Palette.moss` | `#2C4A3E` | Deep Botanical Moss | Secondary cards, learning modules, dark containers |
-| `Palette.mossSoft` | `#E6EFEA` | Soft Sage Green | Non-venomous/common species pills, progress bars |
+| `Palette.mossDark` | `#1E352C` | Night Forest Moss | AI match badge background, dark accents |
+| `Palette.mossSoft` | `#E6EFEA` | Soft Sage Green | Non-venomous/common species pills, icon circles, quiz feedback |
 | `Palette.canvas` | `#FBF9F4` | Naturalist Field Paper | Root screen background |
-| `Palette.paper` | `#FFFFFF` | Card White | Content cards, modal sheets, floating panels |
+| `Palette.paper` | `#FFFFFF` | Card White | Content cards, modal sheets, bottom tab bar |
 | `Palette.ink` | `#17211F` | Deep Charcoal Ink | Primary display headlines, high-contrast text |
 | `Palette.muted` | `#6E7773` | Gray-Green Slate | Subtitles, metadata, inactive icons |
 | `Palette.line` | `#EAE6DE` | Warm Border Line | Card delimiters, dividers, input borders |
 | `Palette.gold` | `#E59824` | Solar Amber | Streak flames, XP counters, quiz awards |
 | `Palette.danger` | `#D32F2F` | Medical Alert Red | High toxicity warnings, bite hazard pills |
 
+### Card Theme Catalog (`CardTheme`) & Flat Design Rules
+> **Zero Drop Shadows**: Every card must use `elevation: 0` and `shadowOpacity: 0`. Separation is achieved via warm borders (`1px solid #EAE6DE`) and organic natural fills (`#FFFFFF`, `#FDEBE7`, `#E6EFEA`, `#2C4A3E`).
+
+1. **`HeroDiscoveryCard`**: Dark Moss `#2C4A3E`, 24px radii, 3D spider graphic, white serif headline, circular Coral CTA button.
+2. **`FieldMetricsCard`**: Paper `#FFFFFF`, 1px line, 20px radii, 3-column stats counter with vertical line dividers (`Spiders identified`, `Species`, `Habitats`).
+3. **`SpeciesGridCard`**: Paper `#FFFFFF`, 1px line, 16px radii, 1:1 image, serif title, italic taxa, status badge.
+4. **`SpeciesListCard`**: Paper `#FFFFFF`, 1px line, 16px radii, 60x60 left thumbnail, middle taxonomy, right chevron.
+5. **`SafetyWarningCard`**: Soft Coral `#FDEBE7`, 1px danger border `#F7B5A8`, 18px radii, `AlertTriangle` icon, educational safety guidance.
+6. **`QuickFactsGridCard`**: Paper `#FFFFFF`, 1px line, 16px radii, circular Soft Sage badge (`#E6EFEA`) with Lucide icon, metric label & value.
+7. **`LearningHeroCard`**: Moss `#2C4A3E`, 24px radii, spider anatomy art, duration/XP pills, circular Coral arrow button.
+8. **`QuizOptionCard`**: Paper `#FFFFFF`, 1px line, 16px radii, letter pill badge (`A, B, C, D`), moss border + checkmark on correct.
+9. **`QuizFeedbackCard`**: Soft Sage `#E6EFEA`, 18px radii, `CheckCircle2` icon, explanation text, Deep Moss CTA.
+10. **`CommunityFeedCard`**: Paper `#FFFFFF`, 1px line, 18px radii, user avatar, sighting image, caption, heart/comment counters.
+11. **`MapPreviewCard`**: Paper `#FFFFFF` floating sheet, 18px radii, thumbnail, species name, distance indicator.
+
 ### Typography Scale
 - **Display Headings (H1/H2)**: Editorial Serif (`ui-serif`, `Georgia`, `'Times New Roman'`) for warm naturalist personality (*"Good to see you, Explorer."*, *"Redback spider"*).
 - **Body & Controls**: Crisp Modern Sans (`system-ui`, `-apple-system`, `Roboto`) for UI elements, labels, buttons, and form inputs.
 - **Scientific Taxa**: Italicized Serif (`ui-serif`), e.g. *Latrodectus hasselti*.
+- **Data & Codes**: Monospace (`ui-monospace`, `SFMono-Regular`) for precise biometric measurements and taxa codes.
 
 ---
 

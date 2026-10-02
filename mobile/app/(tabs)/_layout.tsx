@@ -1,8 +1,9 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Palette } from '@/constants/theme';
-import { Home, Compass, BookOpen, User } from 'lucide-react-native';
+import { Home, Compass, BookOpen, User, Camera } from 'lucide-react-native';
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
@@ -32,11 +33,11 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, size }) => (
-           <Home size={size??22} color={color}/>
+            <Home size={size ?? 22} color={color} />
           ),
         }}
       />
-    {/* 2. Spider Search & Explorer */}
+      {/* 2. Spider Search & Explorer */}
       <Tabs.Screen
         name="explore"
         options={{
@@ -46,7 +47,21 @@ export default function TabLayout() {
           ),
         }}
       />
-      {/* 3. Learning Center */}
+
+      {/* 3. Camera Scanner (in the center) */}
+      <Tabs.Screen
+        name="scanner"
+        options={{
+          title: 'Scanner',
+          tabBarIcon: ({ size, focused }) => (
+            <View style={[styles.circle, focused && styles.activeCircle]}>
+              <Camera size={size ?? 22} color={focused ? Palette.paper : Palette.coral} />
+            </View>
+          ),
+        }}
+      />
+
+      {/* 4. Learning Center */}
       <Tabs.Screen
         name="learn"
         options={{
@@ -56,7 +71,8 @@ export default function TabLayout() {
           ),
         }}
       />
-      {/* 4. Explorer Profile */}
+
+      {/* 5. Explorer Profile */}
       <Tabs.Screen
         name="profile"
         options={{
@@ -69,3 +85,17 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  circle: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Palette.coralSoft,
+  },
+  activeCircle: {
+    backgroundColor: Palette.coral,
+  },
+});

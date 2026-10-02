@@ -138,3 +138,89 @@ Because redBack.ai identifies medically significant species (e.g. *Latrodectus h
    - `medically_significant`: Severe neurotoxic or necrotic symptoms requiring medical assessment (e.g., Redback).
    - `severe`: Potentially life-threatening, emergency antivenom indicated (e.g., Sydney Funnel-web).
 3. **Medical Advice Prohibition**: The backend must never provide self-treatment, tourniquet recommendations, or delay emergency response.
+
+---
+
+## 5. Mobile UI & Screen Architecture (12-Screen Master Topology)
+
+Visual Blueprint: [`mobile/assets/design/redBack.ai_Spider_Discovery_App_UI-1.png`](file:///c:/Users/user/Desktop/redBack.ai/mobile/assets/design/redBack.ai_Spider_Discovery_App_UI-1.png)
+
+The mobile client (Tier 1) orchestrates 12 interconnected screens organized into 4 primary domain loops:
+
+```mermaid
+flowchart TD
+    subgraph Loop1 ["Loop 1: Onboarding & Authentication"]
+        S1["Screen 1: Onboarding Carousel\n(/onboarding)"]
+        S2["Screen 2: Login & Auth\n(/(auth)/login)"]
+        S1 -->|Get Started| S2
+    end
+
+    subgraph Loop2 ["Loop 2: Field Sighting & Vision AI Pipeline"]
+        S3["Screen 3: Explorer Home\n(/(tabs)/index)"]
+        S4["Screen 4: Camera Scanner\n(/scanner)"]
+        S5["Screen 5: AI Identification Result\n(/results)"]
+        S6["Screen 6: Species Detail & Facts\n(/species/:id)"]
+        
+        S2 -->|Authenticated Session| S3
+        S3 -->|Tap Shutter / FAB| S4
+        S4 -->|Capture & Vector Query| S5
+        S5 -->|View Deep Taxonomy| S6
+    end
+
+    subgraph Loop3 ["Loop 3: Taxonomy & Biodiversity Discovery"]
+        S7["Screen 7: Explore Species Grid\n(/(tabs)/explore)"]
+        S8["Screen 8: Nearby Species Map\n(/map)"]
+        
+        S3 -->|Explore Tab| S7
+        S7 -->|Toggle Map View| S8
+        S8 -->|Select Pin| S6
+        S7 -->|Select Card| S6
+    end
+
+    subgraph Loop4 ["Loop 4: Learning Academy & Citizen Community"]
+        S9["Screen 9: Learning Hub & Streak\n(/(tabs)/learn)"]
+        S10["Screen 10: Quiz & Anatomy Lesson\n(/learn/:topicId)"]
+        S11["Screen 11: Profile & Achievements\n(/(tabs)/profile)"]
+        S12["Screen 12: Community Sighting Feed\n(/(tabs)/community)"]
+        
+        S3 -->|Learn Tab| S9
+        S9 -->|Start Topic| S10
+        S10 -->|XP Awarded| S11
+        S3 -->|Community Tab| S12
+    end
+```
+
+---
+
+## 6. Card Theme Architecture & Domain Data Binding
+
+All cards in the UI conform to strict **Flat Design Standards** (zero drop-shadows, 1px warm borders `#EAE6DE`, and soft organic surfaces). Each card theme binds directly to backend domain modules:
+
+| Card Theme | Visual Surface | Domain Module | Data Model / Payload |
+|---|---|---|---|
+| `HeroDiscoveryCard` | Moss `#2C4A3E`, 24px radii, 3D spider graphic | `identification` | Quick camera action, daily featured species summary |
+| `FieldMetricsCard` | Paper `#FFFFFF`, 1px line, 20px radii, 3 cols | `auth` & `species` | `user.stats.identified`, `catalog.totalCount`, `user.stats.habitats` |
+| `SpeciesGridCard` | Paper `#FFFFFF`, 1px line, 16px radii, 1:1 image | `species` | `SpeciesSummaryDTO` (name, binomial, thumbnail, venomSeverity) |
+| `SpeciesListCard` | Paper `#FFFFFF`, 1px line, 16px radii, left thumb | `species` | `FeaturedSpeciesDTO` (name, binomial, thumbUrl, statusTag) |
+| `SafetyWarningCard`| CoralSoft `#FDEBE7`, 1px danger border, Alert icon | `shared/safety` | Mandatory disclaimer + venom severity triage warning |
+| `QuickFactsGridCard`| Paper `#FFFFFF`, Sage icon circle, 16px radii | `species` | `morphology` (size, lifespan, preyDiet, habitatRange) |
+| `LearningHeroCard` | Moss `#2C4A3E`, 24px radii, spider anatomy visual | `learning` | `TopicDTO` (title, estMinutes, xpReward, progressPct) |
+| `QuizOptionCard`   | Paper `#FFFFFF`, letter pill, moss border on select| `learning` | `QuizQuestion.options` (key, label, isCorrect) |
+| `QuizFeedbackCard` | MossSoft `#E6EFEA`, 18px radii, check circle | `learning` | `QuizEvaluationDTO` (isCorrect, explanation, nextTopicId) |
+| `CommunityFeedCard`| Paper `#FFFFFF`, 1px line, 18px radii, photo | `identification` | `PublicObservationDTO` (author, photoUrl, notes, likes, comments) |
+| `MapPreviewCard`   | Paper `#FFFFFF` floating sheet, 18px radii | `species` | `GeoSightingDTO` (speciesName, distanceKm, thumbnail) |
+
+---
+
+## 7. Mobile State & Offline Persistence Strategy
+
+1. **Session & Auth State (`AsyncStorage`)**:
+   - `auth_token`: Stored via `AsyncStorageManagement.setToken(jwt)`.
+   - `user_data`: Stored via `AsyncStorageManagement.setUserData(user)`.
+   - Splash redirect: Verified in `mobile/app/index.tsx` before routing to `/(tabs)` or `/onboarding`.
+2. **Offline Sighting Cache**:
+   - When offline or in remote field conditions without 4G/5G, photo sightings queue in local SQLite/AsyncStorage storage (`offline_sightings`).
+   - Syncs automatically to `/api/v1/identifications` when connectivity resumes.
+3. **Optimized Image Ingestion**:
+   - Photos taken in Camera Scanner are compressed locally before vector transmission (max 1080px dimension, 80% JPEG quality) to ensure sub-second vector uploads.
+

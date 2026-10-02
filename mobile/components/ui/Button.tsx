@@ -37,13 +37,13 @@ export function Button({
 
   return (
     <Pressable
-      style={({ pressed }) => [
+      style={(state) => [
         styles.base,
         styles[variant],
         styles[size],
-        pressed && styles.pressed,
+        state.pressed && styles.pressed,
         disabled && styles.disabled,
-        typeof style === 'function' ? style({ pressed }) : style,
+        typeof style === 'function' ? style(state) : style,
       ]}
       disabled={disabled || loading}
       {...rest}

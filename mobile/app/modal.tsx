@@ -1,9 +1,10 @@
 import { Link } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
-
+import Topbar from '@/components/ui/topbar';
 export default function ModalScreen() {
   return (
     <View style={styles.container}>
+      <Topbar pfp={false}/>
       <Text style={styles.title}>This is a modal</Text>
       <Link href="/" dismissTo style={styles.link}>
         <Text style={styles.linkText}>Go to home screen</Text>

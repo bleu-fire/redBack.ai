@@ -24,7 +24,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/species', speciesRoutes);
 app.use('api/identifaction',identificationRoutes)
 
-
 // 4. Global 
 app.use(errorHandler);
 
