@@ -24,12 +24,14 @@ export function FeaturedSpeciesCard({
   const handlePress = () => {
     if (onPress) {
       onPress();
-    } else {
+    } else if (id) {
       router.push(`/species/${id}` as any);
     }
   };
 
-  const isVenomous = status.toLowerCase().includes('venom');
+  const imageSource = typeof image === 'string' ? { uri: image } : (image || require('@/assets/images/spider-3d.png'));
+  const safeStatus = status || 'Common';
+  const isVenomous = safeStatus.toLowerCase().includes('venom');
   const badgeBg = isVenomous ? Palette.coralSoft : '#EAF2EC';
   const badgeColor = isVenomous ? Palette.danger : '#2D5A43';
 
@@ -40,14 +42,14 @@ export function FeaturedSpeciesCard({
       accessibilityRole="button"
       accessibilityLabel={`${name}, ${scientificName}`}
     >
-      <Image source={image} style={styles.thumbnail} resizeMode="cover" />
+      <Image source={imageSource} style={styles.thumbnail} resizeMode="cover" />
 
       <View style={styles.info}>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.scientificName}>{scientificName}</Text>
         <View style={[styles.badge, { backgroundColor: badgeBg }]}>
           <View style={[styles.badgeDot, { backgroundColor: badgeColor }]} />
-          <Text style={[styles.badgeText, { color: badgeColor }]}>{status}</Text>
+          <Text style={[styles.badgeText, { color: badgeColor }]}>{safeStatus}</Text>
         </View>
       </View>
 

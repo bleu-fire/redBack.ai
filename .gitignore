@@ -12,3 +12,7 @@ build/
 
 # Logs
 *.log
+
+# Binaries & Executables
+*.exe
+

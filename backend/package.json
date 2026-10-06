@@ -12,8 +12,12 @@
     "start:dev": "tsx watch src/server.ts",
     "dev": "tsx watch src/server.ts",
     "seed": "tsx src/scripts/seed.ts",
+    "seed:species": "tsx src/scripts/seed-species.ts",
+    "seed:morocco": "tsx src/scripts/seed-morocco-species.ts",
+    "search:morocco": "tsx src/scripts/search-species.ts",
     "test": "tsx src/modules/auth/auth.service.test.ts",
-    "test:species": "jest src/modules/species/species.test.ts"
+    "test:species": "jest src/modules/species/species.test.ts",
+    "test:identification": "jest src/modules/Identification/identification.controller.test.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

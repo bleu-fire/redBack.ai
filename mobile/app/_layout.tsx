@@ -1,28 +1,57 @@
-import React, { useState } from "react";
-import { Stack } from "expo-router";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import CustomSplashScreen from "@/components/splash-screen";
+import 'react-native-reanimated';
+import React, { useState } from 'react';
+import { Stack } from 'expo-router';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { StatusBar } from 'expo-status-bar';
+import CustomSplashScreen from '@/components/splash-screen';
+import { Palette } from '@/constants/theme';
+
+export const unstable_settings = {
+  initialRouteName: 'index',
+};
 
 export default function RootLayout() {
   const [isSplashDone, setIsSplashDone] = useState(false);
 
   return (
-    <SafeAreaProvider>
-      <Stack screenOptions={{ headerShown: false, animation: "fade" }}>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <StatusBar style="dark" backgroundColor={Palette.canvas} />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: Palette.canvas },
+          }}
+        >
+          <Stack.Screen name="index" options={{ headerShown: false, animation: 'fade' }} />
+          <Stack.Screen name="onboarding" options={{ headerShown: false, animation: 'fade' }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false, animation: 'fade' }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false, animation: 'fade' }} />
+          <Stack.Screen name="species/[id]" options={{ headerShown: false, animation: 'slide_from_right' }} />
+          <Stack.Screen name="results" options={{ headerShown: false, animation: 'slide_from_right' }} />
+          <Stack.Screen name="chat" options={{ headerShown: false, animation: 'slide_from_right' }} />
+          <Stack.Screen name="upload" options={{ headerShown: false, animation: 'slide_from_right' }} />
+          <Stack.Screen name="settings" options={{ headerShown: false, animation: 'slide_from_right' }} />
+          <Stack.Screen
+            name="modal"
+            options={{
+              presentation: 'modal',
+              headerShown: false,
+              animation: 'slide_from_bottom',
+            }}
+          />
+        </Stack>
 
-      {/* L-Splash screen dialna f React */}
-      {!isSplashDone && (
-        <CustomSplashScreen
-          duration={2000}
-          logoVariant="white"
-          onFinish={() => setIsSplashDone(true)}
-        />
-      )}
-    </SafeAreaProvider>
+        {/* Brand Splash Screen Overlay */}
+        {!isSplashDone && (
+          <CustomSplashScreen
+            duration={2000}
+            logoVariant="white"
+            onFinish={() => setIsSplashDone(true)}
+          />
+        )}
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

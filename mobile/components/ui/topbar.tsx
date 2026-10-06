@@ -1,8 +1,8 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, Pressable, ImageSourcePropType } from "react-native";
+import { View, Image, StyleSheet, Pressable } from "react-native";
 import { router } from "expo-router";
 import { Bell } from "lucide-react-native";
-import { Palette, Spacing, Radii, Typography } from "@/constants/theme";
+import { Palette, Spacing, Radii } from "@/constants/theme";
 
 interface TopbarProps {
   pfp?: boolean;
@@ -24,6 +24,16 @@ const Topbar = ({ pfp = true }: TopbarProps) => {
       </View>
 
       <View style={styles.actions}>
+        <Pressable
+          onPress={() => router.push("/modal" as any)}
+          style={({ pressed }) => [styles.iconButton, pressed && styles.pressed]}
+          accessibilityRole="button"
+          accessibilityLabel="Notifications"
+        >
+          <Bell size={22} color={Palette.ink} />
+          <View style={styles.notificationDot} />
+        </Pressable>
+
         {Boolean(pfp) && (
           <Pressable
             onPress={() => router.push("/(tabs)/profile" as any)}
@@ -38,15 +48,6 @@ const Topbar = ({ pfp = true }: TopbarProps) => {
             />
           </Pressable>
         )}
-
-        <Pressable
-          onPress={() => router.push("/modal" as any)}
-          style={({ pressed }) => [styles.iconButton, pressed && styles.pressed]}
-          accessibilityRole="button"
-          accessibilityLabel="Notifications"
-        >
-          <Bell size={22} color={Palette.ink} />
-        </Pressable>
       </View>
     </View>
   );
@@ -93,6 +94,18 @@ const styles = StyleSheet.create({
     padding: Spacing.xs,
     alignItems: "center",
     justifyContent: "center",
+    position: "relative",
+  },
+  notificationDot: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: Palette.coral,
+    borderWidth: 1.5,
+    borderColor: Palette.paper,
   },
   pressed: {
     opacity: 0.7,

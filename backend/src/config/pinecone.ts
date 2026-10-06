@@ -67,11 +67,49 @@ export class PineconeService {
         throw new Error(`Pinecone query failed with status: ${response.status}`);
       }
 
-      const result:any = await response.json();
+      const result: any = await response.json();
       return result.matches || [];
     } catch (error) {
       console.error('[Pinecone] Error querying vector index:', error);
       return [];
+    }
+  }
+
+  /**
+   * Upsert vectors with taxonomic metadata into Pinecone index
+   */
+  async upsertVectors(
+    vectors: Array<{
+      id: string;
+      values: number[];
+      metadata?: Record<string, any>;
+    }>
+  ): Promise<boolean> {
+    if (!this.isConfigured()) {
+      console.warn('[Pinecone] PINECONE_API_KEY not configured, skipping vector upsert');
+      return false;
+    }
+
+    try {
+      const host = process.env.PINECONE_HOST || `https://${this.indexName}.svc.pinecone.io`;
+      const response = await fetch(`${host}/vectors/upsert`, {
+        method: 'POST',
+        headers: {
+          'Api-Key': this.apiKey,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ vectors }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Pinecone upsert failed with status: ${response.status}`);
+      }
+
+      console.log(`[Pinecone] Successfully upserted ${vectors.length} vectors to ${this.indexName}`);
+      return true;
+    } catch (error) {
+      console.error('[Pinecone] Error upserting vectors:', error);
+      return false;
     }
   }
 }

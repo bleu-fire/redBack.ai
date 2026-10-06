@@ -9,5 +9,8 @@ export const config = {
   mongoUri: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/redback_db',
   jwtSecret: process.env.JWT_SECRET || 'default-secret-change-it',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
+  geminiApiKey: process.env.GEMINI_API_KEY || '',
+  pineconeApiKey: process.env.PINECONE_API_KEY || '',
+  pineconeIndex: process.env.PINECONE_INDEX || 'redback-spider-vision',
 };
 

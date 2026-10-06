@@ -19,12 +19,12 @@ export default function TabLayout() {
           borderTopColor: Palette.line,
           borderTopWidth: 1,
           elevation: 0,
-          height: 56 + insets.bottom,
+          height: 60 + (insets.bottom > 0 ? insets.bottom : 8),
           paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
-          paddingTop: 8,
+          paddingTop: 6,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: '600',
         },
       }}>
@@ -48,14 +48,15 @@ export default function TabLayout() {
         }}
       />
 
-      {/* 3. Camera Scanner (in the center) */}
+      {/* 3. Camera Scanner (elevated central action) */}
       <Tabs.Screen
         name="scanner"
         options={{
           title: 'Scanner',
-          tabBarIcon: ({ size, focused }) => (
-            <View style={[styles.circle, focused && styles.activeCircle]}>
-              <Camera size={size ?? 22} color={focused ? Palette.paper : Palette.coral} />
+          tabBarLabel: () => null,
+          tabBarIcon: ({ focused }) => (
+            <View style={[styles.scannerButton, focused && styles.scannerButtonActive]}>
+              <Camera size={22} color="#FFFFFF" />
             </View>
           ),
         }}
@@ -87,15 +88,19 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
-  circle: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+  scannerButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: Palette.coral,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Palette.coralSoft,
+    marginBottom: 8,
+    borderWidth: 3,
+    borderColor: Palette.paper,
   },
-  activeCircle: {
-    backgroundColor: Palette.coral,
+  scannerButtonActive: {
+    backgroundColor: Palette.coralDark,
+    transform: [{ scale: 1.05 }],
   },
 });

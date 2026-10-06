@@ -15,10 +15,12 @@ import { Link, router } from 'expo-router';
 import { Lock, Mail, Eye, EyeOff } from 'lucide-react-native';
 import { Palette, Radii, Spacing, Typography } from '@/constants/theme';
 import { Button } from '@/components/ui';
-import {LoginUser} from  '@/data/api/logic'
-import AsyncStorageManagement  from "@/data/storage/asyncstorage"
+import { LoginUser } from '@/data/api/logic';
+import AsyncStorageManagement from "@/data/storage/asyncstorage";
+import { useStore } from '@/store/stores';
 
 export default function LoginScreen() {
+  const login = useStore((state) => state.login);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -33,11 +35,14 @@ export default function LoginScreen() {
     try {
       setLoading(true);
       const response = await LoginUser(email.trim(), password);
+      const user = response.data?.user || { email: email.trim() };
+
+      // Update Zustand global store
+      login(response.token, user);
+
       // Save token and user details to storage
       await AsyncStorageManagement.setToken(response.token);
-      if (response.data?.user) {
-        await AsyncStorageManagement.setUserData(response.data.user);
-      }
+      await AsyncStorageManagement.setUserData(user);
 
       router.replace('/(tabs)');
     } catch (err: any) {

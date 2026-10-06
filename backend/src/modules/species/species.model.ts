@@ -10,6 +10,15 @@ export interface ISpecies extends Document {
   distribution: string;
   behavior: string;
   venomInfo: string;
+  toxicityLevel?: 'harmless' | 'mild' | 'moderate' | 'danger' | 'deadly';
+  firstAid?: string;
+  morphology?: {
+    eyePattern?: string;
+    bodyLengthMm?: string;
+    colors?: string[];
+    keyFeatures?: string[];
+  };
+  vectorId?: string;
   conservationStatus?: string;
   imageUrls: string[];
   createdAt: Date;
@@ -59,9 +68,29 @@ const speciesSchema = new Schema<ISpecies>(
       type: String,
       required: true,
     },
+    toxicityLevel: {
+      type: String,
+      enum: ['harmless', 'mild', 'moderate', 'danger', 'deadly'],
+      default: 'harmless',
+    },
+    firstAid: {
+      type: String,
+      required: false,
+    },
+    morphology: {
+      eyePattern: { type: String },
+      bodyLengthMm: { type: String },
+      colors: { type: [String], default: [] },
+      keyFeatures: { type: [String], default: [] },
+    },
+    vectorId: {
+      type: String,
+      required: false,
+    },
     conservationStatus: {
       type: String,
-      required: true,
+      required: false,
+      default: 'Least Concern',
     },
     imageUrls: {
       type: [String],

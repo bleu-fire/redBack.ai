@@ -33,10 +33,12 @@ export function Button({
   const isPrimary = variant === 'primary';
   const isSecondary = variant === 'secondary';
   const isOutline = variant === 'outline';
-  const isDanger = variant === 'danger';
 
   return (
     <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      accessibilityState={{ disabled: Boolean(disabled || loading) }}
       style={(state) => [
         styles.base,
         styles[variant],
@@ -107,7 +109,7 @@ const styles = StyleSheet.create({
     backgroundColor: Palette.danger,
   },
   sm: {
-    height: 40,
+    height: 44,
     paddingHorizontal: 16,
   },
   md: {

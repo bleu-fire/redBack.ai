@@ -1,14 +1,15 @@
-import { IdentificationController, identificationController } from './modules/Identification/identification.controller';
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import authRoutes from './modules/auth/auth.routes';
 import speciesRoutes from './modules/species/species.routes';
-import identificationRoutes from './modules/species/species.routes';
+import identificationRoutes from './modules/Identification/identification.routes';
 import { errorHandler } from './middlewares/error.middleware';
 
 const app: Application = express();
 
+app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // 2. Routes
 app.get('/health', (req: Request, res: Response) => {
@@ -22,7 +23,7 @@ app.get('/health', (req: Request, res: Response) => {
 // Routes API
 app.use('/api/auth', authRoutes);
 app.use('/api/species', speciesRoutes);
-app.use('api/identifaction',identificationRoutes)
+app.use('/api/identification', identificationRoutes);
 
 // 4. Global 
 app.use(errorHandler);

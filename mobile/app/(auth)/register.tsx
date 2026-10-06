@@ -16,8 +16,11 @@ import { Lock, Mail, User, Eye, EyeOff } from 'lucide-react-native';
 import { Palette, Radii, Spacing, Typography } from '@/constants/theme';
 import { Button } from '@/components/ui';
 import { registerUser } from '@/data/api/logic';
+import AsyncStorageManagement from "@/data/storage/asyncstorage";
+import { useStore } from '@/store/stores';
 
 export default function RegisterScreen() {
+  const login = useStore((state) => state.login);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -48,6 +51,14 @@ export default function RegisterScreen() {
       setLoading(true);
       const data = await registerUser(name.trim(), email.trim(), password);
       console.log('Register successful:', data);
+
+      if (data?.token) {
+        const user = data.data?.user || { name: name.trim(), email: email.trim() };
+        login(data.token, user);
+        await AsyncStorageManagement.setToken(data.token);
+        await AsyncStorageManagement.setUserData(user);
+      }
+
       router.replace('/(tabs)');
     } catch (err: any) {
       console.error('Register error:', err);
@@ -74,7 +85,7 @@ export default function RegisterScreen() {
           <View style={styles.heroSection}>
             <Text style={styles.heroTitle}>Start your{'\n'}field notes.</Text>
             <Text style={styles.heroSubtitle}>
-              Join a community of curious minds exploring Australia's amazing spiders and the natural world.
+              Join a community of curious minds exploring Australia&apos;s amazing spiders and the natural world.
             </Text>
             <Text style={styles.heroScript}>Small creatures big stories.</Text>
           </View>

@@ -6,9 +6,12 @@ import { HeroCard } from "@/components/ui/HeroCard";
 import { StatCounter } from "@/components/ui/StatCounter";
 import { FeaturedSpeciesCard } from "@/components/ui/FeaturedSpeciesCard";
 import { Topbar } from "@/components/ui";
+import { useStore } from "@/store/stores";
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
+  const user = useStore((state) => state.user);
+  const firstName = user?.name ? user.name.trim().split(' ')[0] : 'Explorer';
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -20,20 +23,11 @@ export default function HomeScreen() {
       >
         {/* Explorer Greeting from Master UI Sheet (Screen 3) */}
         <View style={styles.greetingSection}>
-          <Text style={styles.headline}>Good morning,{"\n"}Explorer.</Text>
+          <Text style={styles.headline}>Good morning,{"\n"}{firstName}.</Text>
         </View>
 
         {/* 1. Hero Discovery Card (Screen 3 Master UI Sheet) */}
         <HeroCard variant="discovery" />
-
-        {/* 2. 3-Column Field Metrics Card */}
-        <StatCounter
-          stats={[
-            { count: '2,847', label: 'Spiders identified' },
-            { count: '156', label: 'Species' },
-            { count: '12', label: 'Habitats' },
-          ]}
-        />
 
         {/* 3. Featured Species Section */}
         <View style={styles.sectionHeader}>
