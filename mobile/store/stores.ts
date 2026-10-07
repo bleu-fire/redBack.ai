@@ -36,15 +36,15 @@ export const useStore = create<StoreState>()(
       password: null,
       isDarkMode: false,
 
-      setIsLoggedIn: (isLoggedIn) => set({ isLoggedIn }),
-      setUser: (user) => set({ user }),
-      setToken: (token) => set({ token, isLoggedIn: Boolean(token) }),
-      setEmail: (email) => set({ email }),
-      setPassword: (password) => set({ password }),
-      setIsDarkMode: (isDarkMode) => set({ isDarkMode }),
-      toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
+      setIsLoggedIn: (isLoggedIn: boolean) => set({ isLoggedIn }),
+      setUser: (user: UserData | null) => set({ user }),
+      setToken: (token: string | null) => set({ token, isLoggedIn: Boolean(token) }),
+      setEmail: (email: string | null) => set({ email }),
+      setPassword: (password: string | null) => set({ password }),
+      setIsDarkMode: (isDarkMode: boolean) => set({ isDarkMode }),
+      toggleDarkMode: () => set((state: StoreState) => ({ isDarkMode: !state.isDarkMode })),
 
-      login: (token, user = null) =>
+      login: (token: string, user: UserData | null = null) =>
         set({
           token,
           user,
@@ -64,7 +64,7 @@ export const useStore = create<StoreState>()(
       name: 'redback-storage',
       storage: createJSONStorage(() => AsyncStorage),
       // Only persist safe credentials and preferences across app restarts
-      partialize: (state) => ({
+      partialize: (state: StoreState) => ({
         token: state.token,
         user: state.user,
         isLoggedIn: state.isLoggedIn,

@@ -29,6 +29,7 @@ export interface FetchSpeciesParams {
   limit?: number;
   search?: string;
   family?: string;
+  region?: string;
 }
 
 export interface SpeciesResponse {
@@ -89,6 +90,68 @@ export const fetchSpeciesById = async (id: string): Promise<ISpecies> => {
     return response.data.data;
   } catch (error: any) {
     console.error('fetchSpeciesById error:', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export interface IdentificationResponse {
+  status: string;
+  data: {
+    topPrediction: {
+      speciesId?: string;
+      scientificName: string;
+      commonName: string;
+      confidence: number;
+      confidenceBand: 'high' | 'moderate' | 'low';
+      visualEvidence?: string[];
+    };
+    predictions: any[];
+    uncertaintyLevel: 'low' | 'moderate' | 'high';
+    disclaimer: string;
+    notes?: string;
+    speciesDetails?: ISpecies;
+  };
+}
+
+export const uploadSpiderImage = async (imageUri: string, notes?: string): Promise<IdentificationResponse> => {
+  try {
+    const formData = new FormData();
+    const filename = imageUri.split('/').pop() || 'spider.jpg';
+    const match = /\.(\w+)$/.exec(filename);
+    const type = match ? `image/${match[1]}` : 'image/jpeg';
+
+    formData.append('image', {
+      uri: imageUri,
+      name: filename,
+      type,
+    } as any);
+
+    if (notes) {
+      formData.append('notes', notes);
+    }
+
+    const response = await api.post('/identifications/detect', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error('uploadSpiderImage error:', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const askNaturalistAI = async (message: string, speciesContext?: { name: string; scientific: string }): Promise<string> => {
+  try {
+    const response = await api.post('/ai/chat', {
+      message,
+      context: speciesContext,
+    });
+    return response.data.reply;
+  } catch (error: any) {
+    console.error('askNaturalistAI error:', error.response?.data || error.message);
     throw error;
   }
 };

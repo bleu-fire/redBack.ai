@@ -23,13 +23,13 @@ import {
 } from 'lucide-react-native';
 import { Palette, Spacing, Radii, Typography } from '@/constants/theme';
 import { StatCounter, MenuListItem } from '@/components/ui';
-import { useStore } from '@/store/stores';
+import { useStore, StoreState } from '@/store/stores';
 import AsyncStorageManagement from '@/data/storage/asyncstorage';
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
-  const user = useStore((state) => state.user);
-  const logout = useStore((state) => state.logout);
+  const user = useStore((state: StoreState) => state.user);
+  const logout = useStore((state: StoreState) => state.logout);
 
   const handleLogout = async () => {
     logout();

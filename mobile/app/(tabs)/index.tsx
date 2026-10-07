@@ -6,11 +6,11 @@ import { HeroCard } from "@/components/ui/HeroCard";
 import { StatCounter } from "@/components/ui/StatCounter";
 import { FeaturedSpeciesCard } from "@/components/ui/FeaturedSpeciesCard";
 import { Topbar } from "@/components/ui";
-import { useStore } from "@/store/stores";
+import { useStore, StoreState } from "@/store/stores";
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
-  const user = useStore((state) => state.user);
+  const user = useStore((state: StoreState) => state.user);
   const firstName = user?.name ? user.name.trim().split(' ')[0] : 'Explorer';
 
   return (

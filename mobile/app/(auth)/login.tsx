@@ -17,10 +17,10 @@ import { Palette, Radii, Spacing, Typography } from '@/constants/theme';
 import { Button } from '@/components/ui';
 import { LoginUser } from '@/data/api/logic';
 import AsyncStorageManagement from "@/data/storage/asyncstorage";
-import { useStore } from '@/store/stores';
+import { useStore, StoreState } from '@/store/stores';
 
 export default function LoginScreen() {
-  const login = useStore((state) => state.login);
+  const login = useStore((state: StoreState) => state.login);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);

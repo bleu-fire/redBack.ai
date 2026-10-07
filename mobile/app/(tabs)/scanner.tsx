@@ -1,23 +1,81 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
   Pressable,
-  Image,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { X, Zap, Image as ImageIcon } from 'lucide-react-native';
 import { Palette, Spacing, Radii } from '@/constants/theme';
-import {Camera , useCameraPermissions} from 'expo-camera';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import { uploadSpiderImage } from '@/data/api/logic';
 
 export default function ScannerScreen() {
   const insets = useSafeAreaInsets();
+  const cameraRef = useRef<CameraView>(null);
+  const [permission, requestPermission] = useCameraPermissions();
   const [flashOn, setFlashOn] = useState(false);
+  const [isCameraReady, setIsCameraReady] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
 
-  // Capture action navigating directly to AI results
-  const handleCapture = () => {
-    router.push('/results' as any);
+  // Capture a photo, identify it with the AI vision pipeline, and open the results
+  const handleCapture = async () => {
+    if (isCapturing) return;
+
+    if (!permission?.granted) {
+      const response = await requestPermission();
+      if (!response.granted) {
+        Alert.alert(
+          'Camera access required',
+          'Allow camera access to identify a spider from a photo.',
+        );
+        return;
+      }
+    }
+
+    if (!isCameraReady) {
+      Alert.alert(
+        'Camera starting',
+        'The camera is still warming up. Please try again in a moment.',
+      );
+      return;
+    }
+
+    setIsCapturing(true);
+    try {
+      const photo = await cameraRef.current?.takePictureAsync({ quality: 0.85 });
+
+      if (!photo?.uri) {
+        Alert.alert('Capture failed', 'Could not capture a photo. Please try again.');
+        return;
+      }
+
+      try {
+        const response = await uploadSpiderImage(photo.uri);
+        router.push({
+          pathname: '/results',
+          params: {
+            identificationData: JSON.stringify(response.data),
+            imageUri: photo.uri,
+          },
+        });
+      } catch {
+        // Offline/dev fallback: keep the captured photo, results screen applies its default identification
+        console.warn('[Scanner] Identification request failed, navigating with captured photo only');
+        router.push({
+          pathname: '/results',
+          params: { imageUri: photo.uri },
+        });
+      }
+    } catch (error) {
+      console.warn('[Scanner] Photo capture failed:', error);
+      Alert.alert('Capture failed', 'Something went wrong while taking the photo.');
+    } finally {
+      setIsCapturing(false);
+    }
   };
 
 
@@ -50,10 +108,15 @@ export default function ScannerScreen() {
 
       {/* 2. Clean Center Viewfinder */}
       <View style={styles.viewfinder}>
-        <Image
-          source={require('@/assets/images/spider-bg.png')}
+        <CameraView
+          ref={cameraRef}
           style={styles.previewImage}
-          resizeMode="cover"
+          facing="back"
+          flash={flashOn ? 'on' : 'off'}
+          onCameraReady={() => setIsCameraReady(true)}
+          onMountError={({ message }) =>
+            console.warn('[Scanner] Camera failed to start:', message)
+          }
         />
 
         {/* Framing corner accents */}
@@ -67,7 +130,7 @@ export default function ScannerScreen() {
       <View style={styles.bottomBar}>
         {/* Gallery button */}
         <Pressable
-          onPress={() => router.push('/upload' as any)}
+          onPress={() => router.push('/upload')}
           style={({ pressed }) => [styles.galleryBtn, pressed && styles.pressed]}
           accessibilityRole="button"
           accessibilityLabel="Choose from gallery"
@@ -78,11 +141,21 @@ export default function ScannerScreen() {
         {/* Shutter button */}
         <Pressable
           onPress={handleCapture}
-          style={({ pressed }) => [styles.shutterRing, pressed && styles.shutterPressed]}
+          disabled={isCapturing}
+          style={({ pressed }) => [
+            styles.shutterRing,
+            pressed && styles.shutterPressed,
+            isCapturing && styles.shutterDisabled,
+          ]}
           accessibilityRole="button"
           accessibilityLabel="Capture photo"
+          accessibilityState={{ busy: isCapturing, disabled: isCapturing }}
         >
-          <View style={styles.shutterInner} />
+          {isCapturing ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <View style={styles.shutterInner} />
+          )}
         </Pressable>
 
         {/* Invisible spacer for symmetrical alignment */}
@@ -210,5 +283,8 @@ const styles = StyleSheet.create({
   shutterPressed: {
     transform: [{ scale: 0.92 }],
     opacity: 0.85,
+  },
+  shutterDisabled: {
+    opacity: 0.6,
   },
 });

@@ -16,7 +16,7 @@ const SPIDER_SPECIES = [
     id: 'redback-spider',
     name: 'Redback spider',
     scientificName: 'Latrodectus hasselti',
-    badgeText: '● Venomous',
+    badgeText: 'Venomous',
     badgeType: 'danger' as const,
     category: 'Venomous',
     image: require('@/assets/images/spider-3d.png'),

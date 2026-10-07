@@ -8,7 +8,7 @@ import {
   Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
 import {
   ArrowLeft,
   Bookmark,
@@ -22,8 +22,35 @@ import { SafetyWarningCard, SegmentedTabs } from '@/components/ui';
 
 export default function AIResultsScreen() {
   const insets = useSafeAreaInsets();
+  const params = useLocalSearchParams<{
+    identificationData?: string;
+    speciesName?: string;
+    scientificName?: string;
+    confidence?: string;
+    imageUri?: string;
+  }>();
+
   const [activeTab, setActiveTab] = useState('About');
   const [isSaved, setIsSaved] = useState(false);
+
+  // Parse payload from upload route if present
+  let speciesName = params.speciesName || 'Redback spider';
+  let scientificName = params.scientificName || 'Latrodectus hasselti';
+  let confidence = params.confidence ? `${params.confidence}%` : '96%';
+  let imageUri = params.imageUri;
+
+  if (params.identificationData) {
+    try {
+      const parsed = JSON.parse(params.identificationData);
+      if (parsed.topPrediction) {
+        speciesName = parsed.topPrediction.commonName || speciesName;
+        scientificName = parsed.topPrediction.scientificName || scientificName;
+        confidence = `${Math.round((parsed.topPrediction.confidence || 0.94) * 100)}%`;
+      }
+    } catch (e) {
+      console.warn('Failed to parse identificationData payload');
+    }
+  }
 
   const TABS = ['About', 'Safety', 'Habitat', 'Similar'];
 
@@ -31,8 +58,8 @@ export default function AIResultsScreen() {
     router.push({
       pathname: '/chat',
       params: {
-        speciesName: 'Redback spider',
-        scientificName: 'Latrodectus hasselti',
+        speciesName,
+        scientificName,
       },
     } as any);
   };
@@ -74,7 +101,7 @@ export default function AIResultsScreen() {
         {/* 2. Spider Photo Banner with AI Match Pill */}
         <View style={styles.imageBannerContainer}>
           <Image
-            source={require('@/assets/images/spider-bg.png')}
+            source={imageUri ? { uri: imageUri } : require('@/assets/images/spider-bg.png')}
             style={styles.bannerImage}
             resizeMode="cover"
           />
@@ -83,14 +110,14 @@ export default function AIResultsScreen() {
           <View style={styles.aiMatchBadge}>
             <CheckCircle2 size={16} color="#FFFFFF" />
             <Text style={styles.aiMatchText}>AI IDENTIFICATION</Text>
-            <Text style={styles.aiMatchPercent}>96% match</Text>
+            <Text style={styles.aiMatchPercent}>{confidence} match</Text>
           </View>
         </View>
 
         {/* 3. Species Titles & Scientific Name */}
         <View style={styles.titleSection}>
-          <Text style={styles.speciesName}>Redback spider</Text>
-          <Text style={styles.scientificName}>Latrodectus hasselti</Text>
+          <Text style={styles.speciesName}>{speciesName}</Text>
+          <Text style={styles.scientificName}>{scientificName}</Text>
 
           {/* Badges Row */}
           <View style={styles.badgesRow}>

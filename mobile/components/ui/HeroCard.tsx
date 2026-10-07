@@ -110,7 +110,7 @@ export function HeroCard({
   // 3. DISCOVERY CARD (Screen 3 Master UI - Identify a spider)
   return (
     <Pressable
-      onPress={onPress || (() => router.push('/(tabs)/scanner'))}
+      onPress={onPress || (() => router.push('/(tabs)/scanner' as any))}
       style={({ pressed }) => [styles.card, styles.discoveryCard, style, pressed && styles.pressed]}
       accessibilityRole="button"
       accessibilityLabel={title || 'Identify a spider'}
