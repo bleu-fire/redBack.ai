@@ -5,6 +5,21 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Palette } from '@/constants/theme';
 import { Home, Compass, BookOpen, User, Camera } from 'lucide-react-native';
 
+interface TabIconProps {
+  focused: boolean;
+  IconComponent: any;
+}
+
+function TabIcon({ focused, IconComponent }: TabIconProps) {
+  return (
+    <IconComponent
+      size={22}
+      color={focused ? Palette.coral : Palette.muted}
+      strokeWidth={focused ? 2.2 : 1.8}
+    />
+  );
+}
+
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
 
@@ -28,22 +43,24 @@ export default function TabLayout() {
           fontWeight: '600',
         },
       }}>
+      {/* 1. Home Screen */}
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <Home size={size ?? 22} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <TabIcon focused={focused} IconComponent={Home} />
           ),
         }}
       />
+
       {/* 2. Spider Search & Explorer */}
       <Tabs.Screen
         name="explore"
         options={{
           title: 'Explore',
-          tabBarIcon: ({ color, size }) => (
-            <Compass size={size ?? 22} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <TabIcon focused={focused} IconComponent={Compass} />
           ),
         }}
       />
@@ -56,7 +73,7 @@ export default function TabLayout() {
           tabBarLabel: () => null,
           tabBarIcon: ({ focused }) => (
             <View style={[styles.scannerButton, focused && styles.scannerButtonActive]}>
-              <Camera size={22} color="#FFFFFF" />
+              <Camera size={22} color="#FFFFFF" strokeWidth={2.2} />
             </View>
           ),
         }}
@@ -67,8 +84,8 @@ export default function TabLayout() {
         name="learn"
         options={{
           title: 'Learn',
-          tabBarIcon: ({ color, size }) => (
-            <BookOpen size={size ?? 22} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <TabIcon focused={focused} IconComponent={BookOpen} />
           ),
         }}
       />
@@ -78,8 +95,8 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color, size }) => (
-            <User size={size ?? 22} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <TabIcon focused={focused} IconComponent={User} />
           ),
         }}
       />
@@ -98,6 +115,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     borderWidth: 3,
     borderColor: Palette.paper,
+    shadowColor: Palette.coral,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 4,
   },
   scannerButtonActive: {
     backgroundColor: Palette.coralDark,

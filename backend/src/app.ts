@@ -1,5 +1,6 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
+import path from 'path';
 import authRoutes from './modules/auth/auth.routes';
 import speciesRoutes from './modules/species/species.routes';
 import identificationRoutes from './modules/Identification/identification.routes';
@@ -12,6 +13,7 @@ const app: Application = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/images', express.static(path.join(__dirname, '../images')));
 
 // 2. Routes
 app.get('/health', (req: Request, res: Response) => {

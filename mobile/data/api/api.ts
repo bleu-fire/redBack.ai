@@ -5,10 +5,23 @@ import Constants from 'expo-constants';
 import { useStore } from '@/store/stores';
 
 // Get current computer IP (dynamic via Expo hostUri or current Wi-Fi IP)
-const getBaseUrl = () => {
+export const getServerOrigin = () => {
   const hostUri = Constants.expoConfig?.hostUri;
   const ip = hostUri ? hostUri.split(':')[0] : '192.168.1.31';
-  return `http://${ip}:3000/api`;
+  return `http://${ip}:3000`;
+};
+
+export const getBaseUrl = () => {
+  return `${getServerOrigin()}/api`;
+};
+
+export const getFullImageUrl = (imagePath?: string): string | null => {
+  if (!imagePath) return null;
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath;
+  }
+  const cleanPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+  return `${getServerOrigin()}${cleanPath}`;
 };
 
 const BASE_URL = getBaseUrl();
