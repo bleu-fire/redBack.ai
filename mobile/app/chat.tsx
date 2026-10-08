@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
+  ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -16,22 +17,50 @@ import { Palette, Spacing, Radii, Typography } from '@/constants/theme';
 import { askNaturalistAI } from '@/data/api/logic';
 
 export default function ChatScreen() {
+
   const insets = useSafeAreaInsets();
   const [inputText, setInputText] = useState('');
-  const  SendMessageInto = async ()=>{
-   try{
-    if(inputText.trim()){
-      const reply =  await askNaturalistAI(inputText)
-      console.log(reply);
-      setInputText('');
-    }
-   }
-   catch(err){
-    console.error("error in the chat");
-   }
-  }
-
   const [messages, setmessage] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const SendMessageInto = async () => {
+    try {
+      if (!inputText.trim() || loading) return;
+
+      const userText = inputText.trim();
+      setInputText('');
+
+      const userMsg = { id: Date.now().toString(), text: userText, sender: 'user' };
+      setmessage((prevMessages) => {
+        const newArry = [...prevMessages];
+        newArry.push(userMsg);
+        return newArry;
+      });
+
+      setLoading(true);
+
+      const reply = await askNaturalistAI(userText);
+
+      const userBot = { id: (Date.now() + 1).toString(), text: reply, sender: 'bot' };
+      setmessage((prevMessages) => {
+        const newArry = [...prevMessages];
+        newArry.push(userBot);
+        return newArry;
+      });
+
+    } catch (err) {
+      console.error("error in the chat", err);
+      const errorBot = {
+        id: (Date.now() + 1).toString(),
+        text: "Sorry, I couldn't reach the server. Please try again.",
+        sender: 'bot',
+      };
+      setmessage((prevMessages) => [...prevMessages, errorBot]);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
   
 
@@ -56,9 +85,33 @@ export default function ChatScreen() {
         <View style={styles.messagesContainer}>
           <FlatList
             data={messages}
-            keyExtractor={(_, index) => index.toString()}
-            renderItem={() => null}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View
+                style={[
+                  styles.messageBubble,
+                  item.sender === 'user' ? styles.userBubble : styles.botBubble,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.messageText,
+                    item.sender === 'user' ? styles.userText : styles.botText,
+                  ]}
+                >
+                  {item.text}
+                </Text>
+              </View>
+            )}
             contentContainerStyle={styles.messagesList}
+            ListFooterComponent={
+              loading ? (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="small" color={Palette.moss} />
+                  <Text style={styles.loadingText}>Naturalist AI is thinking...</Text>
+                </View>
+              ) : null
+            }
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
                 <View style={styles.botIconCircle}>
@@ -81,9 +134,18 @@ export default function ChatScreen() {
             placeholderTextColor={Palette.muted}
             value={inputText}
             onChangeText={setInputText}
+            editable={!loading}
           />
-          <Pressable style={styles.sendBtn}  onPress={SendMessageInto}>
-            <Send size={18} color={Palette.paper} />
+          <Pressable
+            style={[styles.sendBtn, loading && styles.sendBtnDisabled]}
+            onPress={SendMessageInto}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color={Palette.paper} />
+            ) : (
+              <Send size={18} color={Palette.paper} />
+            )}
           </Pressable>
         </View>
       </View>
@@ -199,5 +261,54 @@ const styles = StyleSheet.create({
     backgroundColor: Palette.coral,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  sendBtnDisabled: {
+    opacity: 0.6,
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    gap: Spacing.sm,
+    backgroundColor: Palette.surfaceSubtle,
+    borderRadius: Radii.pill,
+    alignSelf: 'flex-start',
+    marginBottom: Spacing.sm,
+  },
+  loadingText: {
+    fontSize: 12,
+    fontFamily: Typography.body,
+    color: Palette.muted,
+  },
+  messageBubble: {
+    maxWidth: '82%',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: Radii.lg,
+    marginBottom: Spacing.sm,
+  },
+  userBubble: {
+    alignSelf: 'flex-end',
+    backgroundColor: Palette.coral,
+    borderBottomRightRadius: 2,
+  },
+  botBubble: {
+    alignSelf: 'flex-start',
+    backgroundColor: Palette.paper,
+    borderWidth: 1,
+    borderColor: Palette.line,
+    borderBottomLeftRadius: 2,
+  },
+  messageText: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontFamily: Typography.body,
+  },
+  userText: {
+    color: Palette.paper,
+  },
+  botText: {
+    color: Palette.ink,
   },
 });
