@@ -3,7 +3,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Palette, Spacing, Typography } from '@/constants/theme';
 import { HeroCard } from "@/components/ui/HeroCard";
-import { StatCounter } from "@/components/ui/StatCounter";
 import { FeaturedSpeciesCard } from "@/components/ui/FeaturedSpeciesCard";
 import { Topbar } from "@/components/ui";
 import { useStore, StoreState } from "@/store/stores";

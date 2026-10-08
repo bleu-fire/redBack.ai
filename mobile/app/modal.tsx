@@ -32,58 +32,11 @@ export interface NotificationItem {
   route?: string;
 }
 
-const INITIAL_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: '1',
-    type: 'safety',
-    title: 'High Venom Risk in Your Area',
-    message: 'Female Redback spiders (Latrodectus hasselti) have been active in sheltered urban areas this week.',
-    time: '12m ago',
-    read: false,
-    route: '/species/redback-spider',
-  },
-  {
-    id: '2',
-    type: 'discovery',
-    title: 'AI Identification Complete',
-    message: 'Your recent field photo was matched with 96% confidence to the Garden Orb-weaver.',
-    time: '2h ago',
-    read: false,
-    route: '/results',
-  },
-  {
-    id: '3',
-    type: 'achievement',
-    title: '7-Day Explorer Streak!',
-    message: 'Congratulations! You kept your field journal active for 7 days in a row. +50 XP awarded.',
-    time: 'Yesterday',
-    read: true,
-    route: '/(tabs)/profile',
-  },
-  {
-    id: '4',
-    type: 'community',
-    title: 'Field Verification Approved',
-    message: 'A naturalist reviewer verified your taxonomy submission for Latrodectus sp.',
-    time: '2 days ago',
-    read: true,
-  },
-  {
-    id: '5',
-    type: 'discovery',
-    title: 'New Spotlight Species Added',
-    message: 'Check out the Golden Orb-weaving Spider now available in the Explore catalog.',
-    time: '3 days ago',
-    read: true,
-    route: '/(tabs)/explore',
-  },
-];
-
 const FILTERS = ['All', 'Safety', 'Discoveries', 'Activity'];
 
 export default function ModalScreen() {
   const insets = useSafeAreaInsets();
-  const [notifications, setNotifications] = useState<NotificationItem[]>(INITIAL_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [selectedFilter, setSelectedFilter] = useState('All');
 
   const unreadCount = notifications.filter((n) => !n.read).length;

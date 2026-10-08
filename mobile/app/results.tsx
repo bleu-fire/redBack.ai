@@ -42,10 +42,11 @@ export default function AIResultsScreen() {
   if (params.identificationData) {
     try {
       const parsed = JSON.parse(params.identificationData);
-      if (parsed.topPrediction) {
-        speciesName = parsed.topPrediction.commonName || speciesName;
-        scientificName = parsed.topPrediction.scientificName || scientificName;
-        confidence = `${Math.round((parsed.topPrediction.confidence || 0.94) * 100)}%`;
+      const topPrediction = parsed.data?.topPrediction || parsed.topPrediction;
+      if (topPrediction) {
+        speciesName = topPrediction.commonName || speciesName;
+        scientificName = topPrediction.scientificName || scientificName;
+        confidence = `${Math.round((topPrediction.confidence || 0.94) * 100)}%`;
       }
     } catch (e) {
       console.warn('Failed to parse identificationData payload');

@@ -20,7 +20,13 @@
       "output": "static"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow redBack.ai to access your camera to scan and identify spiders."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

@@ -6,8 +6,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Leaf } from 'lucide-react-native';
-import { Palette, Spacing, Radii, Typography } from '@/constants/theme';
+import { Palette, Spacing, Typography } from '@/constants/theme';
 import { SpeciesGridCard } from '@/components/ui';
 
 // Simple list of spider species for the explore grid
@@ -25,7 +24,7 @@ const SPIDER_SPECIES = [
     id: 'huntsman-spider',
     name: 'Huntsman spider',
     scientificName: 'Heteropoda sp.',
-    badgeText: '● Common',
+    badgeText: 'Common',
     badgeType: 'moss' as const,
     category: 'Common',
     image: require('@/assets/images/spider-bg.png'),
@@ -34,7 +33,7 @@ const SPIDER_SPECIES = [
     id: 'jumping-spider',
     name: 'Jumping spider',
     scientificName: 'Salticidae family',
-    badgeText: '● Popular',
+    badgeText: 'Popular',
     badgeType: 'gold' as const,
     category: 'Jumping',
     image: require('@/assets/images/spider-logo-3d.png'),
@@ -43,7 +42,7 @@ const SPIDER_SPECIES = [
     id: 'garden-orb-weaver',
     name: 'Garden orb-weaver',
     scientificName: 'Araneus diadematus',
-    badgeText: '● Common',
+    badgeText: 'Common',
     badgeType: 'moss' as const,
     category: 'Orb-weavers',
     image: require('@/assets/images/spider-3d.png'),
@@ -67,8 +66,6 @@ export default function ExploreScreen() {
               Meet the extraordinary species around you.
             </Text>
           </View>
-
-          
         </View>
 
         {/* 2. 2-Column Species Grid */}
@@ -124,7 +121,6 @@ const styles = StyleSheet.create({
     color: Palette.muted,
     marginTop: 4,
   },
-
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',

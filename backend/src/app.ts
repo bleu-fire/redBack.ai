@@ -5,6 +5,8 @@ import speciesRoutes from './modules/species/species.routes';
 import identificationRoutes from './modules/Identification/identification.routes';
 import { errorHandler } from './middlewares/error.middleware';
 
+import aiRoutes from './modules/ai/ai.routes';
+
 const app: Application = express();
 
 app.use(cors());
@@ -24,6 +26,8 @@ app.get('/health', (req: Request, res: Response) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/species', speciesRoutes);
 app.use('/api/identification', identificationRoutes);
+app.use('/api/identifications', identificationRoutes);
+app.use('/api/ai', aiRoutes);
 
 // 4. Global 
 app.use(errorHandler);

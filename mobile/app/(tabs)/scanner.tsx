@@ -1,165 +1,78 @@
 import React, { useRef, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  Pressable,
-  Alert,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { X, Zap, Image as ImageIcon } from 'lucide-react-native';
 import { Palette, Spacing, Radii } from '@/constants/theme';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { uploadSpiderImage } from '@/data/api/logic';
+import { router } from 'expo-router';
 
 export default function ScannerScreen() {
   const insets = useSafeAreaInsets();
-  const cameraRef = useRef<CameraView>(null);
   const [permission, requestPermission] = useCameraPermissions();
-  const [flashOn, setFlashOn] = useState(false);
-  const [isCameraReady, setIsCameraReady] = useState(false);
-  const [isCapturing, setIsCapturing] = useState(false);
+  const cameraRef = useRef<CameraView>(null);
+  const [flash, setflash] = useState(false);
 
-  // Capture a photo, identify it with the AI vision pipeline, and open the results
-  const handleCapture = async () => {
-    if (isCapturing) return;
-
-    if (!permission?.granted) {
-      const response = await requestPermission();
-      if (!response.granted) {
-        Alert.alert(
-          'Camera access required',
-          'Allow camera access to identify a spider from a photo.',
-        );
-        return;
-      }
-    }
-
-    if (!isCameraReady) {
-      Alert.alert(
-        'Camera starting',
-        'The camera is still warming up. Please try again in a moment.',
-      );
+  const takenPhoto = async () => {
+    if (!cameraRef.current) {
+      console.warn('The camera is not ready');
       return;
     }
-
-    setIsCapturing(true);
     try {
-      const photo = await cameraRef.current?.takePictureAsync({ quality: 0.85 });
-
-      if (!photo?.uri) {
-        Alert.alert('Capture failed', 'Could not capture a photo. Please try again.');
-        return;
-      }
-
-      try {
-        const response = await uploadSpiderImage(photo.uri);
-        router.push({
-          pathname: '/results',
-          params: {
-            identificationData: JSON.stringify(response.data),
-            imageUri: photo.uri,
-          },
-        });
-      } catch {
-        // Offline/dev fallback: keep the captured photo, results screen applies its default identification
-        console.warn('[Scanner] Identification request failed, navigating with captured photo only');
+      const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
+      if (photo?.uri) {
+        console.log('Captured photo:', photo.uri);
         router.push({
           pathname: '/results',
           params: { imageUri: photo.uri },
         });
       }
     } catch (error) {
-      console.warn('[Scanner] Photo capture failed:', error);
-      Alert.alert('Capture failed', 'Something went wrong while taking the photo.');
-    } finally {
-      setIsCapturing(false);
+      console.error('Failed to capture photo:', error);
     }
   };
 
-
   return (
-    <View style={[styles.screen, { paddingTop: insets.top, paddingBottom: insets.bottom + 16 }]}>
-      {/* 1. Minimal Top Bar (Close & Flash) */}
-      <View style={styles.topBar}>
-        <Pressable
-          onPress={() => router.back()}
-          style={({ pressed }) => [styles.iconBtn, pressed && styles.pressed]}
-          accessibilityRole="button"
-          accessibilityLabel="Close scanner"
-        >
-          <X size={22} color="#FFFFFF" />
-        </Pressable>
+    <View style={[styles.screen, { paddingTop: insets.top, paddingBottom: insets.bottom + Spacing.xl }]}>
+      <CameraView 
+        ref={cameraRef}
+        style={StyleSheet.absoluteFillObject} 
+        facing="back"  
+        flash={flash ? 'on' : 'off'}
+      />
 
-        <Pressable
-          onPress={() => setFlashOn(!flashOn)}
+      {/* Top Bar with Flash Toggle */}
+      <View style={styles.topBar}>
+        <Pressable 
+          onPress={() => setflash(!flash)} 
           style={({ pressed }) => [
-            styles.iconBtn,
-            flashOn && styles.flashActive,
+            styles.circleBtn,
+            flash && styles.circleBtnActive,
             pressed && styles.pressed,
           ]}
-          accessibilityRole="button"
-          accessibilityLabel="Toggle flash"
         >
-          <Zap size={22} color={flashOn ? Palette.gold : '#FFFFFF'} />
+          <Text style={[styles.circleBtnText, flash && { color: Palette.gold }]}>
+            turn On
+          </Text>
         </Pressable>
       </View>
 
-      {/* 2. Clean Center Viewfinder */}
+      {/* Center Viewfinder Target Frame */}
       <View style={styles.viewfinder}>
-        <CameraView
-          ref={cameraRef}
-          style={styles.previewImage}
-          facing="back"
-          flash={flashOn ? 'on' : 'off'}
-          onCameraReady={() => setIsCameraReady(true)}
-          onMountError={({ message }) =>
-            console.warn('[Scanner] Camera failed to start:', message)
-          }
-        />
-
-        {/* Framing corner accents */}
         <View style={[styles.corner, styles.topLeft]} />
         <View style={[styles.corner, styles.topRight]} />
         <View style={[styles.corner, styles.bottomLeft]} />
         <View style={[styles.corner, styles.bottomRight]} />
       </View>
 
-      {/* 3. Simple Bottom Controls (Gallery & Shutter) */}
+      {/* Bottom Shutter Capture Button */}
       <View style={styles.bottomBar}>
-        {/* Gallery button */}
-        <Pressable
-          onPress={() => router.push('/upload')}
-          style={({ pressed }) => [styles.galleryBtn, pressed && styles.pressed]}
+        <Pressable 
+          onPress={takenPhoto}
+          style={({ pressed }) => [styles.shutterRing, pressed && styles.shutterPressed]}
           accessibilityRole="button"
-          accessibilityLabel="Choose from gallery"
+          accessibilityLabel="Take photo"
         >
-          <ImageIcon size={24} color="#FFFFFF" />
+          <View style={styles.shutterInner} />
         </Pressable>
-
-        {/* Shutter button */}
-        <Pressable
-          onPress={handleCapture}
-          disabled={isCapturing}
-          style={({ pressed }) => [
-            styles.shutterRing,
-            pressed && styles.shutterPressed,
-            isCapturing && styles.shutterDisabled,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel="Capture photo"
-          accessibilityState={{ busy: isCapturing, disabled: isCapturing }}
-        >
-          {isCapturing ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <View style={styles.shutterInner} />
-          )}
-        </Pressable>
-
-        {/* Invisible spacer for symmetrical alignment */}
-        <View style={styles.spacer} />
       </View>
     </View>
   );
@@ -168,123 +81,102 @@ export default function ScannerScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#0F1614',
+    backgroundColor: Palette.ink,
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.xl,
-  },
-
-  // Minimal Top Bar
-  topBar: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: Spacing.md,
   },
-  iconBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+  topBar: {
+    width: '100%',
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.sm,
+    alignItems: 'flex-start',
+    zIndex: 10,
+  },
+  circleBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: Radii.pill,
+    backgroundColor: 'rgba(23, 33, 31, 0.65)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.25)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  flashActive: {
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+  circleBtnActive: {
+    backgroundColor: Palette.mossDark,
+    borderColor: Palette.gold,
   },
-
-  // Viewfinder
+  circleBtnText: {
+    fontSize: 20,
+    color: Palette.paper,
+  },
   viewfinder: {
-    width: 280,
-    height: 280,
-    alignSelf: 'center',
+    width: 270,
+    height: 270,
     position: 'relative',
-    borderRadius: Radii.lg,
-    overflow: 'hidden',
-  },
-  previewImage: {
-    width: '100%',
-    height: '100%',
-    opacity: 0.9,
   },
   corner: {
     position: 'absolute',
-    width: 24,
-    height: 24,
-    borderColor: '#FFFFFF',
+    width: 26,
+    height: 26,
+    borderColor: Palette.paper,
   },
-
   topLeft: {
     top: 0,
     left: 0,
-    borderTopWidth: 3,
-    borderLeftWidth: 3,
-    borderTopLeftRadius: 8,
+    borderTopWidth: 3.5,
+    borderLeftWidth: 3.5,
+    borderTopLeftRadius: Radii.sm,
   },
   topRight: {
     top: 0,
     right: 0,
-    borderTopWidth: 3,
-    borderRightWidth: 3,
-    borderTopRightRadius: 8,
+    borderTopWidth: 3.5,
+    borderRightWidth: 3.5,
+    borderTopRightRadius: Radii.sm,
   },
   bottomLeft: {
     bottom: 0,
     left: 0,
-    borderBottomWidth: 3,
-    borderLeftWidth: 3,
-    borderBottomLeftRadius: 8,
+    borderBottomWidth: 3.5,
+    borderLeftWidth: 3.5,
+    borderBottomLeftRadius: Radii.sm,
   },
   bottomRight: {
     bottom: 0,
     right: 0,
-    borderBottomWidth: 3,
-    borderRightWidth: 3,
-    borderBottomRightRadius: 8,
+    borderBottomWidth: 3.5,
+    borderRightWidth: 3.5,
+    borderBottomRightRadius: Radii.sm,
   },
-
-  // Bottom Controls
   bottomBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingBottom: Spacing.md,
-  },
-  galleryBtn: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 10,
   },
   shutterRing: {
-    width: 78,
-    height: 78,
-    borderRadius: 39,
+    width: 80,
+    height: 80,
+    borderRadius: Radii.pill,
     borderWidth: 4,
-    borderColor: '#FFFFFF',
+    borderColor: Palette.paper,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   shutterInner: {
     width: 62,
     height: 62,
-    borderRadius: 31,
+    borderRadius: Radii.pill,
     backgroundColor: Palette.coral,
-  },
-  spacer: {
-    width: 50,
-    height: 50,
-  },
-  pressed: {
-    opacity: 0.75,
-    transform: [{ scale: 0.95 }],
   },
   shutterPressed: {
     transform: [{ scale: 0.92 }],
     opacity: 0.85,
   },
-  shutterDisabled: {
-    opacity: 0.6,
+  pressed: {
+    opacity: 0.75,
+    transform: [{ scale: 0.95 }],
   },
 });

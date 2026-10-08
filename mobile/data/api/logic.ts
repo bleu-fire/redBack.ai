@@ -1,12 +1,14 @@
 import api from "./api";
-// auth Api 
-export interface GetAllUser  {
-    id_:string;
-    name:string;
-    email:string;
-    role:string;
+
+// Auth API interfaces
+export interface GetAllUser {
+  id_: string;
+  name: string;
+  email: string;
+  role: string;
 }
-//  intefaces Species API 
+
+// Species API interfaces
 export interface ISpecies {
   _id: string;
   scientificName: string;
@@ -44,6 +46,26 @@ export interface SpeciesResponse {
   };
 }
 
+export interface IIdentificationRecord {
+  _id: string;
+  userId?: string;
+  imageUrl: string;
+  status: string;
+  uncertaintyLevel?: 'low' | 'moderate' | 'high';
+  topPrediction?: {
+    speciesId?: string;
+    scientificName: string;
+    commonName: string;
+    confidence: number;
+    confidenceBand?: string;
+  };
+  predictions?: any[];
+  disclaimer?: string;
+  notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export const fetchAllUser = async (): Promise<GetAllUser[]> => {
   try {
     const GetAll = await api.get("/auth/users");
@@ -54,11 +76,10 @@ export const fetchAllUser = async (): Promise<GetAllUser[]> => {
   }
 };
 
-
 export const LoginUser = async (email: string, password: string) => {
   const response = await api.post('/auth/login', {
-    email: email,
-    password: password,
+    email,
+    password,
   });
   return response.data;
 };
@@ -71,8 +92,6 @@ export const registerUser = async (name: string, email: string, password: string
   });
   return response.data;
 };
-
-
 
 export const fetchAllSpecies = async (params?: FetchSpeciesParams): Promise<SpeciesResponse> => {
   try {
@@ -90,6 +109,26 @@ export const fetchSpeciesById = async (id: string): Promise<ISpecies> => {
     return response.data.data;
   } catch (error: any) {
     console.error('fetchSpeciesById error:', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const fetchAllIdentifications = async (): Promise<IIdentificationRecord[]> => {
+  try {
+    const response = await api.get('/identification');
+    return response.data.data;
+  } catch (error: any) {
+    console.error('fetchAllIdentifications error:', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const fetchIdentificationById = async (id: string): Promise<IIdentificationRecord> => {
+  try {
+    const response = await api.get(`/identification/${id}`);
+    return response.data.data;
+  } catch (error: any) {
+    console.error('fetchIdentificationById error:', error.response?.data || error.message);
     throw error;
   }
 };
@@ -130,7 +169,7 @@ export const uploadSpiderImage = async (imageUri: string, notes?: string): Promi
       formData.append('notes', notes);
     }
 
-    const response = await api.post('/identifications/detect', formData, {
+    const response = await api.post('/identification/analyze', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
