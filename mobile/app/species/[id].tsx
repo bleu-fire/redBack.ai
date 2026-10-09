@@ -38,7 +38,6 @@ import {
   ChevronUp,
 } from 'lucide-react-native';
 import { Palette, Spacing, Radii, Typography } from '@/constants/theme';
-import { TruncatedText } from '@/components/ui';
 import {
   getSpeciesById,
   SPECIES_CATALOG,
