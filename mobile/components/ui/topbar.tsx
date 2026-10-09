@@ -113,5 +113,6 @@ const styles = StyleSheet.create({
   },
 });
 
+export { Topbar };
 export default Topbar;
 

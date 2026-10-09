@@ -6,13 +6,11 @@ import {
   ScrollView,
   Pressable,
   Image,
-  Dimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import {
-  Camera,
   Compass,
   Flame,
   Sparkles,
@@ -20,19 +18,15 @@ import {
   ShieldAlert,
   CheckCircle2,
   Lock,
-  ArrowRight,
   HelpCircle,
   MapPin,
-  Clock,
 } from 'lucide-react-native';
 import { Palette, Spacing, Radii, Typography } from '@/constants/theme';
-import { Topbar } from '@/components/ui';
+import { Topbar, TruncatedText } from '@/components/ui';
 import { HeroCard } from '@/components/ui/HeroCard';
 import { useStore, StoreState } from '@/store/stores';
 import { SPECIES_CATALOG } from '@/data/speciesData';
 import { getFullImageUrl } from '@/data/api/api';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
@@ -243,10 +237,14 @@ export default function HomeScreen() {
                   : styles.dailyExplanationRetry,
               ]}
             >
-              <Text style={styles.dailyExplanationText}>
-                {DAILY_CHALLENGE.options[dailySelected].correct ? '🎉 ' : 'ℹ️ '}
+              <TruncatedText
+                style={styles.dailyExplanationText}
+                numberOfLines={2}
+                expandLabel="read full fact"
+                collapseLabel="less"
+              >
                 {DAILY_CHALLENGE.explanation}
-              </Text>
+              </TruncatedText>
             </View>
           )}
         </View>
@@ -445,8 +443,10 @@ const styles = StyleSheet.create({
   dexCard: {
     backgroundColor: Palette.paper,
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: Palette.line,
+    borderWidth: 1.5,
+    borderColor: Palette.borderLine,
+    borderBottomWidth: 3,
+    borderBottomColor: '#D8D0C5',
     padding: Spacing.md,
     gap: Spacing.sm,
   },
@@ -537,8 +537,10 @@ const styles = StyleSheet.create({
   dailyCard: {
     backgroundColor: Palette.paper,
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: Palette.line,
+    borderWidth: 1.5,
+    borderColor: Palette.borderLine,
+    borderBottomWidth: 3,
+    borderBottomColor: '#D8D0C5',
     padding: Spacing.md,
     gap: Spacing.sm,
   },
@@ -600,18 +602,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Palette.canvas,
-    borderWidth: 1,
-    borderColor: Palette.line,
+    borderWidth: 1.5,
+    borderColor: Palette.borderLine,
+    borderBottomWidth: 3,
+    borderBottomColor: '#D8D0C5',
     borderRadius: Radii.md,
-    padding: 10,
+    padding: 11,
     gap: 10,
   },
   dailyOptionCorrect: {
-    borderColor: Palette.moss,
-    backgroundColor: Palette.mossSoft,
+    borderColor: Palette.forestGreen,
+    borderBottomColor: Palette.forestGreenDark,
+    backgroundColor: Palette.sageSubtle,
   },
   dailyOptionWrong: {
-    borderColor: Palette.danger,
+    borderColor: Palette.spicyCrimson,
+    borderBottomColor: Palette.spicyCrimsonDark,
     backgroundColor: Palette.coralSoft,
   },
   dailyOptionLetterPill: {
@@ -768,11 +774,13 @@ const styles = StyleSheet.create({
 
   // 6. Emergency Protocol Strip
   emergencyStrip: {
-    backgroundColor: '#FFF7F5',
-    borderWidth: 1,
-    borderColor: '#F9DCD6',
-    borderRadius: 16,
-    padding: 12,
+    backgroundColor: '#FFF5F5',
+    borderWidth: 1.5,
+    borderColor: '#F7C5C0',
+    borderBottomWidth: 3,
+    borderBottomColor: '#EAA9A2',
+    borderRadius: 18,
+    padding: 14,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,

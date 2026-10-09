@@ -108,13 +108,16 @@ const styles = StyleSheet.create({
   card: {
     width: '48%',
     backgroundColor: Palette.paper,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Palette.line,
+    borderBottomWidth: 3,
+    borderBottomColor: '#D8D0C5',
     borderRadius: Radii.lg,
     overflow: 'hidden',
   },
   cardPressed: {
     opacity: 0.9,
+    transform: [{ scale: 0.98 }],
     borderColor: Palette.moss,
   },
   imageWrapper: {

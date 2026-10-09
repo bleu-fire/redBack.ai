@@ -7,10 +7,10 @@ import {
   TextInput,
   Pressable,
   RefreshControl,
-  ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Search, X, SlidersHorizontal, AlertCircle, RefreshCw } from 'lucide-react-native';
+import { router } from 'expo-router';
+import { Search, X, AlertCircle } from 'lucide-react-native';
 import { Palette, Spacing, Radii, Typography } from '@/constants/theme';
 import { SpeciesGridCard } from '@/components/ui';
 import { SPECIES_CATALOG, SpeciesDetail } from '@/data/speciesData';
@@ -141,25 +141,72 @@ export default function ExploreScreen() {
         {/* 1. Naturalist Header Section */}
         <View style={styles.header}>
           <View style={styles.headerTextGroup}>
-            <Text style={styles.title}>Explore Spiders</Text>
+            <Text style={styles.eyebrow}>FIELD BESTIARY</Text>
+            <Text style={styles.title}>Arachnid Explorer</Text>
             <Text style={styles.subtitle}>
-              Verified Field Catalog • Morocco & Australia
+              Verified morphological database & look-alike triage
             </Text>
           </View>
           {isLiveSynced && (
             <View style={styles.syncedPill}>
               <View style={styles.syncedDot} />
-              <Text style={styles.syncedText}>Live</Text>
+              <Text style={styles.syncedText}>Live Atlas</Text>
             </View>
           )}
         </View>
 
-        {/* 2. Search Bar */}
+        {/* 2. Regional Discovery Progress Card (Adventure Naturalist progression) */}
+        <View style={styles.progressCard}>
+          <View style={styles.progressHeaderRow}>
+            <View style={styles.progressTitleGroup}>
+              <Text style={styles.progressEyebrow}>EXPEDITION PROGRESS</Text>
+              <Text style={styles.progressTitle}>Species Catalogued</Text>
+            </View>
+            <View style={styles.progressScorePill}>
+              <Text style={styles.progressScoreText}>18 / {speciesList.length}</Text>
+            </View>
+          </View>
+          <View style={styles.progressTrack}>
+            <View
+              style={[
+                styles.progressFill,
+                { width: `${Math.round((18 / Math.max(speciesList.length, 1)) * 100)}%` },
+              ]}
+            />
+          </View>
+          <View style={styles.progressFooterRow}>
+            <Text style={styles.progressFooterText}>
+              {Math.round((18 / Math.max(speciesList.length, 1)) * 100)}% of regional species verified
+            </Text>
+            <Text style={styles.progressRegionTag}>Morocco & Australia</Text>
+          </View>
+        </View>
+
+        {/* 3. Look-Alike Comparison Banner (Screen 7 prompt alignment) */}
+        <Pressable
+          onPress={() => router.push('/species/latrodectus-tredecimguttatus' as any)}
+          style={({ pressed }) => [styles.compareBanner, pressed && styles.cardPressed]}
+        >
+          <View style={styles.compareBannerLeft}>
+            <View style={styles.compareBadge}>
+              <Text style={styles.compareBadgeText}>TACTICAL TRIAGE</Text>
+            </View>
+            <Text style={styles.compareTitle}>Compare Look-Alike Pairs</Text>
+            <Text style={styles.compareSubtitle}>
+              Learn how to distinguish dangerous Redbacks from harmless False Widows.
+            </Text>
+          </View>
+          <View style={styles.compareArrowCircle}>
+            <Text style={styles.compareArrowText}>→</Text>
+          </View>
+        </Pressable>
+
+        {/* 4. Search Bar */}
         <View style={styles.searchContainer}>
           <Search size={18} color={Palette.muted} style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search name, scientific taxa, Morocco..."
+            placeholder="Search common name, taxa, venom level..."
             placeholderTextColor={Palette.muted}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -174,7 +221,7 @@ export default function ExploreScreen() {
           )}
         </View>
 
-        {/* 3. Horizontal Filter Chips */}
+        {/* 5. Horizontal Filter Chips */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -204,7 +251,7 @@ export default function ExploreScreen() {
           })}
         </ScrollView>
 
-        {/* 4. Results Counter & Reset Action */}
+        {/* 6. Results Counter & Reset Action */}
         <View style={styles.resultsBar}>
           <Text style={styles.resultsCount}>
             Showing {filteredSpecies.length} of {speciesList.length} species
@@ -222,7 +269,7 @@ export default function ExploreScreen() {
           )}
         </View>
 
-        {/* 5. 2-Column Species Grid or Empty State */}
+        {/* 7. 2-Column Species Grid or Empty State */}
         {filteredSpecies.length > 0 ? (
           <View style={styles.grid}>
             {filteredSpecies.map((spider) => {
@@ -294,6 +341,15 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingRight: Spacing.sm,
   },
+  eyebrow: {
+    fontFamily: Typography.body,
+    fontSize: 11,
+    fontWeight: '700',
+    color: Palette.moss,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: 2,
+  },
   title: {
     fontFamily: Typography.display,
     fontSize: 26,
@@ -305,7 +361,139 @@ const styles = StyleSheet.create({
     fontFamily: Typography.body,
     fontSize: 13,
     color: Palette.muted,
-    marginTop: 3,
+    marginTop: 2,
+  },
+  progressCard: {
+    backgroundColor: Palette.paper,
+    borderWidth: 1.5,
+    borderColor: Palette.line,
+    borderBottomWidth: 3,
+    borderBottomColor: '#D8D0C5',
+    borderRadius: Radii.lg,
+    padding: Spacing.md,
+    gap: Spacing.sm,
+  },
+  progressHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  progressTitleGroup: {
+    gap: 2,
+  },
+  progressEyebrow: {
+    fontFamily: Typography.body,
+    fontSize: 10,
+    fontWeight: '700',
+    color: Palette.muted,
+    letterSpacing: 0.8,
+  },
+  progressTitle: {
+    fontFamily: Typography.display,
+    fontSize: 16,
+    fontWeight: '700',
+    color: Palette.ink,
+  },
+  progressScorePill: {
+    backgroundColor: Palette.mossSoft,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: Radii.pill,
+  },
+  progressScoreText: {
+    fontFamily: Typography.body,
+    fontSize: 12,
+    fontWeight: '700',
+    color: Palette.moss,
+  },
+  progressTrack: {
+    height: 8,
+    backgroundColor: Palette.surfaceSubtle,
+    borderRadius: Radii.pill,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: Palette.moss,
+    borderRadius: Radii.pill,
+  },
+  progressFooterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  progressFooterText: {
+    fontFamily: Typography.body,
+    fontSize: 11,
+    color: Palette.muted,
+    fontWeight: '600',
+  },
+  progressRegionTag: {
+    fontFamily: Typography.body,
+    fontSize: 11,
+    color: Palette.ink,
+    fontWeight: '700',
+  },
+  compareBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#213E34',
+    borderRadius: Radii.lg,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderBottomWidth: 3,
+    borderBottomColor: '#172C25',
+    padding: Spacing.md,
+  },
+  cardPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.99 }],
+  },
+  compareBannerLeft: {
+    flex: 1,
+    paddingRight: Spacing.sm,
+    gap: 4,
+  },
+  compareBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: Radii.pill,
+  },
+  compareBadgeText: {
+    fontFamily: Typography.body,
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 0.6,
+  },
+  compareTitle: {
+    fontFamily: Typography.display,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  compareSubtitle: {
+    fontFamily: Typography.body,
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.85)',
+    lineHeight: 16,
+  },
+  compareArrowCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: Palette.moss,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  compareArrowText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    lineHeight: 18,
   },
   syncedPill: {
     flexDirection: 'row',

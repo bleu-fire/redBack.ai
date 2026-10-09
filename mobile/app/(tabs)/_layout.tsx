@@ -14,7 +14,7 @@ function TabIcon({ focused, IconComponent }: TabIconProps) {
   return (
     <IconComponent
       size={22}
-      color={focused ? Palette.coral : Palette.muted}
+      color={focused ? Palette.moss : Palette.muted}
       strokeWidth={focused ? 2.2 : 1.8}
     />
   );
@@ -27,7 +27,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: Palette.coral,
+        tabBarActiveTintColor: Palette.moss,
         tabBarInactiveTintColor: Palette.muted,
         tabBarStyle: {
           backgroundColor: Palette.paper,
@@ -69,7 +69,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="scanner"
         options={{
-          title: 'Scanner',
+          title: 'Identify',
           tabBarLabel: () => null,
           tabBarIcon: ({ focused }) => (
             <View style={[styles.scannerButton, focused && styles.scannerButtonActive]}>
@@ -90,11 +90,11 @@ export default function TabLayout() {
         }}
       />
 
-      {/* 5. Explorer Profile */}
+      {/* 5. Field Journal / Profile */}
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: 'Journal',
           tabBarIcon: ({ focused }) => (
             <TabIcon focused={focused} IconComponent={User} />
           ),
@@ -106,23 +106,23 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   scannerButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: Palette.coral,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: Palette.moss,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
     borderWidth: 3,
     borderColor: Palette.paper,
-    shadowColor: Palette.coral,
+    shadowColor: Palette.moss,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
     shadowRadius: 8,
     elevation: 4,
   },
   scannerButtonActive: {
-    backgroundColor: Palette.coralDark,
+    backgroundColor: Palette.mossDark,
     transform: [{ scale: 1.05 }],
   },
 });

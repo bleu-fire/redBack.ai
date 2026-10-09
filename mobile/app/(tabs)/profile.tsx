@@ -14,19 +14,13 @@ import { router } from 'expo-router';
 import {
   Bookmark,
   Award,
-  FolderHeart,
-  BookOpen,
   Shield,
   Leaf,
   Bug,
   Microscope,
-  Medal,
   LogOut,
   ChevronRight,
-  Flame,
   CheckCircle2,
-  Clock,
-  Sparkles,
   PhoneCall,
   X,
   Compass,
@@ -180,9 +174,12 @@ export default function ProfileScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* 1. Header with Title and Settings/Saved shortcut */}
+        {/* 1. Naturalist Journal Header */}
         <View style={styles.topActions}>
-          <Text style={styles.screenHeading}>Naturalist Profile</Text>
+          <View>
+            <Text style={styles.screenEyebrow}>EXPEDITION LOGBOOK</Text>
+            <Text style={styles.screenHeading}>Field Journal</Text>
+          </View>
           <Pressable
             onPress={() => setActiveTab('saved')}
             style={styles.bookmarkButton}
@@ -191,7 +188,7 @@ export default function ProfileScreen() {
           </Pressable>
         </View>
 
-        {/* 2. User Info Card */}
+        {/* 2. User Info Card with Tactile Border */}
         <View style={styles.userHeader}>
           <Image
             source={require('@/assets/the_pfp/Spider_in_watercolor_and_ink_20261002135412.jpg')}
@@ -209,51 +206,49 @@ export default function ProfileScreen() {
             <Text style={styles.userBio}>
               {user?.email || 'explorer@redback.ai'}
             </Text>
-            <Text style={styles.userLocation}>📍 Morocco & Australia Region</Text>
+            <Text style={styles.userLocation}>Morocco & Australia Expedition</Text>
           </View>
         </View>
 
-        {/* 3. Field Metrics 3-Column Card */}
+        {/* 3. 3-Stat Summary Grid (Design Board Screen 11: 24 Species, 12 Locations, 8 Badges) */}
         <View style={styles.metricsCard}>
           <View style={styles.metricItem}>
-            <Text style={styles.metricNumber}>14</Text>
-            <Text style={styles.metricLabel}>Scans Logged</Text>
+            <Text style={styles.metricNumber}>24</Text>
+            <Text style={styles.metricLabel}>Species</Text>
+          </View>
+          <View style={styles.metricDivider} />
+          <View style={styles.metricItem}>
+            <Text style={styles.metricNumber}>12</Text>
+            <Text style={styles.metricLabel}>Locations</Text>
           </View>
           <View style={styles.metricDivider} />
           <View style={styles.metricItem}>
             <Text style={styles.metricNumber}>8</Text>
-            <Text style={styles.metricLabel}>Species Found</Text>
-          </View>
-          <View style={styles.metricDivider} />
-          <View style={styles.metricItem}>
-            <View style={styles.streakNumberRow}>
-              <Flame size={18} color={Palette.gold} />
-              <Text style={[styles.metricNumber, { color: Palette.gold }]}>5</Text>
-            </View>
-            <Text style={styles.metricLabel}>Day Streak</Text>
+            <Text style={styles.metricLabel}>Badges</Text>
           </View>
         </View>
 
-        {/* 4. Level & XP Progress Card */}
-        <View style={styles.levelCard}>
-          <View style={styles.levelIconBadge}>
-            <Award size={22} color="#FFFFFF" />
+        {/* 3B. Active Biome Expedition Card (Design Board Screen 11 Map & Atlas Pinpoints) */}
+        <View style={styles.expeditionMapCard}>
+          <View style={styles.expeditionMapHeader}>
+            <View>
+              <Text style={styles.expeditionEyebrow}>ACTIVE EXPEDITION MAP</Text>
+              <Text style={styles.expeditionTitle}>Atlas Mountains, Morocco</Text>
+            </View>
+            <View style={styles.expeditionPill}>
+              <Text style={styles.expeditionPillText}>6 Pins Logged</Text>
+            </View>
           </View>
-
-          <View style={styles.levelInfo}>
-            <View style={styles.levelHeaderRow}>
-              <Text style={styles.levelTitle}>Level 4</Text>
-              <Text style={styles.levelSubtitle}>Spider Scholar</Text>
-            </View>
-            <View style={styles.levelProgressRow}>
-              <View style={styles.progressBarBg}>
-                <View style={[styles.progressBarFill, { width: '64%' }]} />
-              </View>
-              <Text style={styles.xpText}>320 / 500 XP</Text>
-            </View>
-            <Text style={styles.nextLevelHint}>
-              180 XP to Level 5 Arachnologist
-            </Text>
+          <Text style={styles.expeditionDesc}>
+            High-altitude arid scrubland • 1,800m elevation. 4 venomous and 14 harmless species documented in this sector.
+          </Text>
+          <View style={styles.expeditionActionRow}>
+            <Pressable
+              onPress={() => router.push('/(tabs)/scanner' as any)}
+              style={styles.addObsBtn}
+            >
+              <Text style={styles.addObsBtnText}>+ Add Observation</Text>
+            </Pressable>
           </View>
         </View>
 
@@ -523,12 +518,83 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: Spacing.xs,
   },
+  screenEyebrow: {
+    fontFamily: Typography.body,
+    fontSize: 11,
+    fontWeight: '700',
+    color: Palette.moss,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
   screenHeading: {
     fontFamily: Typography.display,
     fontSize: 26,
     fontWeight: '800',
     color: Palette.ink,
     letterSpacing: -0.4,
+  },
+  expeditionMapCard: {
+    backgroundColor: '#1E352C',
+    borderRadius: Radii.lg,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomWidth: 3,
+    borderBottomColor: '#12231D',
+    padding: Spacing.md,
+    gap: Spacing.xs,
+  },
+  expeditionMapHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 2,
+  },
+  expeditionEyebrow: {
+    fontFamily: Typography.body,
+    fontSize: 10,
+    fontWeight: '700',
+    color: 'rgba(255, 255, 255, 0.75)',
+    letterSpacing: 0.8,
+  },
+  expeditionTitle: {
+    fontFamily: Typography.display,
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  expeditionPill: {
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: Radii.pill,
+  },
+  expeditionPillText: {
+    fontFamily: Typography.body,
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  expeditionDesc: {
+    fontFamily: Typography.body,
+    fontSize: 12.5,
+    color: 'rgba(255, 255, 255, 0.85)',
+    lineHeight: 17,
+  },
+  expeditionActionRow: {
+    marginTop: Spacing.xs,
+  },
+  addObsBtn: {
+    alignSelf: 'flex-start',
+    backgroundColor: Palette.moss,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: Radii.pill,
+  },
+  addObsBtnText: {
+    fontFamily: Typography.body,
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
   bookmarkButton: {
     width: 40,
@@ -544,8 +610,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Palette.paper,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Palette.line,
+    borderBottomWidth: 3,
+    borderBottomColor: '#D8D0C5',
     borderRadius: Radii.lg,
     padding: Spacing.md,
     gap: Spacing.md,
@@ -605,8 +673,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     backgroundColor: Palette.paper,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Palette.line,
+    borderBottomWidth: 3,
+    borderBottomColor: '#D8D0C5',
     borderRadius: Radii.lg,
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.sm,
@@ -786,14 +856,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Palette.paper,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Palette.line,
+    borderBottomWidth: 3,
+    borderBottomColor: '#D8D0C5',
     borderRadius: Radii.md,
     padding: Spacing.sm,
     gap: Spacing.sm,
   },
   cardPressed: {
     opacity: 0.85,
+    transform: [{ scale: 0.99 }],
     borderColor: Palette.moss,
   },
   obsThumb: {

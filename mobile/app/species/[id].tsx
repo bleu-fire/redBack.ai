@@ -7,7 +7,6 @@ import {
   Pressable,
   Image,
   Linking,
-  Dimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -23,17 +22,13 @@ import {
   Ruler,
   Clock,
   Bug,
-  MapPin,
   Bot,
   PhoneCall,
   CheckCircle2,
   HeartPulse,
-  Compass,
-  Box,
-  Layers,
-  ChevronRight,
 } from 'lucide-react-native';
 import { Palette, Spacing, Radii, Typography } from '@/constants/theme';
+import { TruncatedText } from '@/components/ui';
 import {
   getSpeciesById,
   SPECIES_CATALOG,
@@ -44,8 +39,6 @@ import {
   SizeScaleProfile,
 } from '@/data/speciesData';
 import { getFullImageUrl } from '@/data/api/api';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 type ScaleBenchmark = 'coin' | 'cap' | 'thumb';
 type ActionProtocol = 'threat' | 'relocate' | 'emergency';
@@ -104,7 +97,6 @@ export default function SpeciesDetailsScreen() {
   // Threat severity styling
   const isHighDanger = threat.score >= 4;
   const isMediumDanger = threat.score >= 2 && threat.score <= 3;
-  const isHarmless = threat.score < 2;
 
   let gaugeAccentColor = Palette.moss;
   if (isHighDanger) gaugeAccentColor = Palette.danger;
@@ -184,6 +176,26 @@ export default function SpeciesDetailsScreen() {
           <Text style={styles.scientificName}>{species.scientificName}</Text>
         </View>
 
+        {/* --- 2B. 4-Pillar Quick Field Metrics (Size, Habitat, Activity, Diet) --- */}
+        <View style={styles.metricsGrid}>
+          <View style={styles.metricCard}>
+            <Text style={styles.metricLabel}>SIZE</Text>
+            <Text style={styles.metricVal}>{sizeScale.bodyMm}–{sizeScale.legSpanMm} mm</Text>
+          </View>
+          <View style={styles.metricCard}>
+            <Text style={styles.metricLabel}>HABITAT</Text>
+            <Text style={styles.metricVal} numberOfLines={1}>{species.habitat.split(',')[0]}</Text>
+          </View>
+          <View style={styles.metricCard}>
+            <Text style={styles.metricLabel}>ACTIVITY</Text>
+            <Text style={styles.metricVal}>{species.behavior?.activity || 'Nocturnal'}</Text>
+          </View>
+          <View style={styles.metricCard}>
+            <Text style={styles.metricLabel}>REGION</Text>
+            <Text style={styles.metricVal}>{species.region}</Text>
+          </View>
+        </View>
+
         {/* --- 3. THE 0–5 CLINICAL DANGER DIAGNOSTIC (The Hero Feature) --- */}
         <View style={styles.clinicalDiagnosticCard}>
           <View style={styles.clinicalHeader}>
@@ -249,7 +261,14 @@ export default function SpeciesDetailsScreen() {
             })}
           </View>
 
-          <Text style={styles.clinicalSummary}>{threat.summary}</Text>
+          <TruncatedText
+            style={styles.clinicalSummary}
+            numberOfLines={3}
+            expandLabel="Show clinical details"
+            collapseLabel="Hide details"
+          >
+            {threat.summary}
+          </TruncatedText>
 
           {/* Three Concrete Clinical Anchors */}
           <View style={styles.clinicalAnchorsContainer}>
@@ -320,7 +339,7 @@ export default function SpeciesDetailsScreen() {
                   activeBenchmark === 'coin' && styles.benchmarkBtnTextActive,
                 ]}
               >
-                🪙 1 Dirham / $1 Coin (25mm)
+                1 Dirham / $1 Coin (25mm)
               </Text>
             </Pressable>
 
@@ -337,7 +356,7 @@ export default function SpeciesDetailsScreen() {
                   activeBenchmark === 'cap' && styles.benchmarkBtnTextActive,
                 ]}
               >
-                🧴 Bottle Cap (30mm)
+                Bottle Cap (30mm)
               </Text>
             </Pressable>
 
@@ -354,7 +373,7 @@ export default function SpeciesDetailsScreen() {
                   activeBenchmark === 'thumb' && styles.benchmarkBtnTextActive,
                 ]}
               >
-                🖐️ Human Thumb (55mm)
+                Human Thumb (55mm)
               </Text>
             </Pressable>
           </View>
@@ -404,7 +423,7 @@ export default function SpeciesDetailsScreen() {
           </View>
 
           <Text style={styles.scaleComparisonText}>
-            💡 {sizeScale.comparisonText}
+            {sizeScale.comparisonText}
           </Text>
         </View>
 
@@ -606,7 +625,24 @@ export default function SpeciesDetailsScreen() {
           </View>
         </View>
 
-        {/* --- 7. Ask AI Naturalist Floating Trigger --- */}
+        {/* --- 7. Look-Alike Distinction Card (Students & Field Scientists) --- */}
+        {species.confusionWith && species.confusionWith.length > 0 && (
+          <View style={styles.lookAlikeCard}>
+            <Text style={styles.lookAlikeEyebrow}>FIELD COMPARISON</Text>
+            <Text style={styles.lookAlikeTitle}>Easily Confused With</Text>
+            <Text style={styles.lookAlikeDesc}>
+              Common false IDs: {species.confusionWith.join(', ')}.
+            </Text>
+            <View style={styles.lookAlikeTipBox}>
+              <Text style={styles.lookAlikeTipHeading}>Key Differentiator</Text>
+              <Text style={styles.lookAlikeTipBody}>
+                {species.morphology.keyFeatures[0] || 'Inspect abdominal color markers and leg articulation angles.'}
+              </Text>
+            </View>
+          </View>
+        )}
+
+        {/* --- 8. Ask AI Naturalist Floating Trigger --- */}
         <Pressable
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -739,8 +775,10 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.lg,
     backgroundColor: Palette.paper,
     borderRadius: 22,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Palette.line,
+    borderBottomWidth: 3,
+    borderBottomColor: '#D8D0C5',
     padding: Spacing.md,
     gap: Spacing.md,
   },
@@ -852,8 +890,10 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.lg,
     backgroundColor: Palette.paper,
     borderRadius: 22,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Palette.line,
+    borderBottomWidth: 3,
+    borderBottomColor: '#D8D0C5',
     padding: Spacing.md,
     gap: Spacing.md,
   },
@@ -1022,8 +1062,10 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.lg,
     backgroundColor: Palette.paper,
     borderRadius: 22,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Palette.line,
+    borderBottomWidth: 3,
+    borderBottomColor: '#D8D0C5',
     padding: Spacing.md,
     gap: Spacing.md,
   },
@@ -1210,8 +1252,10 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.lg,
     backgroundColor: Palette.paper,
     borderRadius: 22,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Palette.line,
+    borderBottomWidth: 3,
+    borderBottomColor: '#D8D0C5',
     padding: Spacing.md,
     gap: Spacing.sm,
   },
@@ -1277,14 +1321,105 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     backgroundColor: Palette.moss,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderBottomWidth: 3,
+    borderBottomColor: Palette.mossDark,
     paddingVertical: 14,
     borderRadius: Radii.pill,
+    minHeight: 50,
   },
   askAiBtnText: {
     fontFamily: Typography.body,
     fontSize: 14,
     fontWeight: '700',
     color: '#FFFFFF',
+  },
+
+  // 2B. 4-Pillar Quick Field Metrics Grid
+  metricsGrid: {
+    marginHorizontal: Spacing.lg,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+  },
+  metricCard: {
+    flex: 1,
+    minWidth: '45%',
+    backgroundColor: Palette.paper,
+    borderWidth: 1.5,
+    borderColor: Palette.line,
+    borderBottomWidth: 3,
+    borderBottomColor: '#D8D0C5',
+    borderRadius: Radii.md,
+    padding: Spacing.sm,
+    gap: 2,
+  },
+  metricLabel: {
+    fontFamily: Typography.body,
+    fontSize: 10,
+    fontWeight: '800',
+    color: Palette.muted,
+    letterSpacing: 0.8,
+  },
+  metricVal: {
+    fontFamily: Typography.display,
+    fontSize: 13,
+    fontWeight: '700',
+    color: Palette.ink,
+  },
+
+  // 7. Look-Alike Card
+  lookAlikeCard: {
+    marginHorizontal: Spacing.lg,
+    backgroundColor: Palette.paper,
+    borderRadius: 22,
+    borderWidth: 1.5,
+    borderColor: Palette.line,
+    borderBottomWidth: 3,
+    borderBottomColor: '#D8D0C5',
+    padding: Spacing.md,
+    gap: Spacing.xs,
+  },
+  lookAlikeEyebrow: {
+    fontFamily: Typography.body,
+    fontSize: 10,
+    fontWeight: '800',
+    color: Palette.muted,
+    letterSpacing: 1,
+  },
+  lookAlikeTitle: {
+    fontFamily: Typography.display,
+    fontSize: 17,
+    fontWeight: '800',
+    color: Palette.ink,
+  },
+  lookAlikeDesc: {
+    fontFamily: Typography.body,
+    fontSize: 13,
+    color: Palette.muted,
+    lineHeight: 18,
+  },
+  lookAlikeTipBox: {
+    backgroundColor: Palette.canvas,
+    borderWidth: 1,
+    borderColor: Palette.line,
+    borderRadius: Radii.md,
+    padding: 10,
+    marginTop: 6,
+    gap: 2,
+  },
+  lookAlikeTipHeading: {
+    fontFamily: Typography.body,
+    fontSize: 11,
+    fontWeight: '800',
+    color: Palette.moss,
+  },
+  lookAlikeTipBody: {
+    fontFamily: Typography.body,
+    fontSize: 12.5,
+    color: Palette.ink,
+    lineHeight: 17,
   },
 
   pressed: {

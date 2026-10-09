@@ -1,11 +1,15 @@
 import 'react-native-reanimated';
 import React, { useState } from 'react';
+import { LogBox } from 'react-native';
 import { Stack } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import CustomSplashScreen from '@/components/splash-screen';
 import { Palette } from '@/constants/theme';
+
+// Ignore harmless dev reload warning from expo-keep-awake before Android activity attaches
+LogBox.ignoreLogs(['Unable to activate keep awake']);
 
 export const unstable_settings = {
   initialRouteName: 'index',
