@@ -26,8 +26,6 @@ import {
   ProtocolRule,
 } from '@/data/learningData';
 
-type FilterCategory = 'All' | 'Safety' | 'Morocco' | 'Anatomy' | 'Webs';
-
 function getProtocolParts(
   item: ProtocolRule | string
 ): { lead: string; detail: string } {
@@ -58,22 +56,14 @@ function getProtocolParts(
 
 export default function LearnScreen() {
   const insets = useSafeAreaInsets();
-  const [selectedCategory, setSelectedCategory] = useState<FilterCategory>('All');
   const [activeModule, setActiveModule] = useState<LearningModule | null>(null);
-  const [userXp, setUserXp] = useState(320);
-  const [streakDays] = useState(5);
 
   // Quiz state for the modal
   const [quizAnswers, setQuizAnswers] = useState<Record<string, number>>({});
   const [quizSubmitted, setQuizSubmitted] = useState<Record<string, boolean>>({});
   const [claimedModules, setClaimedModules] = useState<Record<string, boolean>>({});
 
-  const featuredModule = LEARNING_MODULES.find((m) => m.isFeatured) || LEARNING_MODULES[0];
-
-  const filteredModules = LEARNING_MODULES.filter((m) => {
-    if (selectedCategory === 'All') return true;
-    return m.category === selectedCategory;
-  });
+  const filteredModules = LEARNING_MODULES;
 
   const handleOpenModule = (mod: LearningModule) => {
     setActiveModule(mod);
@@ -85,9 +75,8 @@ export default function LearnScreen() {
     setQuizSubmitted((prev) => ({ ...prev, [questionId]: true }));
   };
 
-  const handleClaimReward = (modId: string, xpReward: number) => {
+  const handleClaimReward = (modId: string, _xpReward: number) => {
     if (!claimedModules[modId]) {
-      setUserXp((prev) => prev + xpReward);
       setClaimedModules((prev) => ({ ...prev, [modId]: true }));
     }
   };
@@ -101,78 +90,9 @@ export default function LearnScreen() {
         {/* 1. Naturalist Academy Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.headerEyebrow}>FIELD ACADEMY</Text>
             <Text style={styles.headerTitle}>Arachnology Path</Text>
           </View>
-
-          <View style={styles.headerPills}>
-            <View style={styles.streakPill}>
-              <Text style={styles.streakText}>{streakDays}d streak</Text>
-            </View>
-            <View style={styles.xpPill}>
-              <Text style={styles.xpText}>{userXp} XP</Text>
-            </View>
-          </View>
         </View>
-
-        {/* 2. Level 1: Field Observer Progression Hero Card (Matching Design Board Screen 8) */}
-        <View style={styles.levelHeroCard}>
-          <View style={styles.levelHeroHeader}>
-            <View style={styles.levelHeroBadge}>
-              <Text style={styles.levelHeroBadgeText}>ACTIVE CURRICULUM</Text>
-            </View>
-            <Text style={styles.levelHeroStepCount}>3 / 5 Competencies</Text>
-          </View>
-
-          <Text style={styles.levelHeroTitle}>Level 1: Field Observer</Text>
-          <Text style={styles.levelHeroDesc}>
-            Learn to safely observe, compare morphological traits, and identify spiders without contact.
-          </Text>
-
-          {/* Progress Bar */}
-          <View style={styles.levelProgressTrack}>
-            <View style={[styles.levelProgressFill, { width: '60%' }]} />
-          </View>
-
-          <View style={styles.levelHeroFooter}>
-            <Text style={styles.levelHeroFooterText}>60% Complete • Next: Photo Tips for ID</Text>
-            <Pressable
-              onPress={() => handleOpenModule(featuredModule)}
-              style={styles.continueLevelBtn}
-            >
-              <Text style={styles.continueLevelBtnText}>Continue</Text>
-              <ChevronRight size={14} color="#FFFFFF" strokeWidth={2.5} />
-            </Pressable>
-          </View>
-        </View>
-
-        {/* 3. Category Filter Chips */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chipsRow}
-        >
-          {[
-            { label: 'All Modules', value: 'All' as FilterCategory },
-            { label: 'First Aid & Safety', value: 'Safety' as FilterCategory },
-            { label: 'Morocco Biomes', value: 'Morocco' as FilterCategory },
-            { label: 'Anatomy', value: 'Anatomy' as FilterCategory },
-            { label: 'Web Typology', value: 'Webs' as FilterCategory },
-          ].map((chip) => {
-            const isSelected = selectedCategory === chip.value;
-            return (
-              <Pressable
-                key={chip.value}
-                onPress={() => setSelectedCategory(chip.value)}
-                style={[styles.chip, isSelected && styles.chipSelected]}
-              >
-                <Text style={[styles.chipText, isSelected && styles.chipTextSelected]}>
-                  {chip.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
 
         {/* 4. Section: Step-by-Step Competencies (Roadmap from Design Board) */}
         <View style={styles.sectionHeader}>
@@ -218,41 +138,13 @@ export default function LearnScreen() {
                   <Text style={styles.progressPercent}>{mod.progress}%</Text>
                 </View>
 
-                <View style={styles.moduleArrowCircle}>
-                  <ChevronRight size={16} color="#6B7280" />
-                </View>
+                <ChevronRight size={18} color="#9CA3AF" />
               </View>
             </Pressable>
           ))}
         </View>
 
-        {/* 4B. Locked Level 2 Teaser (Design Board Screen 8) */}
-        <View style={styles.lockedLevelCard}>
-          <View style={styles.lockedLevelHeader}>
-            <Text style={styles.lockedLevelTag}>LOCKED</Text>
-            <Text style={styles.lockedLevelReq}>Requires Level 1 Completion</Text>
-          </View>
-          <Text style={styles.lockedLevelTitle}>Level 2: Field Identifier</Text>
-          <Text style={styles.lockedLevelDesc}>
-            Advanced chelicerae classification, ocular diagnostic patterns, and toxic spider differential diagnosis.
-          </Text>
-        </View>
 
-        {/* 5. Field Quick-Safety Hotline Card */}
-        <View style={styles.hotlineCard}>
-          <View style={styles.hotlineIconWrapper}>
-            <ShieldAlert size={24} color={Palette.danger} />
-          </View>
-          <View style={styles.hotlineContent}>
-            <Text style={styles.hotlineTitle}>Poison Control Hotlines</Text>
-            <Text style={styles.hotlineNumbers}>
-              🇲🇦 Morocco: <Text style={styles.hotlineBold}>0537-68-64-64</Text> (CAPM 24/7)
-            </Text>
-            <Text style={styles.hotlineNumbers}>
-              🇦🇺 Australia: <Text style={styles.hotlineBold}>13 11 26</Text> (Poisons Info)
-            </Text>
-          </View>
-        </View>
       </ScrollView>
 
       {/* --- 6. Interactive Lesson & Quiz Reader Modal --- */}
@@ -584,14 +476,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: Spacing.xs,
   },
-  headerEyebrow: {
-    fontFamily: Typography.body,
-    fontSize: 11,
-    fontWeight: '700',
-    color: Palette.moss,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-  },
   headerTitle: {
     fontFamily: Typography.display,
     fontSize: 26,
@@ -601,121 +485,7 @@ const styles = StyleSheet.create({
     lineHeight: 32,
     marginTop: 2,
   },
-  headerPills: {
-    flexDirection: 'row',
-    gap: 8,
-    marginTop: 4,
-  },
-  streakPill: {
-    backgroundColor: '#FDF4EB',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: Radii.pill,
-  },
-  streakText: {
-    fontFamily: Typography.body,
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#B45309',
-  },
-  xpPill: {
-    backgroundColor: '#FDF4EB',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: Radii.pill,
-  },
-  xpText: {
-    fontFamily: Typography.body,
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#B45309',
-  },
-  levelHeroCard: {
-    backgroundColor: '#213E34',
-    borderRadius: 22,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    borderBottomWidth: 3,
-    borderBottomColor: '#172C25',
-    padding: Spacing.lg,
-    gap: Spacing.xs,
-  },
-  levelHeroHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 4,
-  },
-  levelHeroBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.16)',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: Radii.pill,
-  },
-  levelHeroBadgeText: {
-    fontFamily: Typography.body,
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    letterSpacing: 0.6,
-  },
-  levelHeroStepCount: {
-    fontFamily: Typography.body,
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  levelHeroTitle: {
-    fontFamily: Typography.display,
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    letterSpacing: -0.3,
-  },
-  levelHeroDesc: {
-    fontFamily: Typography.body,
-    fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.85)',
-    lineHeight: 18,
-  },
-  levelProgressTrack: {
-    height: 7,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: Radii.pill,
-    overflow: 'hidden',
-    marginTop: Spacing.xs,
-  },
-  levelProgressFill: {
-    height: '100%',
-    backgroundColor: Palette.gold,
-    borderRadius: Radii.pill,
-  },
-  levelHeroFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: Spacing.sm,
-  },
-  levelHeroFooterText: {
-    fontFamily: Typography.body,
-    fontSize: 11,
-    color: 'rgba(255, 255, 255, 0.8)',
-  },
-  continueLevelBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: Palette.moss,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: Radii.pill,
-  },
-  continueLevelBtnText: {
-    fontFamily: Typography.body,
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
+
   moduleIndexBadge: {
     backgroundColor: Palette.canvas,
     borderWidth: 1,
@@ -730,47 +500,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Palette.ink,
   },
-  lockedLevelCard: {
-    backgroundColor: Palette.paper,
-    borderRadius: 18,
-    borderWidth: 1.5,
-    borderColor: Palette.line,
-    borderStyle: 'dashed',
-    padding: Spacing.md,
-    gap: 4,
-    opacity: 0.85,
-  },
-  lockedLevelHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 2,
-  },
-  lockedLevelTag: {
-    fontFamily: Typography.body,
-    fontSize: 10,
-    fontWeight: '800',
-    color: Palette.muted,
-    letterSpacing: 0.8,
-  },
-  lockedLevelReq: {
-    fontFamily: Typography.body,
-    fontSize: 11,
-    color: Palette.muted,
-    fontStyle: 'italic',
-  },
-  lockedLevelTitle: {
-    fontFamily: Typography.display,
-    fontSize: 16,
-    fontWeight: '700',
-    color: Palette.ink,
-  },
-  lockedLevelDesc: {
-    fontFamily: Typography.body,
-    fontSize: 12,
-    color: Palette.muted,
-    lineHeight: 17,
-  },
+
   heroContent: {
     zIndex: 2,
     gap: Spacing.xs,
@@ -840,31 +570,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  chipsRow: {
-    flexDirection: 'row',
-    gap: Spacing.xs,
-  },
-  chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: Radii.pill,
-    backgroundColor: Palette.paper,
-    borderWidth: 1,
-    borderColor: Palette.line,
-  },
-  chipSelected: {
-    backgroundColor: '#213E34',
-    borderColor: '#213E34',
-  },
-  chipText: {
-    fontFamily: Typography.body,
-    fontSize: 13,
-    fontWeight: '600',
-    color: Palette.muted,
-  },
-  chipTextSelected: {
-    color: '#FFFFFF',
-  },
+
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'flex-end',
@@ -977,53 +683,8 @@ const styles = StyleSheet.create({
     width: 32,
     textAlign: 'right',
   },
-  moduleArrowCircle: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#F3F0E9',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  hotlineCard: {
-    flexDirection: 'row',
-    backgroundColor: Palette.coralSoft,
-    borderRadius: Radii.lg,
-    borderWidth: 1,
-    borderColor: '#F7B5A8',
-    padding: Spacing.md,
-    gap: Spacing.md,
-    alignItems: 'center',
-    marginTop: Spacing.xs,
-  },
-  hotlineIconWrapper: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  hotlineContent: {
-    flex: 1,
-  },
-  hotlineTitle: {
-    fontFamily: Typography.display,
-    fontSize: 14,
-    fontWeight: '700',
-    color: Palette.danger,
-    marginBottom: 2,
-  },
-  hotlineNumbers: {
-    fontFamily: Typography.body,
-    fontSize: 12,
-    color: Palette.ink,
-    lineHeight: 17,
-  },
-  hotlineBold: {
-    fontWeight: '700',
-    color: Palette.danger,
-  },
+
+
 
   // Modal Reader Styles
   modalBackdrop: {

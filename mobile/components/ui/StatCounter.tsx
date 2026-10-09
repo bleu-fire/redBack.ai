@@ -71,9 +71,8 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   count: {
-    fontFamily: Typography.body,
-    fontSize: 20,
-    fontWeight: '900',
+    fontFamily: Typography.displayBold,
+    fontSize: 22,
     color: Palette.ink,
   },
   label: {

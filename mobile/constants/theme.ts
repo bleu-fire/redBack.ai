@@ -89,87 +89,229 @@ export const Radii = {
   pill: 9999,
 };
 
-export const Fonts = Platform.select({
-  ios: {
-    sans: 'system-ui',
-    serif: 'ui-serif',
-    rounded: 'ui-rounded',
-    mono: 'ui-monospace',
+export const FontFamilies = {
+  sentient: {
+    regular: 'Sentient-Regular',
+    medium: 'Sentient-Medium',
+    bold: 'Sentient-Bold',
+    light: 'Sentient-Light',
+    extraLight: 'Sentient-Extralight',
+    italic: 'Sentient-Italic',
+    mediumItalic: 'Sentient-MediumItalic',
+    boldItalic: 'Sentient-BoldItalic',
+    lightItalic: 'Sentient-LightItalic',
+    extraLightItalic: 'Sentient-ExtralightItalic',
   },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  },
-});
+  sans: Platform.select({
+    ios: 'system-ui',
+    android: 'normal',
+    web: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    default: 'normal',
+  }) as string,
+  mono: Platform.select({
+    ios: 'ui-monospace',
+    android: 'monospace',
+    web: "SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+    default: 'monospace',
+  }) as string,
+};
 
-const bodyFont = Platform.select({
-  ios: 'system-ui',
-  android: 'normal',
-  web: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-  default: 'normal',
-}) as string;
+export const FontSizes = {
+  hero: 36,
+  displayXl: 32,
+  h1: 28,
+  h2: 24,
+  h3: 20,
+  h4: 18,
+  bodyLg: 16,
+  body: 15,
+  bodySm: 13,
+  caption: 12,
+  captionSm: 11,
+  badge: 10,
+  tiny: 9,
+};
 
-const displayFont = Platform.select({
-  ios: 'ui-serif',
-  android: 'serif',
-  web: "Georgia, 'Times New Roman', serif",
-  default: 'serif',
-}) as string;
+export const LineHeights = {
+  hero: 42,
+  displayXl: 38,
+  h1: 34,
+  h2: 30,
+  h3: 26,
+  h4: 24,
+  bodyLg: 22,
+  body: 21,
+  bodySm: 18,
+  caption: 16,
+  captionSm: 15,
+  badge: 13,
+  tiny: 12,
+};
 
-const monoFont = Platform.select({
-  ios: 'ui-monospace',
-  android: 'monospace',
-  web: "SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-  default: 'monospace',
-}) as string;
+export const FontWeights = {
+  light: '300' as const,
+  regular: '400' as const,
+  medium: '500' as const,
+  semiBold: '600' as const,
+  bold: '700' as const,
+  extraBold: '800' as const,
+};
+
+export const LetterSpacings = {
+  tighter: -0.5,
+  tight: -0.25,
+  normal: 0,
+  wide: 0.3,
+  wider: 0.6,
+  widest: 1.0,
+};
+
+export const Fonts = {
+  display: 'Sentient-Regular',
+  displayBold: 'Sentient-Bold',
+  displayMedium: 'Sentient-Medium',
+  displayItalic: 'Sentient-Italic',
+  displayBoldItalic: 'Sentient-BoldItalic',
+  displayLight: 'Sentient-Light',
+  serif: 'Sentient-Regular',
+  sans: FontFamilies.sans,
+  mono: FontFamilies.mono,
+  rounded: FontFamilies.sans,
+};
 
 export const Typography = {
-  display: displayFont,
-  body: bodyFont,
-  mono: monoFont,
+  // Primary Family Handles
+  display: 'Sentient-Regular',
+  displayBold: 'Sentient-Bold',
+  displayMedium: 'Sentient-Medium',
+  displayLight: 'Sentient-Light',
+  displayItalic: 'Sentient-Italic',
+  displayBoldItalic: 'Sentient-BoldItalic',
+  body: FontFamilies.sans,
+  mono: FontFamilies.mono,
+
+  // Direct access to all font families and variants
+  fonts: FontFamilies,
+
+  // Helper function to resolve specific Sentient weight and style
+  sentient: (
+    weight: 'regular' | 'medium' | 'bold' | 'light' | 'extralight' = 'regular',
+    italic = false
+  ): string => {
+    if (weight === 'bold') return italic ? 'Sentient-BoldItalic' : 'Sentient-Bold';
+    if (weight === 'medium') return italic ? 'Sentient-MediumItalic' : 'Sentient-Medium';
+    if (weight === 'light') return italic ? 'Sentient-LightItalic' : 'Sentient-Light';
+    if (weight === 'extralight') return italic ? 'Sentient-ExtralightItalic' : 'Sentient-Extralight';
+    return italic ? 'Sentient-Italic' : 'Sentient-Regular';
+  },
+
+  // Complete Typography Scale & Preset Styles
+  hero: {
+    fontFamily: 'Sentient-Bold',
+    fontSize: FontSizes.hero,
+    lineHeight: LineHeights.hero,
+    letterSpacing: LetterSpacings.tighter,
+    color: Colors.inkPrimary,
+  },
+  displayXl: {
+    fontFamily: 'Sentient-Bold',
+    fontSize: FontSizes.displayXl,
+    lineHeight: LineHeights.displayXl,
+    letterSpacing: LetterSpacings.tight,
+    color: Colors.inkPrimary,
+  },
   h1: {
-    fontSize: 32,
-    fontWeight: '700' as const,
-    lineHeight: 38,
+    fontFamily: 'Sentient-Bold',
+    fontSize: FontSizes.h1,
+    lineHeight: LineHeights.h1,
+    letterSpacing: LetterSpacings.tight,
     color: Colors.inkPrimary,
   },
   h2: {
-    fontSize: 24,
-    fontWeight: '700' as const,
-    lineHeight: 30,
+    fontFamily: 'Sentient-Bold',
+    fontSize: FontSizes.h2,
+    lineHeight: LineHeights.h2,
+    letterSpacing: LetterSpacings.tight,
     color: Colors.inkPrimary,
   },
   h3: {
-    fontSize: 20,
-    fontWeight: '600' as const,
-    lineHeight: 26,
+    fontFamily: 'Sentient-Bold',
+    fontSize: FontSizes.h3,
+    lineHeight: LineHeights.h3,
+    letterSpacing: LetterSpacings.normal,
+    color: Colors.inkPrimary,
+  },
+  h4: {
+    fontFamily: 'Sentient-Medium',
+    fontSize: FontSizes.h4,
+    lineHeight: LineHeights.h4,
+    color: Colors.inkPrimary,
+  },
+  bodyLarge: {
+    fontFamily: FontFamilies.sans,
+    fontSize: FontSizes.bodyLg,
+    lineHeight: LineHeights.bodyLg,
     color: Colors.inkPrimary,
   },
   bodyStyle: {
-    fontSize: 16,
-    fontWeight: '400' as const,
-    lineHeight: 22,
+    fontFamily: FontFamilies.sans,
+    fontSize: FontSizes.body,
+    lineHeight: LineHeights.body,
+    color: Colors.inkPrimary,
+  },
+  bodySmall: {
+    fontFamily: FontFamilies.sans,
+    fontSize: FontSizes.bodySm,
+    lineHeight: LineHeights.bodySm,
     color: Colors.inkPrimary,
   },
   caption: {
-    fontSize: 14,
-    fontWeight: '400' as const,
-    lineHeight: 18,
+    fontFamily: FontFamilies.sans,
+    fontSize: FontSizes.caption,
+    lineHeight: LineHeights.caption,
     color: Colors.inkMuted,
   },
   small: {
-    fontSize: 12,
-    fontWeight: '400' as const,
-    lineHeight: 16,
+    fontFamily: FontFamilies.sans,
+    fontSize: FontSizes.captionSm,
+    lineHeight: LineHeights.captionSm,
     color: Colors.inkMuted,
+  },
+  taxa: {
+    fontFamily: 'Sentient-Italic',
+    fontSize: FontSizes.bodySm,
+    lineHeight: LineHeights.bodySm,
+    color: Colors.inkMuted,
+  },
+  taxaLarge: {
+    fontFamily: 'Sentient-Italic',
+    fontSize: FontSizes.bodyLg,
+    lineHeight: LineHeights.bodyLg,
+    color: Colors.inkMuted,
+  },
+  statCounter: {
+    fontFamily: 'Sentient-Bold',
+    fontSize: 28,
+    lineHeight: 32,
+    color: Colors.inkPrimary,
+  },
+  badge: {
+    fontFamily: FontFamilies.sans,
+    fontSize: FontSizes.badge,
+    fontWeight: '700' as const,
+    letterSpacing: LetterSpacings.wide,
+  },
+  button: {
+    fontFamily: FontFamilies.sans,
+    fontSize: FontSizes.body,
+    fontWeight: '700' as const,
+    letterSpacing: LetterSpacings.wide,
+  },
+  monoStyle: {
+    fontFamily: FontFamilies.mono,
+    fontSize: FontSizes.bodySm,
+    lineHeight: LineHeights.bodySm,
+    color: Colors.inkPrimary,
   },
 };
 

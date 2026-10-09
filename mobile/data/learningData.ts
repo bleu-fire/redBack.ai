@@ -74,7 +74,7 @@ export const LEARNING_MODULES: LearningModule[] = [
       {
         heading: 'Morocco Emergency Response (Centre Anti-Poison)',
         content:
-          'In Morocco, the Mediterranean Black Widow (الأرملة السوداء) and Mediterranean Recluse (عنكبوت الكمان) cause 99% of serious bites. The Centre Anti-Poison et de Pharmacovigilance du Maroc (CAPM) operates 24/7. Always photograph the specimen safely from 30 cm away for rapid hospital verification.',
+          'In Morocco, the Mediterranean Black Widow and Mediterranean Recluse cause 99% of serious bites. The Centre Anti-Poison et de Pharmacovigilance du Maroc (CAPM) operates 24/7. Always photograph the specimen safely from 30 cm away for rapid hospital verification.',
       },
       {
         heading: 'First-Aid Action Matrix',
@@ -164,7 +164,7 @@ export const LEARNING_MODULES: LearningModule[] = [
   },
   {
     id: 'moroccan-spider-guide',
-    title: 'Spiders of Morocco (عناكب المغرب)',
+    title: 'Spiders of Morocco',
     subtitle: 'From the Mediterranean Black Widow to harmless desert jumpers.',
     category: 'Morocco',
     categoryBadge: 'Morocco',
@@ -182,12 +182,12 @@ export const LEARNING_MODULES: LearningModule[] = [
     ],
     sections: [
       {
-        heading: 'Mediterranean Black Widow (الأرملة السوداء المتوسطية)',
+        heading: 'Mediterranean Black Widow',
         content:
           'Unlike the Australian redback which has a single dorsal stripe, the Mediterranean black widow exhibits 13 bright red or orange spots surrounded by delicate pale borders. Found in rural wheat fields and scrublands, they are active mostly during warm summer harvest seasons.',
       },
       {
-        heading: 'Mediterranean Recluse (عنكبوت الكمان)',
+        heading: 'Mediterranean Recluse',
         content:
           'Recognizable by its fawn-brown coloring, violin motif, and unique six-eye configuration arranged in 3 pairs (dyads). They hide in urban closets, behind framed artwork, and underneath furniture.',
       },

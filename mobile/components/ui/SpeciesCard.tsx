@@ -127,13 +127,13 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   commonName: {
-    fontSize: Typography.bodyStyle.fontSize,
-    fontWeight: '700',
+    fontFamily: Typography.displayBold,
+    fontSize: 16,
     color: Colors.inkPrimary,
   },
   scientificName: {
-    fontSize: Typography.caption.fontSize,
-    fontStyle: 'italic',
+    fontFamily: Typography.displayItalic,
+    fontSize: 13,
     color: Colors.inkMuted,
   },
   badgeRow: {

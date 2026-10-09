@@ -12,7 +12,6 @@ import {
   ArrowLeft,
   Camera,
   Plus,
-  Focus,
 } from 'lucide-react-native';
 import { Colors, Spacing, Radii, Typography, TouchTargets } from '@/constants/theme';
 
@@ -23,7 +22,6 @@ export default function ScannerScreen() {
   const cameraRef = useRef<CameraView>(null);
   const [flash, setFlash] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState<'0.5x' | '1x' | '2x'>('1x');
 
   // Capture photo from camera
   const handleTakePhoto = async () => {
@@ -124,12 +122,6 @@ export default function ScannerScreen() {
           <ArrowLeft size={20} color="#FFFFFF" strokeWidth={2} />
         </Pressable>
 
-        {/* Minimal Location & Status Pill */}
-        <View style={styles.statusPill}>
-          <View style={styles.statusDot} />
-          <Text style={styles.statusPillText}>GPS: High Atlas • Offline Ready</Text>
-        </View>
-
         {/* Flash Toggle Button */}
         <Pressable
           onPress={() => {
@@ -159,30 +151,6 @@ export default function ScannerScreen() {
           <View style={[styles.reticleCorner, styles.cornerTR]} />
           <View style={[styles.reticleCorner, styles.cornerBL]} />
           <View style={[styles.reticleCorner, styles.cornerBR]} />
-        </View>
-
-        {/* Floating Macro Guidance Text */}
-        <View style={styles.guidancePill}>
-          <Focus size={13} color="#FFFFFF" />
-          <Text style={styles.guidanceText}>Hold steady • 20–30cm macro focus</Text>
-        </View>
-
-        {/* Optical Zoom Level Selector */}
-        <View style={styles.zoomSelector}>
-          {(['0.5x', '1x', '2x'] as const).map((z) => (
-            <Pressable
-              key={z}
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                setZoomLevel(z);
-              }}
-              style={[styles.zoomPill, zoomLevel === z && styles.zoomPillActive]}
-            >
-              <Text style={[styles.zoomText, zoomLevel === z && styles.zoomTextActive]}>
-                {z}
-              </Text>
-            </Pressable>
-          ))}
         </View>
       </View>
 
@@ -260,29 +228,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(250, 176, 5, 0.25)',
     borderColor: Colors.gold,
   },
-  statusPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: Radii.pill,
-    backgroundColor: 'rgba(24, 32, 30, 0.75)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  statusDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: Colors.forestGreen,
-  },
-  statusPillText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    letterSpacing: 0.2,
-  },
 
   // Viewfinder
   viewfinderContainer: {
@@ -329,51 +274,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 3.5,
     borderRightWidth: 3.5,
     borderBottomRightRadius: 10,
-  },
-
-  guidancePill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: 'rgba(24, 32, 30, 0.75)',
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: Radii.pill,
-    marginTop: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-  },
-  guidanceText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-
-  zoomSelector: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(24, 32, 30, 0.65)',
-    borderRadius: Radii.pill,
-    padding: 3,
-    gap: 4,
-    marginTop: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-  },
-  zoomPill: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: Radii.pill,
-  },
-  zoomPillActive: {
-    backgroundColor: Colors.forestGreen,
-  },
-  zoomText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#CCCCCC',
-  },
-  zoomTextActive: {
-    color: '#FFFFFF',
   },
 
   // Bottom Action Deck

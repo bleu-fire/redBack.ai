@@ -5,7 +5,6 @@ interface MoroccanSpecies {
   folder: string;
   scientificName: string;
   commonName: string;
-  arabicName: string;
   toxicity: string;
 }
 
@@ -14,56 +13,48 @@ const moroccanSpiderCatalog: MoroccanSpecies[] = [
     folder: 'mediterranean-black-widow',
     scientificName: 'Latrodectus tredecimguttatus',
     commonName: 'Mediterranean black widow',
-    arabicName: 'الأرملة السوداء المتوسطية',
     toxicity: 'High neurotoxic (Alpha-latrotoxin)',
   },
   {
     folder: 'mediterranean-recluse',
     scientificName: 'Loxosceles rufescens',
     commonName: 'Mediterranean recluse spider (Violin spider)',
-    arabicName: 'عنكبوت الكمان / الناسك المتوسطي',
     toxicity: 'Medically significant cytotoxic (Necrotic)',
   },
   {
     folder: 'moroccan-funnel-web',
     scientificName: 'Macrothele calpeiana',
     commonName: 'Gibraltar & Moroccan funnel-web spider',
-    arabicName: 'عنكبوت القمع المغربي / الأندلسي',
     toxicity: 'Painful bite, aggressive, impressive size',
   },
   {
     folder: 'wolf-spider',
     scientificName: 'Hogna radiata',
     commonName: 'Radiated wolf spider',
-    arabicName: 'عنكبوت الذئب المشع',
     toxicity: 'Mild, fast ground hunter',
   },
   {
     folder: 'lobed-argiope',
     scientificName: 'Argiope lobata',
     commonName: 'Lobed argiope / Silver sun spider',
-    arabicName: 'عنكبوت الشمس الفضي الفصي',
     toxicity: 'Harmless garden predator',
   },
   {
     folder: 'moroccan-huntsman',
     scientificName: 'Eusparassus dufouri',
     commonName: 'Mediterranean huntsman spider',
-    arabicName: 'عنكبوت الصياد المتوسطي',
     toxicity: 'Mild bite, non-lethal, very fast',
   },
   {
     folder: 'jumping-spider',
     scientificName: 'Menemerus semilimbatus',
     commonName: 'Mediterranean jumping spider',
-    arabicName: 'العنكبوت القفاز الشائع',
     toxicity: 'Completely harmless, curious',
   },
   {
     folder: 'star-spider',
     scientificName: 'Uroctea durandi',
     commonName: 'Mediterranean star spider',
-    arabicName: 'عنكبوت النجمة المتوسطي',
     toxicity: 'Harmless, lives under rocks',
   },
 ];
@@ -90,7 +81,7 @@ async function fetchSpeciesImages(species: MoroccanSpecies, count = 8) {
     fs.mkdirSync(targetDir, { recursive: true });
   }
 
-  console.log(`\n🇲🇦 Fetching ${species.commonName} (${species.arabicName}) [${species.scientificName}]...`);
+  console.log(`\n🇲🇦 Fetching ${species.commonName} [${species.scientificName}]...`);
 
   const encodedTaxon = encodeURIComponent(species.scientificName);
   const apiUrl = `https://api.inaturalist.org/v1/observations?taxon_name=${encodedTaxon}&quality_grade=research&photos=true&per_page=15`;

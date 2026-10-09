@@ -5,6 +5,7 @@ import { Stack } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
+import { useFonts } from 'expo-font';
 import CustomSplashScreen from '@/components/splash-screen';
 import { Palette } from '@/constants/theme';
 
@@ -16,7 +17,25 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
+  const [fontsLoaded, fontError] = useFonts({
+    'Sentient-Regular': require('@/assets/fonts/Sentient-Regular.ttf'),
+    'Sentient-Italic': require('@/assets/fonts/Sentient-Italic.ttf'),
+    'Sentient-Medium': require('@/assets/fonts/Sentient-Medium.ttf'),
+    'Sentient-MediumItalic': require('@/assets/fonts/Sentient-MediumItalic.ttf'),
+    'Sentient-Bold': require('@/assets/fonts/Sentient-Bold.ttf'),
+    'Sentient-BoldItalic': require('@/assets/fonts/Sentient-BoldItalic.ttf'),
+    'Sentient-Light': require('@/assets/fonts/Sentient-Light.ttf'),
+    'Sentient-LightItalic': require('@/assets/fonts/Sentient-LightItalic.ttf'),
+    'Sentient-Extralight': require('@/assets/fonts/Sentient-Extralight.ttf'),
+    'Sentient-ExtralightItalic': require('@/assets/fonts/Sentient-ExtralightItalic.ttf'),
+    'Sentient': require('@/assets/fonts/Sentient-Regular.ttf'),
+  });
+
   const [isSplashDone, setIsSplashDone] = useState(false);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

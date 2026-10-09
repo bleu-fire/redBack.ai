@@ -1,7 +1,6 @@
 export interface SpeciesDetail {
   id: string;
   name: string;
-  arabicName?: string;
   scientificName: string;
   family: string;
   genus: string;
@@ -28,6 +27,7 @@ export interface SpeciesDetail {
     colors: string[];
     keyFeatures: string[];
   };
+  confusionWith?: string[];
 }
 
 export const SPECIES_CATALOG: SpeciesDetail[] = [
@@ -35,7 +35,6 @@ export const SPECIES_CATALOG: SpeciesDetail[] = [
   {
     id: 'latrodectus-tredecimguttatus',
     name: 'Mediterranean Black Widow',
-    arabicName: 'الأرملة السوداء المتوسطية',
     scientificName: 'Latrodectus tredecimguttatus',
     family: 'Theridiidae',
     genus: 'Latrodectus',
@@ -73,7 +72,6 @@ export const SPECIES_CATALOG: SpeciesDetail[] = [
   {
     id: 'loxosceles-rufescens',
     name: 'Mediterranean Recluse Spider',
-    arabicName: 'عنكبوت الكمان / الناسك',
     scientificName: 'Loxosceles rufescens',
     family: 'Sicariidae',
     genus: 'Loxosceles',
@@ -111,7 +109,6 @@ export const SPECIES_CATALOG: SpeciesDetail[] = [
   {
     id: 'macrothele-calpeiana',
     name: 'Moroccan Funnel-Web Spider',
-    arabicName: 'عنكبوت القمع المغربي',
     scientificName: 'Macrothele calpeiana',
     family: 'Macrothelidae',
     genus: 'Macrothele',
@@ -149,7 +146,6 @@ export const SPECIES_CATALOG: SpeciesDetail[] = [
   {
     id: 'argiope-lobata',
     name: 'Lobed Argiope',
-    arabicName: 'العنكبوت المفصص',
     scientificName: 'Argiope lobata',
     family: 'Araneidae',
     genus: 'Argiope',
@@ -185,7 +181,6 @@ export const SPECIES_CATALOG: SpeciesDetail[] = [
   {
     id: 'hogna-radiata',
     name: 'Radiated Wolf Spider',
-    arabicName: 'عنكبوت الذئب المشع',
     scientificName: 'Hogna radiata',
     family: 'Lycosidae',
     genus: 'Hogna',
@@ -221,7 +216,6 @@ export const SPECIES_CATALOG: SpeciesDetail[] = [
   {
     id: 'menemerus-semilimbatus',
     name: 'Moroccan Wall Jumping Spider',
-    arabicName: 'العنكبوت القافز الجداري',
     scientificName: 'Menemerus semilimbatus',
     family: 'Salticidae',
     genus: 'Menemerus',
@@ -257,7 +251,6 @@ export const SPECIES_CATALOG: SpeciesDetail[] = [
   {
     id: 'moggridgea-pseudocrinita',
     name: 'Moroccan Trapdoor Spider',
-    arabicName: 'عنكبوت الباب المسحور',
     scientificName: 'Moggridgea pseudocrinita',
     family: 'Migidae',
     genus: 'Moggridgea',
@@ -293,7 +286,6 @@ export const SPECIES_CATALOG: SpeciesDetail[] = [
   {
     id: 'uroctea-durandi',
     name: 'European Tent-Web Spider',
-    arabicName: 'عنكبوت الخيمة المتوسطي',
     scientificName: 'Uroctea durandi',
     family: 'Oecobiidae',
     genus: 'Uroctea',

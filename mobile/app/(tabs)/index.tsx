@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -11,56 +11,34 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import {
-  Compass,
-  Flame,
-  Sparkles,
   ChevronRight,
-  ShieldAlert,
-  CheckCircle2,
   Lock,
-  HelpCircle,
   MapPin,
 } from 'lucide-react-native';
 import { Palette, Spacing, Radii, Typography } from '@/constants/theme';
-import { Topbar, TruncatedText } from '@/components/ui';
+import { Topbar } from '@/components/ui';
 import { HeroCard } from '@/components/ui/HeroCard';
 import { useStore, StoreState } from '@/store/stores';
 import { SPECIES_CATALOG } from '@/data/speciesData';
 import { getFullImageUrl } from '@/data/api/api';
 
+function getSeasonalBadgeStyle(badgeText?: string) {
+  if (badgeText === 'Deadly' || badgeText === 'Venomous') {
+    return { bg: '#FEECE9', color: '#D9383A' };
+  }
+  if (badgeText === 'Danger') {
+    return { bg: '#EAF7EE', color: '#28813C' };
+  }
+  if (badgeText === 'Protected' || badgeText === 'Rare') {
+    return { bg: '#FEF3C7', color: '#B45309' };
+  }
+  return { bg: '#EAF7EE', color: '#28813C' };
+}
+
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const user = useStore((state: StoreState) => state.user);
   const firstName = user?.name ? user.name.trim().split(' ')[0] : 'Explorer';
-
-  // Daily Challenge State
-  const [dailySelected, setDailySelected] = useState<number | null>(null);
-  const [dailyClaimed, setDailyClaimed] = useState(false);
-  const [userXp, setUserXp] = useState(320);
-
-  const DAILY_CHALLENGE = {
-    question:
-      'Which medically significant spider features 13 orange-red spots and is active in Moroccan wheat fields during harvest?',
-    options: [
-      { text: 'Mediterranean Black Widow', correct: true },
-      { text: 'Sydney Funnel-Web Spider', correct: false },
-      { text: 'Moroccan Wall Jumping Spider', correct: false },
-    ],
-    explanation:
-      'The Mediterranean Black Widow (Latrodectus tredecimguttatus) is known in Morocco as "Malmignatte", named for its 13 vivid abdominal spots.',
-    xp: 25,
-  };
-
-  const handleSelectDaily = (index: number) => {
-    if (dailyClaimed) return;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setDailySelected(index);
-    if (DAILY_CHALLENGE.options[index].correct) {
-      setDailyClaimed(true);
-      setUserXp((prev) => prev + DAILY_CHALLENGE.xp);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    }
-  };
 
   // Curated seasonal active species
   const seasonalSpecies = SPECIES_CATALOG.slice(0, 5);
@@ -76,34 +54,11 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* --- 1. Field Researcher Header & Status Bar --- */}
+        {/* --- 1. Field Researcher Header --- */}
         <View style={styles.headerBlock}>
-          <Text style={styles.eyebrow}>FIELD EXPEDITION HQ</Text>
           <Text style={styles.greetingTitle}>
             Good morning, <Text style={styles.greetingName}>{firstName}</Text>.
           </Text>
-
-          {/* Metric Status Badges */}
-          <View style={styles.statusPillsRow}>
-            <View style={styles.statusPill}>
-              <Compass size={13} color={Palette.moss} />
-              <Text style={styles.statusPillText}>Field Observer • Lv. 2</Text>
-            </View>
-
-            <View style={[styles.statusPill, styles.streakPill]}>
-              <Flame size={13} color={Palette.coral} />
-              <Text style={[styles.statusPillText, { color: Palette.coral }]}>
-                5d streak
-              </Text>
-            </View>
-
-            <View style={[styles.statusPill, styles.xpPill]}>
-              <Sparkles size={13} color={Palette.gold} />
-              <Text style={[styles.statusPillText, { color: Palette.gold }]}>
-                {userXp} XP
-              </Text>
-            </View>
-          </View>
         </View>
 
         {/* --- 2. Hero Discovery Card (Camera Scanner Primary Trigger) --- */}
@@ -169,99 +124,23 @@ export default function HomeScreen() {
           </View>
         </Pressable>
 
-        {/* --- 4. Daily Field Mystery (Interactive Habit Challenge) --- */}
-        <View style={styles.dailyCard}>
-          <View style={styles.dailyCardHeader}>
-            <View style={styles.dailyHeaderLeft}>
-              <View style={styles.dailyIconBadge}>
-                <HelpCircle size={15} color={Palette.ink} strokeWidth={2.5} />
-              </View>
-              <Text style={styles.dailyCardTitle}>Daily Mystery Challenge</Text>
-            </View>
-            <View style={styles.dailyRewardPill}>
-              <Sparkles size={11} color={Palette.gold} />
-              <Text style={styles.dailyRewardText}>+{DAILY_CHALLENGE.xp} XP</Text>
-            </View>
-          </View>
 
-          <Text style={styles.dailyQuestion}>{DAILY_CHALLENGE.question}</Text>
 
-          {/* Options List */}
-          <View style={styles.dailyOptionsList}>
-            {DAILY_CHALLENGE.options.map((opt, oIdx) => {
-              const isSelected = dailySelected === oIdx;
-              const isSubmitted = dailySelected !== null;
-              const isCorrect = opt.correct;
-
-              let btnStyle = styles.dailyOptionBtn;
-              let textStyle = styles.dailyOptionText;
-
-              if (isSubmitted) {
-                if (isCorrect) {
-                  btnStyle = { ...btnStyle, ...styles.dailyOptionCorrect };
-                  textStyle = { ...textStyle, ...styles.dailyOptionTextCorrect };
-                } else if (isSelected) {
-                  btnStyle = { ...btnStyle, ...styles.dailyOptionWrong };
-                  textStyle = { ...textStyle, ...styles.dailyOptionTextWrong };
-                }
-              }
-
-              return (
-                <Pressable
-                  key={oIdx}
-                  onPress={() => handleSelectDaily(oIdx)}
-                  disabled={dailySubmittedLocked(dailySelected)}
-                  style={btnStyle}
-                >
-                  <View style={styles.dailyOptionLetterPill}>
-                    <Text style={styles.dailyOptionLetter}>
-                      {String.fromCharCode(65 + oIdx)}
-                    </Text>
-                  </View>
-                  <Text style={textStyle}>{opt.text}</Text>
-                  {isSubmitted && isCorrect && (
-                    <CheckCircle2 size={16} color={Palette.moss} />
-                  )}
-                </Pressable>
-              );
-            })}
-          </View>
-
-          {/* Explanation Banner when answered */}
-          {dailySelected !== null && (
-            <View
-              style={[
-                styles.dailyExplanationBox,
-                DAILY_CHALLENGE.options[dailySelected].correct
-                  ? styles.dailyExplanationSuccess
-                  : styles.dailyExplanationRetry,
-              ]}
-            >
-              <TruncatedText
-                style={styles.dailyExplanationText}
-                numberOfLines={2}
-                expandLabel="read full fact"
-                collapseLabel="less"
-              >
-                {DAILY_CHALLENGE.explanation}
-              </TruncatedText>
-            </View>
-          )}
-        </View>
-
-        {/* --- 5. Active This Season (Regional Biodiversity Radar) --- */}
+        {/* --- 5. Active This Season --- */}
         <View style={styles.seasonalSection}>
           <View style={styles.sectionHeader}>
-            <View>
-              <Text style={styles.sectionEyebrow}>REGIONAL RADAR</Text>
-              <Text style={styles.sectionTitle}>Active This Season</Text>
-            </View>
+            <Text style={styles.sectionTitle}>Active This Season</Text>
             <Pressable
-              onPress={() => router.push('/(tabs)/explore' as any)}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                router.push('/(tabs)/explore' as any);
+              }}
               style={styles.seeAllBtn}
+              accessibilityRole="button"
+              accessibilityLabel="See all active seasonal species"
             >
               <Text style={styles.seeAllText}>See all</Text>
-              <ChevronRight size={14} color={Palette.muted} />
+              <ChevronRight size={13} color={Palette.muted} strokeWidth={2.2} />
             </Pressable>
           </View>
 
@@ -272,8 +151,7 @@ export default function HomeScreen() {
           >
             {seasonalSpecies.map((sp) => {
               const imgUrl = getFullImageUrl(sp.serverImage);
-              const isDanger =
-                sp.badgeText === 'Deadly' || sp.badgeText === 'Venomous';
+              const badgeStyle = getSeasonalBadgeStyle(sp.badgeText);
 
               return (
                 <Pressable
@@ -287,7 +165,7 @@ export default function HomeScreen() {
                     pressed && styles.cardPressed,
                   ]}
                   accessibilityRole="button"
-                  accessibilityLabel={sp.name}
+                  accessibilityLabel={`${sp.name}, ${sp.scientificName}`}
                 >
                   <Image
                     source={imgUrl ? { uri: imgUrl } : sp.localImageFallback}
@@ -298,21 +176,19 @@ export default function HomeScreen() {
                   <View style={styles.seasonalCardBody}>
                     <View style={styles.seasonalBadgeRow}>
                       <View style={styles.regionTag}>
-                        <MapPin size={10} color={Palette.muted} />
+                        <MapPin size={11} color={Palette.muted} />
                         <Text style={styles.regionTagText}>{sp.region}</Text>
                       </View>
                       <View
                         style={[
                           styles.toxPill,
-                          isDanger ? styles.toxPillDanger : styles.toxPillSafe,
+                          { backgroundColor: badgeStyle.bg },
                         ]}
                       >
                         <Text
                           style={[
                             styles.toxPillText,
-                            isDanger
-                              ? styles.toxPillTextDanger
-                              : styles.toxPillTextSafe,
+                            { color: badgeStyle.color },
                           ]}
                         >
                           {sp.badgeText}
@@ -335,40 +211,9 @@ export default function HomeScreen() {
             })}
           </ScrollView>
         </View>
-
-        {/* --- 6. Emergency Offline First-Aid Protocol Bar --- */}
-        <Pressable
-          onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            router.push('/(tabs)/learn' as any);
-          }}
-          style={({ pressed }) => [
-            styles.emergencyStrip,
-            pressed && styles.cardPressed,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel="Open Emergency First Aid Protocol"
-        >
-          <View style={styles.emergencyIconWrap}>
-            <ShieldAlert size={20} color={Palette.danger} />
-          </View>
-          <View style={styles.emergencyTextCol}>
-            <Text style={styles.emergencyTitle}>
-              Emergency First-Aid Matrix (100% Offline)
-            </Text>
-            <Text style={styles.emergencySubtitle}>
-              Bitten? Instant clinical protocols & 24/7 CAPM / Australia hotlines.
-            </Text>
-          </View>
-          <ChevronRight size={18} color={Palette.danger} />
-        </Pressable>
       </ScrollView>
     </View>
   );
-}
-
-function dailySubmittedLocked(dailySelected: number | null): boolean {
-  return dailySelected !== null;
 }
 
 const styles = StyleSheet.create({
@@ -388,55 +233,15 @@ const styles = StyleSheet.create({
     gap: 6,
     marginTop: Spacing.xs,
   },
-  eyebrow: {
-    fontFamily: Typography.body,
-    fontSize: 11,
-    fontWeight: '800',
-    color: Palette.muted,
-    letterSpacing: 1.2,
-  },
   greetingTitle: {
-    fontFamily: Typography.display,
+    fontFamily: Typography.displayBold,
     fontSize: 26,
-    fontWeight: '800',
     color: Palette.ink,
     letterSpacing: -0.4,
     lineHeight: 32,
   },
   greetingName: {
     color: Palette.coral,
-  },
-  statusPillsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    flexWrap: 'wrap',
-    marginTop: 4,
-  },
-  statusPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    backgroundColor: Palette.paper,
-    borderWidth: 1,
-    borderColor: Palette.line,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: Radii.pill,
-  },
-  streakPill: {
-    borderColor: '#F9DCD6',
-    backgroundColor: '#FFF7F5',
-  },
-  xpPill: {
-    borderColor: '#FBE8C3',
-    backgroundColor: '#FFFBF2',
-  },
-  statusPillText: {
-    fontFamily: Typography.body,
-    fontSize: 12,
-    fontWeight: '700',
-    color: Palette.ink,
   },
 
   // 2. SpiderDex Tracker Card
@@ -463,9 +268,8 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   dexCardTitle: {
-    fontFamily: Typography.display,
+    fontFamily: Typography.displayBold,
     fontSize: 16,
-    fontWeight: '800',
     color: Palette.ink,
   },
   dexPercentPill: {
@@ -533,282 +337,103 @@ const styles = StyleSheet.create({
 
 
 
-  // 4. Daily Challenge Card
-  dailyCard: {
-    backgroundColor: Palette.paper,
-    borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: Palette.borderLine,
-    borderBottomWidth: 3,
-    borderBottomColor: '#D8D0C5',
-    padding: Spacing.md,
-    gap: Spacing.sm,
-  },
-  dailyCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingBottom: Spacing.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: Palette.line,
-  },
-  dailyHeaderLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  dailyIconBadge: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: '#F3EFE6',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dailyCardTitle: {
-    fontFamily: Typography.display,
-    fontSize: 15,
-    fontWeight: '800',
-    color: Palette.ink,
-  },
-  dailyRewardPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#FFF9E6',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: Radii.pill,
-    borderWidth: 1,
-    borderColor: '#F9E4A9',
-  },
-  dailyRewardText: {
-    fontFamily: Typography.body,
-    fontSize: 11,
-    fontWeight: '800',
-    color: Palette.gold,
-  },
-  dailyQuestion: {
-    fontFamily: Typography.display,
-    fontSize: 13.5,
-    fontWeight: '700',
-    color: Palette.ink,
-    lineHeight: 19,
-  },
-  dailyOptionsList: {
-    gap: 6,
-  },
-  dailyOptionBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Palette.canvas,
-    borderWidth: 1.5,
-    borderColor: Palette.borderLine,
-    borderBottomWidth: 3,
-    borderBottomColor: '#D8D0C5',
-    borderRadius: Radii.md,
-    padding: 11,
-    gap: 10,
-  },
-  dailyOptionCorrect: {
-    borderColor: Palette.forestGreen,
-    borderBottomColor: Palette.forestGreenDark,
-    backgroundColor: Palette.sageSubtle,
-  },
-  dailyOptionWrong: {
-    borderColor: Palette.spicyCrimson,
-    borderBottomColor: Palette.spicyCrimsonDark,
-    backgroundColor: Palette.coralSoft,
-  },
-  dailyOptionLetterPill: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: '#EAE6DE',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dailyOptionLetter: {
-    fontFamily: Typography.body,
-    fontSize: 11,
-    fontWeight: '800',
-    color: Palette.ink,
-  },
-  dailyOptionText: {
-    flex: 1,
-    fontFamily: Typography.body,
-    fontSize: 12.5,
-    color: Palette.ink,
-  },
-  dailyOptionTextCorrect: {
-    color: Palette.moss,
-    fontWeight: '700',
-  },
-  dailyOptionTextWrong: {
-    color: Palette.danger,
-    fontWeight: '700',
-  },
-  dailyExplanationBox: {
-    padding: 10,
-    borderRadius: Radii.md,
-    marginTop: 2,
-  },
-  dailyExplanationSuccess: {
-    backgroundColor: Palette.mossSoft,
-  },
-  dailyExplanationRetry: {
-    backgroundColor: Palette.coralSoft,
-  },
-  dailyExplanationText: {
-    fontFamily: Typography.body,
-    fontSize: 12,
-    color: Palette.ink,
-    lineHeight: 17,
-  },
+
 
   // 5. Seasonal Biodiversity Radar
   seasonalSection: {
-    gap: Spacing.sm,
+    gap: Spacing.sm + 2,
   },
   sectionHeader: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 2,
   },
-  sectionEyebrow: {
-    fontFamily: Typography.body,
-    fontSize: 10,
-    fontWeight: '800',
-    color: Palette.muted,
-    letterSpacing: 1,
-  },
   sectionTitle: {
-    fontFamily: Typography.display,
-    fontSize: 18,
-    fontWeight: '800',
+    fontFamily: Typography.displayBold,
+    fontSize: 22,
     color: Palette.ink,
+    letterSpacing: -0.3,
   },
   seeAllBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 2,
+    paddingVertical: 4,
   },
   seeAllText: {
     fontFamily: Typography.body,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 13,
+    fontWeight: '600',
     color: Palette.muted,
   },
   seasonalScroll: {
-    gap: Spacing.sm,
+    gap: 12,
     paddingRight: Spacing.md,
   },
   seasonalCard: {
-    width: 170,
+    width: 172,
     backgroundColor: Palette.paper,
-    borderRadius: 18,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: Palette.line,
+    borderColor: '#EAE4DC',
     overflow: 'hidden',
+    shadowColor: '#17211F',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 1,
   },
   seasonalCardImg: {
     width: '100%',
-    height: 110,
+    height: 122,
     backgroundColor: Palette.surfaceSubtle,
   },
   seasonalCardBody: {
-    padding: 10,
-    gap: 4,
+    paddingHorizontal: 12,
+    paddingTop: 10,
+    paddingBottom: 14,
+    gap: 3,
   },
   seasonalBadgeRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: 2,
   },
   regionTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 2,
+    gap: 3,
   },
   regionTagText: {
     fontFamily: Typography.body,
-    fontSize: 10,
+    fontSize: 11.5,
     color: Palette.muted,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   toxPill: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  toxPillDanger: {
-    backgroundColor: Palette.coralSoft,
-  },
-  toxPillSafe: {
-    backgroundColor: Palette.mossSoft,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 6,
   },
   toxPillText: {
-    fontSize: 9.5,
-    fontWeight: '800',
-  },
-  toxPillTextDanger: {
-    color: Palette.danger,
-  },
-  toxPillTextSafe: {
-    color: Palette.moss,
+    fontSize: 10.5,
+    fontWeight: '700',
   },
   seasonalCardName: {
-    fontFamily: Typography.display,
-    fontSize: 13,
-    fontWeight: '800',
+    fontFamily: Typography.displayBold,
+    fontSize: 15.5,
     color: Palette.ink,
-    marginTop: 2,
+    letterSpacing: -0.2,
   },
   seasonalCardSciName: {
-    fontFamily: Typography.body,
-    fontSize: 11,
-    fontStyle: 'italic',
+    fontFamily: Typography.displayItalic,
+    fontSize: 12,
     color: Palette.muted,
   },
 
-  // 6. Emergency Protocol Strip
-  emergencyStrip: {
-    backgroundColor: '#FFF5F5',
-    borderWidth: 1.5,
-    borderColor: '#F7C5C0',
-    borderBottomWidth: 3,
-    borderBottomColor: '#EAA9A2',
-    borderRadius: 18,
-    padding: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  emergencyIconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: Palette.paper,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emergencyTextCol: {
-    flex: 1,
-    gap: 2,
-  },
-  emergencyTitle: {
-    fontFamily: Typography.display,
-    fontSize: 13,
-    fontWeight: '800',
-    color: Palette.danger,
-  },
-  emergencySubtitle: {
-    fontFamily: Typography.body,
-    fontSize: 11.5,
-    color: '#8A483E',
-    lineHeight: 16,
-  },
+
 
   cardPressed: {
     opacity: 0.92,

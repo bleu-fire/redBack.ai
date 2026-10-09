@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 import { router } from 'expo-router';
-import { Palette, Spacing, Radii, Typography } from '@/constants/theme';
+import * as Haptics from 'expo-haptics';
+import { MapPin } from 'lucide-react-native';
+import { Palette, Typography } from '@/constants/theme';
 
 interface SpeciesGridCardProps {
   id?: string;
   name: string;
-  arabicName?: string;
   scientificName: string;
   badgeText: string;
   badgeType?: 'danger' | 'moss' | 'gold';
@@ -16,13 +17,34 @@ interface SpeciesGridCardProps {
 }
 
 /**
+ * Helper to obtain the soft pastel badge colors conforming
+ * to the naturalist 'Active This Season' card vibe.
+ */
+function getBadgeTheme(badgeText: string, badgeType?: string) {
+  if (badgeText === 'Deadly' || badgeText === 'Venomous') {
+    return { bg: '#FEECE9', color: '#D9383A' };
+  }
+  if (badgeText === 'Danger') {
+    return { bg: '#EAF7EE', color: '#28813C' };
+  }
+  if (badgeText === 'Protected' || badgeText === 'Rare' || badgeType === 'gold') {
+    return { bg: '#FEF3C7', color: '#B45309' };
+  }
+  return { bg: '#EAF7EE', color: '#28813C' };
+}
+
+/**
  * Reusable Species Grid Card
- * 2-column card showing photo, common name, scientific name, and status pill
+ * Conforming strictly to the 'Active This Season' editorial naturalist card vibe:
+ * - High-resolution specimen photo with smooth curved top
+ * - Metadata row with regional MapPin and soft status pill
+ * - Bold serif common name
+ * - Italic scientific name
+ * - Clean 20dp rounded surface with subtle ambient shadow
  */
 export function SpeciesGridCard({
   id,
   name,
-  arabicName,
   scientificName,
   badgeText,
   badgeType = 'moss',
@@ -31,6 +53,7 @@ export function SpeciesGridCard({
   onPress,
 }: SpeciesGridCardProps) {
   const handlePress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (onPress) {
       onPress();
     } else if (id) {
@@ -38,23 +61,7 @@ export function SpeciesGridCard({
     }
   };
 
-  // Determine badge background and text colors matching screenshot
-  let badgeBg = Palette.mossSoft;
-  let badgeTextColor = Palette.moss;
-
-  if (badgeText === 'Deadly' || badgeText === 'Venomous') {
-    badgeBg = Palette.coralSoft;
-    badgeTextColor = Palette.danger;
-  } else if (badgeText === 'Danger') {
-    badgeBg = '#FEF3C7';
-    badgeTextColor = '#D97706';
-  } else if (badgeText === 'Protected') {
-    badgeBg = '#E0E7FF';
-    badgeTextColor = '#4338CA';
-  } else if (badgeType === 'gold' || badgeText === 'Mild' || badgeText === 'Rare') {
-    badgeBg = Palette.goldSoft;
-    badgeTextColor = Palette.gold;
-  }
+  const badgeTheme = getBadgeTheme(badgeText, badgeType);
 
   // Resolve image source
   const imageSource =
@@ -66,39 +73,40 @@ export function SpeciesGridCard({
     <Pressable
       onPress={handlePress}
       style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      accessibilityRole="button"
+      accessibilityLabel={`${name}, ${scientificName}`}
     >
-      {/* Spider Photo Container with Region Tag */}
+      {/* Spider Photo Container */}
       <View style={styles.imageWrapper}>
         <Image source={imageSource} style={styles.cardImage} resizeMode="cover" />
-        {region && (
-          <View style={styles.regionBadge}>
-            <Text style={styles.regionText}>
-              {region === 'Morocco' ? 'Morocco' : 'Australia'}
-            </Text>
-          </View>
-        )}
       </View>
 
       {/* Card Information */}
       <View style={styles.cardBody}>
+        {/* Row 1: Region & Status Badge */}
+        <View style={styles.metaRow}>
+          <View style={styles.regionTag}>
+            <MapPin size={11} color={Palette.muted} />
+            <Text style={styles.regionTagText} numberOfLines={1}>
+              {region || 'Morocco'}
+            </Text>
+          </View>
+          <View style={[styles.badgePill, { backgroundColor: badgeTheme.bg }]}>
+            <Text style={[styles.badgePillText, { color: badgeTheme.color }]}>
+              {badgeText}
+            </Text>
+          </View>
+        </View>
+
+        {/* Row 2: Common Name (Serif Headline) */}
         <Text style={styles.cardTitle} numberOfLines={1}>
-          {name}
+          {name.replace(/\s*\([\u0600-\u06FF\s\/\-]+\)/g, '').trim()}
         </Text>
-        {arabicName ? (
-          <Text style={styles.cardArabic} numberOfLines={1}>
-            {arabicName}
-          </Text>
-        ) : null}
+
+        {/* Row 3: Scientific Name (Italic Serif / Secondary) */}
         <Text style={styles.cardScientific} numberOfLines={1}>
           {scientificName}
         </Text>
-
-        {/* Status Badge */}
-        <View style={[styles.badgePill, { backgroundColor: badgeBg }]}>
-          <Text style={[styles.badgePillText, { color: badgeTextColor }]}>
-            {badgeText}
-          </Text>
-        </View>
       </View>
     </Pressable>
   );
@@ -108,75 +116,74 @@ const styles = StyleSheet.create({
   card: {
     width: '48%',
     backgroundColor: Palette.paper,
-    borderWidth: 1.5,
-    borderColor: Palette.line,
-    borderBottomWidth: 3,
-    borderBottomColor: '#D8D0C5',
-    borderRadius: Radii.lg,
+    borderWidth: 1,
+    borderColor: '#EAE4DC',
+    borderRadius: 20,
     overflow: 'hidden',
+    shadowColor: '#17211F',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 1,
   },
   cardPressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.98 }],
+    opacity: 0.92,
+    transform: [{ scale: 0.985 }],
     borderColor: Palette.moss,
   },
   imageWrapper: {
     width: '100%',
-    height: 125,
-    position: 'relative',
+    height: 122,
     backgroundColor: Palette.surfaceSubtle,
   },
   cardImage: {
     width: '100%',
     height: '100%',
   },
-  regionBadge: {
-    position: 'absolute',
-    top: 7,
-    left: 7,
-    backgroundColor: 'rgba(23, 33, 31, 0.7)',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: Radii.pill,
-  },
-  regionText: {
-    fontFamily: Typography.body,
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
   cardBody: {
-    padding: Spacing.sm,
+    paddingHorizontal: 11,
+    paddingTop: 10,
+    paddingBottom: 13,
+    gap: 3,
   },
-  cardTitle: {
-    fontFamily: Typography.display,
-    fontSize: 14,
-    fontWeight: '700',
-    color: Palette.ink,
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 2,
   },
-  cardArabic: {
+  regionTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    flex: 1,
+    marginRight: 4,
+  },
+  regionTagText: {
     fontFamily: Typography.body,
     fontSize: 11,
     color: Palette.muted,
-    marginTop: 1,
-  },
-  cardScientific: {
-    fontFamily: Typography.display,
-    fontSize: 12,
-    fontStyle: 'italic',
-    color: Palette.muted,
-    marginTop: 2,
-    marginBottom: 8,
+    fontWeight: '500',
   },
   badgePill: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: Radii.pill,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 6,
   },
   badgePillText: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '700',
+  },
+  cardTitle: {
+    fontFamily: Typography.displayBold,
+    fontSize: 15,
+    color: Palette.ink,
+    letterSpacing: -0.2,
+  },
+  cardScientific: {
+    fontFamily: Typography.displayItalic,
+    fontSize: 12,
+    color: Palette.muted,
   },
 });
 

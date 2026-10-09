@@ -15,7 +15,6 @@ import {
   Bookmark,
   CheckCircle2,
   HelpCircle,
-  ShieldAlert,
   Move,
   ShieldX,
   Bandage,
@@ -39,18 +38,18 @@ export default function AIResultsScreen() {
   const [selectedSubTab, setSelectedSubTab] = useState<'evidence' | 'anatomy'>('evidence');
 
   // Parse species info
-  let speciesName = params.speciesName || 'Redback Spider';
+  let speciesName = (params.speciesName || 'Redback Spider').replace(/\s*\([\u0600-\u06FF\s\/\-]+\)/g, '').trim();
   let scientificName = params.scientificName || 'Latrodectus hasselti';
-  let confidence = params.confidence ? `${params.confidence}%` : '82%';
+  let rawConf = params.confidence || '82';
+  let confidence = rawConf.includes('%') ? rawConf : `${rawConf}%`;
   let imageUri = params.imageUri;
-  const isHighRisk = true; // Redback is medically significant
 
   if (params.identificationData) {
     try {
       const parsed = JSON.parse(params.identificationData);
       const topPrediction = parsed.data?.topPrediction || parsed.topPrediction;
       if (topPrediction) {
-        speciesName = topPrediction.commonName || speciesName;
+        speciesName = (topPrediction.commonName || speciesName).replace(/\s*\([\u0600-\u06FF\s\/\-]+\)/g, '').trim();
         scientificName = topPrediction.scientificName || scientificName;
         confidence = `${Math.round((topPrediction.confidence || 0.82) * 100)}%`;
       }
@@ -66,6 +65,7 @@ export default function AIResultsScreen() {
       params: {
         speciesName,
         scientificName,
+        confidence,
       },
     } as any);
   };
@@ -107,85 +107,56 @@ export default function AIResultsScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* ================= LAYER 1 & 2: PHOTO + CONFIDENCE BADGE ================= */}
+        {/* ================= LAYER 1: SPECIMEN PHOTO ================= */}
         <View style={styles.specimenCard}>
-          <Image
-            source={imageUri ? { uri: imageUri } : require('@/assets/images/spider-3d.png')}
-            style={styles.specimenImage}
-            resizeMode="cover"
-          />
-
-          <View style={styles.specimenMetaOverlay}>
-            <View style={styles.confidencePill}>
-              <CheckCircle2 size={13} color={Colors.forestGreen} />
-              <Text style={styles.confidenceText}>{confidence} confidence</Text>
-            </View>
+          <View style={styles.specimenImageWrapper}>
+            <Image
+              source={imageUri ? { uri: imageUri } : require('@/assets/images/spider-3d.png')}
+              style={styles.specimenImage}
+              resizeMode="cover"
+            />
           </View>
         </View>
 
-        {/* ================= LEVEL 1: SPECIMEN IDENTITY & MACRO CONFIDENCE ================= */}
+        {/* ================= SPECIMEN IDENTITY ================= */}
         <View style={styles.speciesInfoBlock}>
-          <View style={styles.levelTagRow}>
-            <View style={styles.levelBadge}>
-              <Text style={styles.levelBadgeText}>LEVEL 1 • IDENTIFICATION</Text>
+          <View style={styles.speciesHeaderRow}>
+            <View style={styles.speciesNameWrap}>
+              <Text style={styles.commonName}>{speciesName}</Text>
+              <Text style={styles.scientificName}>{scientificName}</Text>
             </View>
-            <View style={styles.confidencePill}>
-              <CheckCircle2 size={12} color={Colors.forestGreen} />
-              <Text style={styles.confidenceText}>{confidence} match</Text>
-            </View>
-          </View>
-          <Text style={styles.commonName}>{speciesName}</Text>
-          <Text style={styles.scientificName}>{scientificName}</Text>
-        </View>
-
-        {/* ================= LEVEL 2: CLINICAL THREAT VERDICT (1.5-SEC TRIAGE) ================= */}
-        <View style={[styles.threatBanner, isHighRisk ? styles.threatHigh : styles.threatSafe]}>
-          <ShieldAlert size={20} color="#FFFFFF" strokeWidth={2.5} />
-          <View style={styles.threatTextCol}>
-            <View style={styles.threatLevelPill}>
-              <Text style={styles.threatLevelPillText}>
-                {isHighRisk ? 'LEVEL 5 HAZARD • HIGH MEDICAL RELEVANCE' : 'LEVEL 1 HAZARD • HARMLESS FIELD ALLY'}
-              </Text>
-            </View>
-            <Text style={styles.threatSubtitle}>
-              {isHighRisk
-                ? 'Neurotoxic latrotoxin venom. Can cause intense muscle spasms and tachycardia. Keep safe perimeter.'
-                : 'Beneficial predatory species. Completely non-venomous and harmless to humans and pets.'}
-            </Text>
+            <Text style={styles.confidenceNumber}>{confidence}</Text>
           </View>
         </View>
 
-        {/* ================= LEVEL 3: IMMEDIATE FIELD ACTION (HIKER ACTION PROTOCOL) ================= */}
+        {/* ================= IMMEDIATE FIELD ACTION ================= */}
         <View style={styles.actionCard}>
           <View style={styles.actionHeaderRow}>
-            <View style={styles.actionLevelTag}>
-              <Text style={styles.actionLevelTagText}>LEVEL 3 • FIELD ACTIONS</Text>
-            </View>
             <Text style={styles.actionCardTitle}>Immediate Safety Triage</Text>
           </View>
-          <View style={styles.actionStepsGrid}>
-            <View style={styles.actionTile}>
-              <View style={styles.actionIconWrap}>
-                <Move size={18} color={Colors.inkPrimary} />
-              </View>
-              <Text style={styles.actionTileTitle}>Keep Distance</Text>
-              <Text style={styles.actionTileDesc}>Stay &gt; 1 meter away</Text>
+          <View style={styles.actionIconsRow}>
+            <View
+              style={styles.actionIconWrap}
+              accessibilityLabel="Keep Distance: Stay > 1 meter away"
+              accessibilityRole="image"
+            >
+              <Move size={22} color={Colors.inkPrimary} strokeWidth={2} />
             </View>
 
-            <View style={styles.actionTile}>
-              <View style={styles.actionIconWrap}>
-                <ShieldX size={18} color={Colors.crimson} />
-              </View>
-              <Text style={styles.actionTileTitle}>Do Not Crush</Text>
-              <Text style={styles.actionTileDesc}>Bites happen on contact</Text>
+            <View
+              style={[styles.actionIconWrap, styles.actionIconWrapCrimson]}
+              accessibilityLabel="Do Not Crush: Bites happen on contact"
+              accessibilityRole="image"
+            >
+              <ShieldX size={22} color={Colors.crimson} strokeWidth={2} />
             </View>
 
-            <View style={styles.actionTile}>
-              <View style={styles.actionIconWrap}>
-                <Bandage size={18} color={Colors.amber} />
-              </View>
-              <Text style={styles.actionTileTitle}>Bite Protocol</Text>
-              <Text style={styles.actionTileDesc}>Firm pressure bandage</Text>
+            <View
+              style={[styles.actionIconWrap, styles.actionIconWrapAmber]}
+              accessibilityLabel="Bite Protocol: Firm pressure bandage"
+              accessibilityRole="image"
+            >
+              <Bandage size={22} color={Colors.amber} strokeWidth={2} />
             </View>
           </View>
 
@@ -329,7 +300,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: 10,
     paddingVertical: Spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: Colors.borderLine,
@@ -352,7 +323,7 @@ const styles = StyleSheet.create({
     color: Colors.inkPrimary,
   },
   scrollContent: {
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: 10,
     paddingTop: Spacing.md,
     paddingBottom: Spacing.xxxl,
     gap: Spacing.lg,
@@ -361,120 +332,52 @@ const styles = StyleSheet.create({
   // Specimen Photo Card
   specimenCard: {
     width: '100%',
-    height: 220,
-    borderRadius: Radii.xl,
-    overflow: 'hidden',
-    position: 'relative',
+    height: 240,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 30,
+    padding: 10,
     borderWidth: 1.5,
     borderColor: Colors.borderLine,
+  },
+  specimenImageWrapper: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: Colors.canvas,
   },
   specimenImage: {
     width: '100%',
     height: '100%',
   },
-  specimenMetaOverlay: {
-    position: 'absolute',
-    bottom: 12,
-    left: 12,
-  },
-  confidencePill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: Radii.pill,
-  },
-  confidenceText: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: Colors.inkPrimary,
-  },
 
-  // Threat Level Banner
-  threatBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    padding: Spacing.md,
-    borderRadius: Radii.lg,
-  },
-  threatHigh: {
-    backgroundColor: Colors.crimson,
-  },
-  threatSafe: {
-    backgroundColor: Colors.forestGreen,
-  },
-  threatTextCol: {
-    flex: 1,
-    gap: 2,
-  },
-  threatTitle: {
-    fontSize: Typography.caption.fontSize,
-    fontWeight: '900',
-    color: '#FFFFFF',
-    letterSpacing: 0.5,
-  },
-  threatSubtitle: {
-    fontSize: Typography.small.fontSize,
-    color: 'rgba(255, 255, 255, 0.92)',
-    lineHeight: 16,
-  },
 
-  levelTagRow: {
+  speciesInfoBlock: {
+    backgroundColor: Colors.card,
+    borderRadius: Radii.xxl,
+    padding: Spacing.lg,
+    borderWidth: 1.5,
+    borderColor: Colors.borderLine,
+    borderBottomWidth: 3,
+    borderBottomColor: Colors.borderPressed,
+  },
+  speciesHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 4,
+    gap: Spacing.sm,
   },
-  levelBadge: {
-    backgroundColor: Colors.surfaceSubtle,
-    borderWidth: 1,
-    borderColor: Colors.borderLine,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: Radii.pill,
+  speciesNameWrap: {
+    flex: 1,
+    paddingRight: Spacing.xs,
   },
-  levelBadgeText: {
-    fontSize: 10,
+  confidenceNumber: {
+    fontSize: 20,
     fontWeight: '800',
-    color: Colors.inkMuted,
-    letterSpacing: 0.8,
-  },
-  threatLevelPill: {
-    alignSelf: 'flex-start',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: Radii.pill,
-    marginBottom: 2,
-  },
-  threatLevelPillText: {
-    fontSize: 10,
-    fontWeight: '900',
-    color: '#FFFFFF',
-    letterSpacing: 0.8,
+    color: Colors.forestGreen,
   },
   actionHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 2,
-  },
-  actionLevelTag: {
-    backgroundColor: Colors.canvas,
-    borderWidth: 1,
-    borderColor: Colors.borderLine,
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-    borderRadius: Radii.pill,
-  },
-  actionLevelTagText: {
-    fontSize: 9.5,
-    fontWeight: '800',
-    color: Colors.inkMuted,
-    letterSpacing: 0.7,
+    marginBottom: 4,
   },
   commonName: {
     fontSize: Typography.h2.fontSize,
@@ -490,7 +393,7 @@ const styles = StyleSheet.create({
   // Hiker Action Card
   actionCard: {
     backgroundColor: Colors.card,
-    borderRadius: Radii.xl,
+    borderRadius: Radii.xxl,
     borderWidth: 1.5,
     borderColor: Colors.borderLine,
     borderBottomWidth: 3,
@@ -503,44 +406,32 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: Colors.inkPrimary,
   },
-  actionStepsGrid: {
+  actionIconsRow: {
     flexDirection: 'row',
-    gap: Spacing.sm,
-  },
-  actionTile: {
-    flex: 1,
-    backgroundColor: Colors.canvas,
-    borderRadius: Radii.md,
-    borderWidth: 1,
-    borderColor: Colors.borderLine,
-    padding: Spacing.sm,
     alignItems: 'center',
-    gap: 4,
+    justifyContent: 'center',
+    gap: Spacing.xl,
+    paddingVertical: Spacing.xs,
   },
   actionIconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: Colors.card,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: Colors.canvas,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actionTileTitle: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: Colors.inkPrimary,
-    textAlign: 'center',
+  actionIconWrapCrimson: {
+    backgroundColor: Colors.crimsonSoft,
   },
-  actionTileDesc: {
-    fontSize: 9.5,
-    color: Colors.inkMuted,
-    textAlign: 'center',
+  actionIconWrapAmber: {
+    backgroundColor: Colors.amberSoft,
   },
 
   // Reasoning Card
   reasoningCard: {
     backgroundColor: Colors.card,
-    borderRadius: Radii.xl,
+    borderRadius: Radii.xxl,
     borderWidth: 1.5,
     borderColor: Colors.borderLine,
     borderBottomWidth: 3,

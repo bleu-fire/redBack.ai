@@ -2,7 +2,7 @@ import { authService } from './auth.service';
 import { User } from './user.model';
 import bcrypt from 'bcryptjs';
 
-// Helper بسيط للـ Testing
+// Simple test runner helper
 let passed = 0;
 let failed = 0;
 

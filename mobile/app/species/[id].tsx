@@ -15,9 +15,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import {
   ArrowLeft,
   Share2,
-  ShieldAlert,
-  ShieldCheck,
-  AlertTriangle,
   Eye,
   Ruler,
   Clock,
@@ -26,6 +23,19 @@ import {
   PhoneCall,
   CheckCircle2,
   HeartPulse,
+  Trees,
+  Compass,
+  Moon,
+  Sun,
+  ShieldAlert,
+  ShieldCheck,
+  PawPrint,
+  Box,
+  Layers,
+  TreePine,
+  Info,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react-native';
 import { Palette, Spacing, Radii, Typography } from '@/constants/theme';
 import { TruncatedText } from '@/components/ui';
@@ -50,6 +60,7 @@ export default function SpeciesDetailsScreen() {
   // Interactive benchmark & action path states
   const [activeBenchmark, setActiveBenchmark] = useState<ScaleBenchmark>('coin');
   const [activeAction, setActiveAction] = useState<ActionProtocol>('threat');
+  const [showClinicalDetails, setShowClinicalDetails] = useState<boolean>(false);
 
   // Lookup species by ID, slug, or fallback to first catalog item
   const species: SpeciesDetail = useMemo(() => {
@@ -108,11 +119,14 @@ export default function SpeciesDetailsScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingBottom: insets.bottom + Spacing.xxxl },
+          {
+            paddingTop: (insets.top || 16) + Spacing.xs,
+            paddingBottom: insets.bottom + Spacing.xxxl,
+          },
         ]}
       >
-        {/* --- 1. Immersive Full-Bleed Specimen Hero --- */}
-        <View style={styles.heroContainer}>
+        {/* --- 1. Specimen Card with White Outline (Reference Design) --- */}
+        <View style={styles.heroCard}>
           <Image
             source={imageSource}
             style={styles.heroImage}
@@ -120,110 +134,107 @@ export default function SpeciesDetailsScreen() {
           />
 
           <LinearGradient
-            colors={['rgba(0, 0, 0, 0.45)', 'transparent', 'rgba(15, 23, 20, 0.95)']}
-            locations={[0, 0.4, 1]}
+            colors={['rgba(0, 0, 0, 0.45)', 'transparent', 'rgba(15, 23, 20, 0.90)']}
+            locations={[0, 0.35, 1]}
             style={styles.heroGradient}
           >
             {/* Top Navigation Row */}
-            <View style={[styles.heroNavRow, { paddingTop: insets.top || 16 }]}>
+            <View style={styles.heroNavRow}>
               <Pressable
                 onPress={() => router.back()}
                 style={({ pressed }) => [
-                  styles.navCircleBtn,
+                  styles.navGhostBtn,
                   pressed && styles.pressed,
                 ]}
                 accessibilityRole="button"
                 accessibilityLabel="Go back"
               >
-                <ArrowLeft size={20} color="#FFFFFF" />
+                <ArrowLeft size={22} color="#FFFFFF" strokeWidth={2.4} />
               </Pressable>
-
-              <View style={styles.heroRegionBadge}>
-                <Text style={styles.heroRegionText}>
-                  {species.region === 'Morocco' ? '🇲🇦 Morocco' : '🇦🇺 Australia'}
-                </Text>
-              </View>
 
               <Pressable
                 style={({ pressed }) => [
-                  styles.navCircleBtn,
+                  styles.navGhostBtn,
                   pressed && styles.pressed,
                 ]}
                 accessibilityRole="button"
                 accessibilityLabel="Share specimen"
               >
-                <Share2 size={18} color="#FFFFFF" />
+                <Share2 size={20} color="#FFFFFF" strokeWidth={2.2} />
               </Pressable>
-            </View>
-
-            {/* Specimen Family Tag over image bottom */}
-            <View style={styles.heroBottomTagRow}>
-              <View style={styles.heroFamilyBadge}>
-                <Text style={styles.heroFamilyText}>
-                  {species.family} • {species.genus}
-                </Text>
-              </View>
             </View>
           </LinearGradient>
         </View>
 
         {/* --- 2. Specimen Identity & Nomenclature --- */}
         <View style={styles.identitySection}>
-          <Text style={styles.commonName}>{species.name}</Text>
-          {species.arabicName ? (
-            <Text style={styles.arabicName}>{species.arabicName}</Text>
-          ) : null}
+          <Text style={styles.commonName}>{species.name.replace(/\s*\([\u0600-\u06FF\s\/\-]+\)/g, '').trim()}</Text>
           <Text style={styles.scientificName}>{species.scientificName}</Text>
         </View>
 
-        {/* --- 2B. 4-Pillar Quick Field Metrics (Size, Habitat, Activity, Diet) --- */}
-        <View style={styles.metricsGrid}>
-          <View style={styles.metricCard}>
-            <Text style={styles.metricLabel}>SIZE</Text>
-            <Text style={styles.metricVal}>{sizeScale.bodyMm}–{sizeScale.legSpanMm} mm</Text>
+        {/* --- 2B. Minimalist Ghost Icon Metrics (Card-Free / Circle-Free) --- */}
+        <View style={styles.metricsGhostStrip}>
+          {/* 1. Size Metric */}
+          <View style={styles.metricGhostItem}>
+            <View style={styles.metricIconWrap}>
+              <Ruler size={20} color={Palette.moss} strokeWidth={2.2} />
+            </View>
+            <Text style={styles.metricGhostLabel}>SIZE</Text>
+            <Text style={styles.metricGhostVal} numberOfLines={1}>
+              {sizeScale.bodyMm}–{sizeScale.legSpanMm} mm
+            </Text>
           </View>
-          <View style={styles.metricCard}>
-            <Text style={styles.metricLabel}>HABITAT</Text>
-            <Text style={styles.metricVal} numberOfLines={1}>{species.habitat.split(',')[0]}</Text>
+
+          {/* 2. Habitat Metric */}
+          <View style={styles.metricGhostItem}>
+            <View style={styles.metricIconWrap}>
+              <Trees size={20} color={Palette.moss} strokeWidth={2.2} />
+            </View>
+            <Text style={styles.metricGhostLabel}>HABITAT</Text>
+            <Text style={styles.metricGhostVal} numberOfLines={1}>
+              {species.habitat.split(',')[0]}
+            </Text>
           </View>
-          <View style={styles.metricCard}>
-            <Text style={styles.metricLabel}>ACTIVITY</Text>
-            <Text style={styles.metricVal}>{species.behavior?.activity || 'Nocturnal'}</Text>
+
+          {/* 3. Activity Metric */}
+          <View style={styles.metricGhostItem}>
+            <View style={styles.metricIconWrap}>
+              {species.activity?.toLowerCase().includes('diurnal') ? (
+                <Sun size={20} color={Palette.gold} strokeWidth={2.2} />
+              ) : (
+                <Moon size={20} color={Palette.moss} strokeWidth={2.2} />
+              )}
+            </View>
+            <Text style={styles.metricGhostLabel}>ACTIVITY</Text>
+            <Text style={styles.metricGhostVal} numberOfLines={1}>
+              {species.activity || 'Nocturnal'}
+            </Text>
           </View>
-          <View style={styles.metricCard}>
-            <Text style={styles.metricLabel}>REGION</Text>
-            <Text style={styles.metricVal}>{species.region}</Text>
+
+          {/* 4. Region Metric */}
+          <View style={styles.metricGhostItem}>
+            <View style={styles.metricIconWrap}>
+              <Compass size={20} color={Palette.moss} strokeWidth={2.2} />
+            </View>
+            <Text style={styles.metricGhostLabel}>REGION</Text>
+            <Text style={styles.metricGhostVal} numberOfLines={1}>
+              {species.region}
+            </Text>
           </View>
         </View>
 
-        {/* --- 3. THE 0–5 CLINICAL DANGER DIAGNOSTIC (The Hero Feature) --- */}
+        {/* --- 3. GHOST CLINICAL DANGER DIAGNOSTIC (Card-Free / Borderless) --- */}
         <View style={styles.clinicalDiagnosticCard}>
           <View style={styles.clinicalHeader}>
             <View style={styles.clinicalHeaderLeft}>
-              <View
-                style={[
-                  styles.clinicalIconCircle,
-                  { backgroundColor: gaugeAccentColor },
-                ]}
-              >
-                {isHighDanger ? (
-                  <ShieldAlert size={16} color="#FFFFFF" strokeWidth={2.5} />
-                ) : isMediumDanger ? (
-                  <AlertTriangle size={16} color="#FFFFFF" strokeWidth={2.5} />
-                ) : (
-                  <ShieldCheck size={16} color="#FFFFFF" strokeWidth={2.5} />
-                )}
-              </View>
-              <View>
-                <Text style={styles.clinicalCardEyebrow}>CLINICAL THREAT METER</Text>
-                <Text style={styles.clinicalCardTitle}>{threat.levelTitle}</Text>
-              </View>
+              <Text style={styles.clinicalCardEyebrow}>CLINICAL THREAT METER</Text>
+              <Text style={styles.clinicalCardTitle}>{threat.levelTitle}</Text>
             </View>
 
             <View
               style={[
                 styles.clinicalScoreBadge,
-                { borderColor: gaugeAccentColor },
+                { backgroundColor: isHighDanger ? Palette.coralSoft : Palette.mossSoft },
               ]}
             >
               <Text
@@ -261,52 +272,108 @@ export default function SpeciesDetailsScreen() {
             })}
           </View>
 
-          <TruncatedText
-            style={styles.clinicalSummary}
-            numberOfLines={3}
-            expandLabel="Show clinical details"
-            collapseLabel="Hide details"
-          >
-            {threat.summary}
-          </TruncatedText>
-
-          {/* Three Concrete Clinical Anchors */}
-          <View style={styles.clinicalAnchorsContainer}>
+          {/* 3-Column Ghost Diagnostic Trio (Pure Floating Icons, No Cards, No Circles) */}
+          <View style={styles.compactTrioRow}>
             {/* 1. Human Risk */}
-            <View style={styles.clinicalAnchorRow}>
-              <View style={styles.clinicalAnchorIcon}>
-                <HeartPulse size={15} color={Palette.ink} />
+            <View style={styles.compactTrioCol}>
+              <View style={styles.compactTrioIconWrap}>
+                <HeartPulse size={20} color={isHighDanger ? Palette.danger : Palette.moss} strokeWidth={2.2} />
               </View>
-              <View style={styles.clinicalAnchorTextCol}>
-                <Text style={styles.clinicalAnchorLabel}>Human Risk</Text>
-                <Text style={styles.clinicalAnchorValue}>{threat.humanRisk}</Text>
-              </View>
+              <Text style={styles.compactTrioLabel}>HUMAN</Text>
+              <Text
+                style={[styles.compactTrioVal, isHighDanger && { color: Palette.danger }]}
+                numberOfLines={1}
+              >
+                {isHighDanger ? 'High Hazard' : isMediumDanger ? 'Caution' : 'Low Risk'}
+              </Text>
             </View>
 
             {/* 2. Pet Risk */}
-            <View style={styles.clinicalAnchorRow}>
-              <View style={styles.clinicalAnchorIcon}>
-                <Bug size={15} color={Palette.ink} />
+            <View style={styles.compactTrioCol}>
+              <View style={styles.compactTrioIconWrap}>
+                <PawPrint
+                  size={20}
+                  color={
+                    threat.petRisk?.toLowerCase().includes('deadly') ||
+                    threat.petRisk?.toLowerCase().includes('severe')
+                      ? Palette.danger
+                      : Palette.moss
+                  }
+                  strokeWidth={2.2}
+                />
               </View>
-              <View style={styles.clinicalAnchorTextCol}>
-                <Text style={styles.clinicalAnchorLabel}>Pet & Dog / Cat Safety</Text>
-                <Text style={styles.clinicalAnchorValue}>{threat.petRisk}</Text>
-              </View>
+              <Text style={styles.compactTrioLabel}>PETS</Text>
+              <Text
+                style={[
+                  styles.compactTrioVal,
+                  (threat.petRisk?.toLowerCase().includes('deadly') ||
+                    threat.petRisk?.toLowerCase().includes('severe')) && {
+                    color: Palette.danger,
+                  },
+                ]}
+                numberOfLines={1}
+              >
+                {threat.petRisk?.toLowerCase().includes('deadly') ||
+                threat.petRisk?.toLowerCase().includes('severe')
+                  ? 'High Risk'
+                  : 'Safe / Mild'}
+              </Text>
             </View>
 
-            {/* 3. Symptoms Timeline */}
-            <View style={styles.clinicalAnchorRow}>
-              <View style={styles.clinicalAnchorIcon}>
-                <Clock size={15} color={Palette.ink} />
+            {/* 3. Timeline */}
+            <View style={styles.compactTrioCol}>
+              <View style={styles.compactTrioIconWrap}>
+                <Clock size={20} color={Palette.ink} strokeWidth={2.2} />
               </View>
-              <View style={styles.clinicalAnchorTextCol}>
-                <Text style={styles.clinicalAnchorLabel}>Symptom Progression</Text>
-                <Text style={styles.clinicalAnchorValue}>
-                  {threat.symptomTimeline}
-                </Text>
-              </View>
+              <Text style={styles.compactTrioLabel}>TIMELINE</Text>
+              <Text style={styles.compactTrioVal} numberOfLines={1}>
+                {threat.symptomTimeline?.toLowerCase().includes('1-3')
+                  ? '1–3h Peak'
+                  : threat.symptomTimeline?.toLowerCase().includes('rapid')
+                  ? 'Rapid'
+                  : 'Mild'}
+              </Text>
             </View>
           </View>
+
+          {/* Progressive Disclosure Action: Disclose deep clinical text on tap */}
+          <Pressable
+            onPress={() => {
+              Haptics.selectionAsync();
+              setShowClinicalDetails(!showClinicalDetails);
+            }}
+            style={({ pressed }) => [styles.clinicalDisclosureBtn, pressed && styles.pressed]}
+            accessibilityRole="button"
+            accessibilityLabel={showClinicalDetails ? 'Hide clinical analysis' : 'View full clinical analysis'}
+          >
+            <Text style={styles.clinicalDisclosureText}>
+              {showClinicalDetails ? 'Hide clinical analysis' : 'View full clinical analysis'}
+            </Text>
+            {showClinicalDetails ? (
+              <ChevronUp size={14} color={Palette.muted} />
+            ) : (
+              <ChevronDown size={14} color={Palette.muted} />
+            )}
+          </Pressable>
+
+          {/* Deep Details Drawer (Progressive Disclosure) */}
+          {showClinicalDetails && (
+            <View style={styles.clinicalDetailsDrawer}>
+              <Text style={styles.clinicalSummary}>{threat.summary}</Text>
+              <View style={styles.drawerDetailRow}>
+                <Text style={styles.drawerDetailLabel}>Clinical pathology:</Text>
+                <Text style={styles.drawerDetailText}>{threat.humanRisk}</Text>
+              </View>
+              <View style={styles.drawerDetailRow}>
+                <Text style={styles.drawerDetailLabel}>Veterinary impact:</Text>
+                <Text style={styles.drawerDetailText}>{threat.petRisk}</Text>
+              </View>
+              <View style={styles.drawerDetailRow}>
+                <Text style={styles.drawerDetailLabel}>Symptom timeline:</Text>
+                <Text style={styles.drawerDetailText}>{threat.symptomTimeline}</Text>
+              </View>
+            </View>
+          )}
         </View>
 
         {/* --- 4. THE INTERACTIVE "REAL-LIFE SIZE SCALE" (Benchmark Simulator) --- */}
@@ -498,6 +565,11 @@ export default function SpeciesDetailsScreen() {
                       : styles.actionVerdictPillSafe,
                   ]}
                 >
+                  {isHighDanger ? (
+                    <ShieldAlert size={14} color={Palette.danger} strokeWidth={2.4} />
+                  ) : (
+                    <ShieldCheck size={14} color={Palette.moss} strokeWidth={2.4} />
+                  )}
                   <Text
                     style={[
                       styles.actionVerdictPillText,
@@ -514,49 +586,59 @@ export default function SpeciesDetailsScreen() {
                   </Text>
                 </View>
               </View>
+
               <Text style={styles.actionExplanationText}>
                 {threat.humanRisk}
               </Text>
-              <Text style={styles.actionSecondaryText}>
-                Habitat Context: {species.habitat}
-              </Text>
+
+              <View style={styles.actionMetaContextRow}>
+                <Trees size={13} color={Palette.muted} />
+                <Text style={styles.actionSecondaryText}>
+                  Habitat Context: {species.habitat}
+                </Text>
+              </View>
             </View>
           )}
 
-          {/* Tab 2: Safe Removal (The Cup & Card Technique) */}
+          {/* Tab 2: Safe Removal (Ghost / Circle-Free Action Stepper) */}
           {activeAction === 'relocate' && (
             <View style={styles.actionBodyBlock}>
-              <Text style={styles.relocationSummary}>
-                {threat.relocationAdvice}
-              </Text>
-
-              <View style={styles.relocationStepsList}>
-                <View style={styles.relocationStepRow}>
-                  <View style={styles.stepNumCircle}>
-                    <Text style={styles.stepNumText}>1</Text>
+              {/* 3-Step Ghost Action Stepper */}
+              <View style={styles.removalFlowRow}>
+                {/* Step 1: Cover */}
+                <View style={styles.removalFlowCol}>
+                  <View style={styles.removalIconWrap}>
+                    <Box size={24} color={Palette.moss} strokeWidth={2.2} />
                   </View>
-                  <Text style={styles.stepDescText}>
-                    Place a wide, clear plastic tub or glass jar over the spider from directly above.
-                  </Text>
+                  <Text style={styles.removalTileTitle}>1. Cover</Text>
+                  <Text style={styles.removalTileSub}>Jar or tub</Text>
                 </View>
 
-                <View style={styles.relocationStepRow}>
-                  <View style={styles.stepNumCircle}>
-                    <Text style={styles.stepNumText}>2</Text>
+                {/* Step 2: Slide */}
+                <View style={styles.removalFlowCol}>
+                  <View style={styles.removalIconWrap}>
+                    <Layers size={24} color={Palette.moss} strokeWidth={2.2} />
                   </View>
-                  <Text style={styles.stepDescText}>
-                    Slowly slide a stiff piece of cardboard or junk mail under the opening.
-                  </Text>
+                  <Text style={styles.removalTileTitle}>2. Slide</Text>
+                  <Text style={styles.removalTileSub}>Stiff card</Text>
                 </View>
 
-                <View style={styles.relocationStepRow}>
-                  <View style={styles.stepNumCircle}>
-                    <Text style={styles.stepNumText}>3</Text>
+                {/* Step 3: Release */}
+                <View style={styles.removalFlowCol}>
+                  <View style={styles.removalIconWrap}>
+                    <TreePine size={24} color={Palette.moss} strokeWidth={2.2} />
                   </View>
-                  <Text style={styles.stepDescText}>
-                    Carry outside and gently tilt open at the base of garden bushes, away from house entries.
-                  </Text>
+                  <Text style={styles.removalTileTitle}>3. Release</Text>
+                  <Text style={styles.removalTileSub}>Outdoors</Text>
                 </View>
+              </View>
+
+              {/* Zero Contact Safety Tip */}
+              <View style={styles.removalTipBar}>
+                <Info size={14} color={Palette.moss} strokeWidth={2} />
+                <Text style={styles.removalTipText}>
+                  Zero skin contact: Keep hands behind the cardboard barrier.
+                </Text>
               </View>
             </View>
           )}
@@ -565,7 +647,10 @@ export default function SpeciesDetailsScreen() {
           {activeAction === 'emergency' && (
             <View style={styles.actionBodyBlock}>
               <View style={styles.firstAidBox}>
-                <Text style={styles.firstAidTitle}>Immediate Action Rule</Text>
+                <View style={styles.firstAidHeaderRow}>
+                  <ShieldAlert size={16} color={Palette.danger} strokeWidth={2.2} />
+                  <Text style={styles.firstAidTitle}>Immediate Action Rule</Text>
+                </View>
                 <Text style={styles.firstAidText}>{threat.immediateAction}</Text>
               </View>
 
@@ -677,12 +762,20 @@ const styles = StyleSheet.create({
     gap: Spacing.lg,
   },
 
-  // 1. Hero Specimen Image
-  heroContainer: {
-    width: '100%',
-    height: 360,
-    position: 'relative',
+  // Top Navigation Header
+  // 1. Specimen Hero Card with White Outline (Matching Reference Card)
+  heroCard: {
+    marginHorizontal: Spacing.lg,
+    height: 350,
+    borderRadius: 26,
+    borderWidth: 0,
+    overflow: 'hidden',
     backgroundColor: '#0F1714',
+    shadowColor: '#17211F',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.14,
+    shadowRadius: 14,
+    elevation: 4,
   },
   heroImage: {
     width: '100%',
@@ -691,57 +784,25 @@ const styles = StyleSheet.create({
   heroGradient: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.md,
+    padding: Spacing.md,
   },
   heroNavRow: {
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    zIndex: 10,
   },
-  navCircleBtn: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: 'rgba(23, 33, 31, 0.65)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.25)',
+  navGhostBtn: {
+    width: 44,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'transparent',
+    borderWidth: 0,
   },
-  heroRegionBadge: {
-    backgroundColor: 'rgba(23, 33, 31, 0.75)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: Radii.pill,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  heroRegionText: {
-    fontFamily: Typography.body,
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  heroBottomTagRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  heroFamilyBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: Radii.pill,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.25)',
-  },
-  heroFamilyText: {
-    fontFamily: Typography.body,
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#DCE7E1',
-    letterSpacing: 0.5,
+  specimenImage: {
+    width: '100%',
+    height: '100%',
   },
 
   // 2. Identity Section
@@ -750,37 +811,27 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   commonName: {
-    fontFamily: Typography.display,
+    fontFamily: Typography.displayBold,
     fontSize: 28,
-    fontWeight: '800',
     color: Palette.ink,
     letterSpacing: -0.5,
     lineHeight: 34,
   },
-  arabicName: {
-    fontFamily: Typography.display,
-    fontSize: 20,
-    fontWeight: '700',
-    color: Palette.moss,
-  },
   scientificName: {
-    fontFamily: Typography.body,
+    fontFamily: Typography.displayItalic,
     fontSize: 15,
-    fontStyle: 'italic',
     color: Palette.muted,
   },
 
-  // 3. Clinical Danger Diagnostic Card
+  // 3. Clinical Danger Diagnostic Card (Ghost Style - No Border Lines)
   clinicalDiagnosticCard: {
     marginHorizontal: Spacing.lg,
     backgroundColor: Palette.paper,
     borderRadius: 22,
-    borderWidth: 1.5,
-    borderColor: Palette.line,
-    borderBottomWidth: 3,
-    borderBottomColor: '#D8D0C5',
     padding: Spacing.md,
     gap: Spacing.md,
+    borderWidth: 0,
+    borderBottomWidth: 0,
   },
   clinicalHeader: {
     flexDirection: 'row',
@@ -788,17 +839,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   clinicalHeaderLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
     flex: 1,
-  },
-  clinicalIconCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+    gap: 2,
   },
   clinicalCardEyebrow: {
     fontFamily: Typography.body,
@@ -808,17 +850,16 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   clinicalCardTitle: {
-    fontFamily: Typography.display,
+    fontFamily: Typography.displayBold,
     fontSize: 16,
-    fontWeight: '800',
     color: Palette.ink,
     letterSpacing: -0.2,
   },
   clinicalScoreBadge: {
-    borderWidth: 1.5,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: Radii.pill,
+    borderWidth: 0,
   },
   clinicalScoreBadgeText: {
     fontFamily: Typography.body,
@@ -846,43 +887,82 @@ const styles = StyleSheet.create({
     color: Palette.ink,
     lineHeight: 19,
   },
-  clinicalAnchorsContainer: {
-    gap: 10,
-    paddingTop: Spacing.xs,
-    borderTopWidth: 1,
-    borderTopColor: Palette.line,
-  },
-  clinicalAnchorRow: {
+  compactTrioRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 10,
+    alignItems: 'stretch',
+    gap: 8,
+    marginTop: 2,
   },
-  clinicalAnchorIcon: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#F3EFE6',
+  compactTrioCol: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 1,
+    gap: 4,
+    paddingVertical: 6,
+    backgroundColor: 'transparent',
+    borderWidth: 0,
   },
-  clinicalAnchorTextCol: {
-    flex: 1,
+  compactTrioIconWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+  },
+  compactTrioLabel: {
+    fontFamily: Typography.body,
+    fontSize: 9.5,
+    fontWeight: '800',
+    color: Palette.muted,
+    letterSpacing: 0.8,
+    textAlign: 'center',
+  },
+  compactTrioVal: {
+    fontFamily: Typography.body,
+    fontSize: 11,
+    fontWeight: '800',
+    color: Palette.ink,
+    textAlign: 'center',
+  },
+  clinicalDisclosureBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 10,
+    backgroundColor: 'transparent',
+    borderRadius: Radii.pill,
+    borderWidth: 0,
+    marginTop: 4,
+  },
+  clinicalDisclosureText: {
+    fontFamily: Typography.body,
+    fontSize: 11.5,
+    fontWeight: '700',
+    color: Palette.ink,
+  },
+  clinicalDetailsDrawer: {
+    backgroundColor: Palette.canvas,
+    borderRadius: 14,
+    padding: Spacing.md,
+    gap: 10,
+    marginTop: 2,
+    borderWidth: 0,
+  },
+  drawerDetailRow: {
     gap: 2,
   },
-  clinicalAnchorLabel: {
+  drawerDetailLabel: {
     fontFamily: Typography.body,
     fontSize: 11,
     fontWeight: '800',
     color: Palette.muted,
-    letterSpacing: 0.5,
   },
-  clinicalAnchorValue: {
+  drawerDetailText: {
     fontFamily: Typography.body,
-    fontSize: 12.5,
+    fontSize: 12,
     color: Palette.ink,
-    lineHeight: 18,
-    fontWeight: '600',
+    lineHeight: 17,
   },
 
   // 4. Interactive Size Scale Card
@@ -890,10 +970,8 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.lg,
     backgroundColor: Palette.paper,
     borderRadius: 22,
-    borderWidth: 1.5,
-    borderColor: Palette.line,
-    borderBottomWidth: 3,
-    borderBottomColor: '#D8D0C5',
+    borderWidth: 0,
+    borderBottomWidth: 0,
     padding: Spacing.md,
     gap: Spacing.md,
   },
@@ -1062,10 +1140,8 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.lg,
     backgroundColor: Palette.paper,
     borderRadius: 22,
-    borderWidth: 1.5,
-    borderColor: Palette.line,
-    borderBottomWidth: 3,
-    borderBottomColor: '#D8D0C5',
+    borderWidth: 0,
+    borderBottomWidth: 0,
     padding: Spacing.md,
     gap: Spacing.md,
   },
@@ -1146,57 +1222,80 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     fontWeight: '600',
   },
+  actionMetaContextRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 2,
+  },
   actionSecondaryText: {
     fontFamily: Typography.body,
     fontSize: 12,
     color: Palette.muted,
     lineHeight: 17,
   },
-  relocationSummary: {
-    fontFamily: Typography.body,
-    fontSize: 13,
-    color: Palette.ink,
-    lineHeight: 19,
-    fontWeight: '600',
-  },
-  relocationStepsList: {
+  removalFlowRow: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
     gap: 8,
     marginTop: 4,
   },
-  relocationStepRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 10,
-  },
-  stepNumCircle: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: Palette.ink,
+  removalFlowCol: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 1,
+    gap: 4,
+    paddingVertical: 4,
   },
-  stepNumText: {
-    fontFamily: Typography.body,
-    fontSize: 11,
+  removalIconWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+  },
+  removalTileTitle: {
+    fontFamily: Typography.display,
+    fontSize: 13,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: Palette.ink,
   },
-  stepDescText: {
+  removalTileSub: {
+    fontFamily: Typography.body,
+    fontSize: 10,
+    fontWeight: '600',
+    color: Palette.muted,
+    textAlign: 'center',
+  },
+  removalTipBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: Palette.canvas,
+    borderWidth: 0,
+    borderRadius: Radii.md,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    marginTop: 4,
+  },
+  removalTipText: {
     flex: 1,
     fontFamily: Typography.body,
-    fontSize: 12.5,
-    color: Palette.ink,
-    lineHeight: 18,
+    fontSize: 11.5,
+    color: Palette.muted,
+    fontWeight: '600',
   },
   firstAidBox: {
     backgroundColor: '#FFF7F5',
-    borderWidth: 1,
-    borderColor: '#F9DCD6',
+    borderWidth: 0,
     borderRadius: Radii.md,
     padding: Spacing.sm + 2,
-    gap: 4,
+    gap: 6,
+  },
+  firstAidHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
   firstAidTitle: {
     fontFamily: Typography.display,
@@ -1321,10 +1420,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     backgroundColor: Palette.moss,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    borderBottomWidth: 3,
-    borderBottomColor: Palette.mossDark,
+    borderWidth: 0,
+    borderBottomWidth: 0,
     paddingVertical: 14,
     borderRadius: Radii.pill,
     minHeight: 50,
@@ -1336,37 +1433,41 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
 
-  // 2B. 4-Pillar Quick Field Metrics Grid
-  metricsGrid: {
+  // 2B. Minimalist Ghost Icon Metrics (Card-Free / Circle-Free)
+  metricsGhostStrip: {
     marginHorizontal: Spacing.lg,
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingVertical: 2,
+    gap: 8,
   },
-  metricCard: {
+  metricGhostItem: {
     flex: 1,
-    minWidth: '45%',
-    backgroundColor: Palette.paper,
-    borderWidth: 1.5,
-    borderColor: Palette.line,
-    borderBottomWidth: 3,
-    borderBottomColor: '#D8D0C5',
-    borderRadius: Radii.md,
-    padding: Spacing.sm,
-    gap: 2,
+    alignItems: 'center',
+    gap: 3,
   },
-  metricLabel: {
+  metricIconWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+  },
+  metricGhostLabel: {
     fontFamily: Typography.body,
-    fontSize: 10,
+    fontSize: 9.5,
     fontWeight: '800',
     color: Palette.muted,
     letterSpacing: 0.8,
+    textAlign: 'center',
   },
-  metricVal: {
+  metricGhostVal: {
     fontFamily: Typography.display,
-    fontSize: 13,
+    fontSize: 11.5,
     fontWeight: '700',
     color: Palette.ink,
+    textAlign: 'center',
   },
 
   // 7. Look-Alike Card
@@ -1374,10 +1475,8 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.lg,
     backgroundColor: Palette.paper,
     borderRadius: 22,
-    borderWidth: 1.5,
-    borderColor: Palette.line,
-    borderBottomWidth: 3,
-    borderBottomColor: '#D8D0C5',
+    borderWidth: 0,
+    borderBottomWidth: 0,
     padding: Spacing.md,
     gap: Spacing.xs,
   },
@@ -1402,8 +1501,7 @@ const styles = StyleSheet.create({
   },
   lookAlikeTipBox: {
     backgroundColor: Palette.canvas,
-    borderWidth: 1,
-    borderColor: Palette.line,
+    borderWidth: 0,
     borderRadius: Radii.md,
     padding: 10,
     marginTop: 6,

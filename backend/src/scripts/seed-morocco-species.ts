@@ -9,7 +9,7 @@ import { pineconeService } from '../config/pinecone';
 const moroccanSpiders = [
   {
     scientificName: 'Latrodectus tredecimguttatus',
-    commonName: 'Mediterranean black widow (الأرملة السوداء المتوسطية)',
+    commonName: 'Mediterranean black widow',
     family: 'Theridiidae',
     genus: 'Latrodectus',
     toxicityLevel: 'deadly' as const,
@@ -40,7 +40,7 @@ const moroccanSpiders = [
   },
   {
     scientificName: 'Loxosceles rufescens',
-    commonName: 'Mediterranean recluse spider (عنكبوت الكمان / الناسك)',
+    commonName: 'Mediterranean recluse spider',
     family: 'Sicariidae',
     genus: 'Loxosceles',
     toxicityLevel: 'danger' as const,
@@ -71,7 +71,7 @@ const moroccanSpiders = [
   },
   {
     scientificName: 'Macrothele calpeiana',
-    commonName: 'Gibraltar & Moroccan funnel-web spider (عنكبوت القمع المغربي)',
+    commonName: 'Gibraltar & Moroccan funnel-web spider',
     family: 'Macrothelidae',
     genus: 'Macrothele',
     toxicityLevel: 'danger' as const,
@@ -102,7 +102,7 @@ const moroccanSpiders = [
   },
   {
     scientificName: 'Hogna radiata',
-    commonName: 'Radiated wolf spider (عنكبوت الذئب المشع)',
+    commonName: 'Radiated wolf spider',
     family: 'Lycosidae',
     genus: 'Hogna',
     toxicityLevel: 'mild' as const,
@@ -132,7 +132,7 @@ const moroccanSpiders = [
   },
   {
     scientificName: 'Argiope lobata',
-    commonName: 'Lobed argiope / Silver sun spider (عنكبوت الشمس الفضي الفصي)',
+    commonName: 'Lobed argiope / Silver sun spider',
     family: 'Araneidae',
     genus: 'Argiope',
     toxicityLevel: 'harmless' as const,
@@ -161,7 +161,7 @@ const moroccanSpiders = [
   },
   {
     scientificName: 'Eusparassus dufouri',
-    commonName: 'Mediterranean huntsman spider (عنكبوت الصياد المتوسطي)',
+    commonName: 'Mediterranean huntsman spider',
     family: 'Sparassidae',
     genus: 'Eusparassus',
     toxicityLevel: 'mild' as const,
@@ -190,7 +190,7 @@ const moroccanSpiders = [
   },
   {
     scientificName: 'Menemerus semilimbatus',
-    commonName: 'Mediterranean jumping spider (العنكبوت القفاز الشائع)',
+    commonName: 'Mediterranean jumping spider',
     family: 'Salticidae',
     genus: 'Menemerus',
     toxicityLevel: 'harmless' as const,
@@ -219,7 +219,7 @@ const moroccanSpiders = [
   },
   {
     scientificName: 'Uroctea durandi',
-    commonName: 'Mediterranean star spider (عنكبوت النجمة المتوسطي)',
+    commonName: 'Mediterranean star spider',
     family: 'Oecobiidae',
     genus: 'Uroctea',
     toxicityLevel: 'harmless' as const,
