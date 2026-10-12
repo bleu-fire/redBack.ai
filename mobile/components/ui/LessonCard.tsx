@@ -59,13 +59,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: Radii.sm,
-    backgroundColor: Palette.mossSoft,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
+    backgroundColor: 'transparent',
   },
   info: {
     flex: 1,

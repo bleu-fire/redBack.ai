@@ -1,122 +1,270 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   Pressable,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import {
   X,
-  Bell,
   BellOff,
   AlertTriangle,
   Bug,
   Sparkles,
+  Award,
   CheckCheck,
   ChevronRight,
   Trash2,
-  CheckCircle2,
+  Compass,
+  ShieldCheck,
+  RotateCcw,
+  Camera,
 } from 'lucide-react-native';
-import { Palette, Spacing, Radii, Typography } from '@/constants/theme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Palette } from '@/constants/theme';
+import { styles } from '@/components/modal/modal.styles';
+
+export type NotificationType = 'safety' | 'discovery' | 'milestone' | 'community' | 'achievement';
 
 export interface NotificationItem {
   id: string;
-  type: 'safety' | 'discovery' | 'achievement' | 'community';
+  type: NotificationType;
+  category?: string;
   title: string;
   message: string;
   time: string;
   read: boolean;
   route?: string;
+  actionLabel?: string;
 }
 
-const FILTERS = ['All', 'Safety', 'Discoveries', 'Activity'];
+const STORAGE_KEY = '@redback_field_notifications';
+
+export const DEFAULT_NOTIFICATIONS: NotificationItem[] = [
+  {
+    id: 'notif-1',
+    type: 'safety',
+    category: 'CLINICAL ALERT',
+    title: 'Active Redback Sighting in Region',
+    message:
+      'Multiple venomous Redbacks documented in dry sheltered perimeter. Review antivenom protocol.',
+    time: '12m ago',
+    read: false,
+    route: '/species/latrodectus-hasselti',
+    actionLabel: 'Review Antivenom Guide',
+  },
+  {
+    id: 'notif-2',
+    type: 'discovery',
+    category: 'SPECIMEN RECORD',
+    title: 'Moroccan Jumping Spider Identified',
+    message:
+      'Observation verified with 96% AI confidence. Added to SpiderDex (+25 XP).',
+    time: '2h ago',
+    read: false,
+    route: '/(tabs)/explore',
+    actionLabel: 'View in SpiderDex',
+  },
+  {
+    id: 'notif-3',
+    type: 'milestone',
+    category: 'RANK ASCENSION',
+    title: 'Milestone Unlocked: Observer Lv. 2',
+    message:
+      'Documented 3 spider families across Morocco & Australia. New field badges unlocked.',
+    time: '5h ago',
+    read: false,
+    route: '/(tabs)/profile',
+    actionLabel: 'Inspect Journal',
+  },
+  {
+    id: 'notif-4',
+    type: 'community',
+    category: 'BIOSPHERE ADVISORY',
+    title: 'Seasonal Funnel-Web Weather Trigger',
+    message:
+      'Recent rainfall triggers wandering behavior in male Funnel-Webs. Check boots and foliage.',
+    time: 'Yesterday',
+    read: true,
+    route: '/species/latrodectus-hasselti',
+    actionLabel: 'Habitat Warning',
+  },
+  {
+    id: 'notif-5',
+    type: 'milestone',
+    category: 'DAILY CHALLENGE',
+    title: 'Daily Morphometric Riddle Ready',
+    message:
+      'A new 15-second mystery spider riddle is live. Solve it to extend your 5-day streak.',
+    time: 'Yesterday',
+    read: true,
+    route: '/(tabs)/learn',
+    actionLabel: 'Start Riddle',
+  },
+];
+
+const FILTER_TABS = [
+  { id: 'All', label: 'All' },
+  { id: 'Safety', label: 'Safety' },
+  { id: 'Discoveries', label: 'Discoveries' },
+  { id: 'Milestones', label: 'Milestones' },
+  { id: 'Advisories', label: 'Advisories' },
+];
 
 export default function ModalScreen() {
   const insets = useSafeAreaInsets();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState('All');
+  const [selectedFilter, setSelectedFilter] = useState<string>('All');
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  // Load persisted dispatches or seed defaults
+  useEffect(() => {
+    const loadDispatches = async () => {
+      try {
+        const stored = await AsyncStorage.getItem(STORAGE_KEY);
+        if (stored !== null) {
+          setNotifications(JSON.parse(stored));
+        } else {
+          setNotifications(DEFAULT_NOTIFICATIONS);
+          await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_NOTIFICATIONS));
+        }
+      } catch {
+        setNotifications(DEFAULT_NOTIFICATIONS);
+      }
+    };
+    loadDispatches();
+  }, []);
+
+  const saveDispatches = async (newItems: NotificationItem[]) => {
+    setNotifications(newItems);
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newItems));
+    } catch (err) {
+      console.warn('Failed to save notifications', err);
+    }
+  };
+
+  const unreadCount = useMemo(
+    () => notifications.filter((n) => !n.read).length,
+    [notifications]
+  );
+
+  const hasSafetyUnread = useMemo(
+    () => notifications.some((n) => !n.read && n.type === 'safety'),
+    [notifications]
+  );
+
+  const filterCounts = useMemo(() => {
+    const counts: Record<string, number> = {
+      All: notifications.length,
+      Safety: notifications.filter((n) => n.type === 'safety').length,
+      Discoveries: notifications.filter((n) => n.type === 'discovery').length,
+      Milestones: notifications.filter((n) => n.type === 'milestone' || n.type === 'achievement').length,
+      Advisories: notifications.filter((n) => n.type === 'community').length,
+    };
+    return counts;
+  }, [notifications]);
+
+  const filteredNotifications = useMemo(() => {
+    return notifications.filter((n) => {
+      if (selectedFilter === 'Safety') return n.type === 'safety';
+      if (selectedFilter === 'Discoveries') return n.type === 'discovery';
+      if (selectedFilter === 'Milestones') return n.type === 'milestone' || n.type === 'achievement';
+      if (selectedFilter === 'Advisories') return n.type === 'community';
+      return true;
+    });
+  }, [notifications, selectedFilter]);
 
   const handleMarkAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    if (unreadCount === 0) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const updated = notifications.map((n) => ({ ...n, read: true }));
+    saveDispatches(updated);
   };
 
   const handleClearAll = () => {
-    setNotifications([]);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    saveDispatches([]);
+  };
+
+  const handleResetDemo = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    saveDispatches(DEFAULT_NOTIFICATIONS);
+    setSelectedFilter('All');
+  };
+
+  const handleDeleteItem = (id: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const updated = notifications.filter((n) => n.id !== id);
+    saveDispatches(updated);
   };
 
   const handlePressItem = (item: NotificationItem) => {
-    // Mark as read
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === item.id ? { ...n, read: true } : n))
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const updated = notifications.map((n) =>
+      n.id === item.id ? { ...n, read: true } : n
     );
-    // Navigate if route is available
+    saveDispatches(updated);
+
     if (item.route) {
       router.push(item.route as any);
     }
   };
 
-  const filteredNotifications = notifications.filter((n) => {
-    if (selectedFilter === 'Safety') return n.type === 'safety';
-    if (selectedFilter === 'Discoveries') return n.type === 'discovery';
-    if (selectedFilter === 'Activity') return n.type === 'achievement' || n.type === 'community';
-    return true;
-  });
-
-  const getIconForType = (type: NotificationItem['type']) => {
-    switch (type) {
-      case 'safety':
-        return <AlertTriangle size={18} color={Palette.danger} />;
-      case 'discovery':
-        return <Bug size={18} color={Palette.moss} />;
-      case 'achievement':
-        return <Sparkles size={18} color={Palette.gold} />;
-      case 'community':
-        return <CheckCircle2 size={18} color={Palette.moss} />;
-      default:
-        return <Bell size={18} color={Palette.muted} />;
-    }
+  const handleSelectFilter = (filterId: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSelectedFilter(filterId);
   };
 
-  const getBadgeBg = (type: NotificationItem['type']) => {
+  const renderBadgeIcon = (type: NotificationType) => {
     switch (type) {
       case 'safety':
-        return Palette.coralSoft;
+        return <AlertTriangle size={15} color={Palette.danger} strokeWidth={2.2} />;
       case 'discovery':
-        return Palette.mossSoft;
+        return <Bug size={15} color={Palette.moss} strokeWidth={2.2} />;
+      case 'milestone':
       case 'achievement':
-        return Palette.goldSoft;
+        return <Award size={15} color={Palette.gold} strokeWidth={2.2} />;
       case 'community':
-        return Palette.mossSoft;
+        return <Compass size={15} color={Palette.amber} strokeWidth={2.2} />;
       default:
-        return Palette.surfaceSubtle;
+        return <Sparkles size={15} color={Palette.muted} strokeWidth={2.2} />;
     }
   };
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top, paddingBottom: insets.bottom + 12 }]}>
-      {/* 1. Header with Close Button and Title */}
+      {/* 1. Header with Clean Title, Plain Text Unread Count (No Badge Background), and Dismiss */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.title}>Notifications</Text>
-          {unreadCount > 0 && (
-            <View style={styles.unreadBadge}>
-              <Text style={styles.unreadBadgeText}>{unreadCount} new</Text>
-            </View>
-          )}
+          <View style={styles.titleRow}>
+            <Text style={styles.title}>Notifications</Text>
+            {unreadCount > 0 && (
+              <Text
+                style={[
+                  styles.unreadCountText,
+                  hasSafetyUnread && styles.unreadCountTextDanger,
+                ]}
+              >
+                ({unreadCount})
+              </Text>
+            )}
+          </View>
         </View>
 
         <Pressable
-          onPress={() => router.back()}
-          style={({ pressed }) => [styles.closeBtn, pressed && styles.pressed]}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            router.back();
+          }}
+          style={({ pressed }) => [styles.closeBtn, pressed && styles.closeBtnPressed]}
           accessibilityRole="button"
           accessibilityLabel="Close notifications"
+          hitSlop={10}
         >
-          <X size={22} color={Palette.ink} />
+          <X size={18} color={Palette.ink} strokeWidth={2.2} />
         </Pressable>
       </View>
 
@@ -128,53 +276,85 @@ export default function ModalScreen() {
             disabled={unreadCount === 0}
             style={({ pressed }) => [
               styles.actionButton,
-              unreadCount === 0 && styles.actionDisabled,
-              pressed && styles.pressed,
+              unreadCount > 0 && styles.actionButtonActive,
+              unreadCount === 0 && styles.actionButtonDisabled,
+              pressed && styles.btnPressed,
             ]}
+            accessibilityRole="button"
+            accessibilityLabel="Mark all notifications as read"
           >
-            <CheckCheck size={16} color={unreadCount > 0 ? Palette.moss : Palette.muted} />
-            <Text style={[styles.actionText, unreadCount === 0 && styles.textDisabled]}>
-              Mark all as read
+            <CheckCheck
+              size={13}
+              color={unreadCount > 0 ? Palette.moss : Palette.muted}
+              strokeWidth={2.2}
+            />
+            <Text
+              style={[
+                styles.actionButtonText,
+                unreadCount === 0 && { color: Palette.muted },
+              ]}
+            >
+              Mark all read
             </Text>
           </Pressable>
 
           <Pressable
             onPress={handleClearAll}
-            style={({ pressed }) => [styles.actionButton, pressed && styles.pressed]}
+            style={({ pressed }) => [styles.actionClearBtn, pressed && styles.btnPressed]}
+            accessibilityRole="button"
+            accessibilityLabel="Clear all notifications"
           >
-            <Trash2 size={15} color={Palette.muted} />
-            <Text style={styles.clearText}>Clear</Text>
+            <Trash2 size={12} color={Palette.muted} strokeWidth={2} />
+            <Text style={styles.actionClearText}>Clear</Text>
           </Pressable>
         </View>
       )}
 
       {/* 3. Filter Category Pills */}
-      <View style={styles.filterScroll}>
-        {FILTERS.map((filter) => {
-          const isSelected = selectedFilter === filter;
-          return (
-            <Pressable
-              key={filter}
-              onPress={() => setSelectedFilter(filter)}
-              style={[
-                styles.filterChip,
-                isSelected ? styles.filterChipActive : styles.filterChipInactive,
-              ]}
-            >
-              <Text
-                style={[
-                  styles.filterText,
-                  isSelected ? styles.filterTextActive : styles.filterTextInactive,
+      <View style={styles.filterScrollView}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filterScrollContent}
+        >
+          {FILTER_TABS.map((tab) => {
+            const isSelected = selectedFilter === tab.id;
+            const count = filterCounts[tab.id] || 0;
+            return (
+              <Pressable
+                key={tab.id}
+                onPress={() => handleSelectFilter(tab.id)}
+                style={({ pressed }) => [
+                  styles.filterChip,
+                  isSelected && styles.filterChipActive,
+                  pressed && styles.filterChipPressed,
                 ]}
+                accessibilityRole="button"
+                accessibilityLabel={`Filter by ${tab.label}`}
               >
-                {filter}
-              </Text>
-            </Pressable>
-          );
-        })}
+                <Text
+                  style={[
+                    styles.filterText,
+                    isSelected && styles.filterTextActive,
+                  ]}
+                >
+                  {tab.label}
+                </Text>
+                <Text
+                  style={[
+                    styles.filterCountText,
+                    isSelected && styles.filterCountTextActive,
+                  ]}
+                >
+                  {count}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
       </View>
 
-      {/* 4. Notifications List */}
+      {/* 4. Compact & Simple Notifications List */}
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
@@ -182,262 +362,152 @@ export default function ModalScreen() {
         {filteredNotifications.length === 0 ? (
           <View style={styles.emptyContainer}>
             <View style={styles.emptyIconCircle}>
-              <BellOff size={32} color={Palette.muted} />
+              {notifications.length === 0 ? (
+                <ShieldCheck size={26} color={Palette.moss} strokeWidth={2} />
+              ) : (
+                <BellOff size={24} color={Palette.muted} strokeWidth={2} />
+              )}
             </View>
-            <Text style={styles.emptyTitle}>All caught up!</Text>
-            <Text style={styles.emptySubtitle}>
-              You have no {selectedFilter === 'All' ? '' : selectedFilter.toLowerCase()} notifications at this time.
+            <Text style={styles.emptyTitle}>
+              {notifications.length === 0 ? 'All caught up' : 'No notifications'}
             </Text>
+            <Text style={styles.emptySubtitle}>
+              {notifications.length === 0
+                ? 'All field advisories and specimen logs have been acknowledged.'
+                : `No ${selectedFilter.toLowerCase()} notifications found.`}
+            </Text>
+
+            <View style={styles.emptyActionsRow}>
+              {notifications.length === 0 ? (
+                <Pressable
+                  onPress={handleResetDemo}
+                  style={({ pressed }) => [styles.emptyPrimaryBtn, pressed && styles.btnPressed]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Restore notifications"
+                >
+                  <RotateCcw size={13} color="#FFFFFF" strokeWidth={2.2} />
+                  <Text style={styles.emptyPrimaryBtnText}>Restore</Text>
+                </Pressable>
+              ) : (
+                <Pressable
+                  onPress={() => handleSelectFilter('All')}
+                  style={({ pressed }) => [styles.emptyPrimaryBtn, pressed && styles.btnPressed]}
+                >
+                  <Text style={styles.emptyPrimaryBtnText}>View All</Text>
+                </Pressable>
+              )}
+
+              <Pressable
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  router.push('/(tabs)/scanner' as any);
+                }}
+                style={({ pressed }) => [styles.emptySecondaryBtn, pressed && styles.btnPressed]}
+                accessibilityRole="button"
+                accessibilityLabel="Open camera scanner"
+              >
+                <Camera size={13} color={Palette.ink} strokeWidth={2} />
+                <Text style={styles.emptySecondaryBtnText}>Scan</Text>
+              </Pressable>
+            </View>
           </View>
         ) : (
-          filteredNotifications.map((item) => (
-            <Pressable
-              key={item.id}
-              onPress={() => handlePressItem(item)}
-              style={({ pressed }) => [
-                styles.card,
-                !item.read && styles.cardUnread,
-                pressed && styles.pressed,
-              ]}
-            >
-              {/* Left Icon Badge */}
-              <View style={[styles.iconBadge, { backgroundColor: getBadgeBg(item.type) }]}>
-                {getIconForType(item.type)}
-              </View>
+          filteredNotifications.map((item) => {
+            const isRead = item.read;
 
-              {/* Center Content */}
-              <View style={styles.contentContainer}>
-                <View style={styles.rowTop}>
-                  <Text style={[styles.itemTitle, !item.read && styles.itemTitleUnread]}>
-                    {item.title}
-                  </Text>
-                  {!item.read && <View style={styles.dotIndicator} />}
+            return (
+              <Pressable
+                key={item.id}
+                onPress={() => handlePressItem(item)}
+                style={({ pressed }) => [
+                  styles.card,
+                  isRead && styles.cardRead,
+                  pressed && styles.cardPressed,
+                ]}
+                accessibilityRole="button"
+                accessibilityLabel={`${item.title}, ${item.message}`}
+              >
+                {/* Compact Icon */}
+                <View style={styles.iconBadge}>
+                  {renderBadgeIcon(item.type)}
                 </View>
 
-                <Text style={styles.itemMessage} numberOfLines={2}>
-                  {item.message}
-                </Text>
+                {/* Content */}
+                <View style={styles.cardContent}>
+                  <View style={styles.cardTopRow}>
+                    <Text
+                      style={[
+                        styles.cardTitle,
+                        isRead && styles.cardTitleRead,
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {item.title}
+                    </Text>
 
-                <Text style={styles.itemTime}>{item.time}</Text>
-              </View>
+                    <View style={styles.timeAndDot}>
+                      {!isRead && (
+                        <View
+                          style={[
+                            styles.unreadDot,
+                            item.type === 'safety' && styles.unreadDotDanger,
+                          ]}
+                        />
+                      )}
+                      <Text style={styles.timeLabel}>{item.time}</Text>
+                    </View>
+                  </View>
 
-              {/* Right Arrow if Navigable */}
-              {Boolean(item.route) && (
-                <ChevronRight size={18} color={Palette.muted} style={styles.chevron} />
-              )}
-            </Pressable>
-          ))
+                  <Text
+                    style={[
+                      styles.cardMessage,
+                      isRead && styles.cardMessageRead,
+                    ]}
+                    numberOfLines={2}
+                  >
+                    {item.message}
+                  </Text>
+
+                  {Boolean(item.actionLabel || item.route) && (
+                    <View style={styles.actionInline}>
+                      <Text
+                        style={[
+                          styles.actionInlineText,
+                          item.type === 'safety' && styles.actionInlineTextDanger,
+                        ]}
+                      >
+                        {item.actionLabel || 'View details'}
+                      </Text>
+                      <ChevronRight
+                        size={12}
+                        color={item.type === 'safety' ? Palette.danger : Palette.moss}
+                        strokeWidth={2.2}
+                      />
+                    </View>
+                  )}
+                </View>
+
+                {/* Small Dismiss Button */}
+                <Pressable
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    handleDeleteItem(item.id);
+                  }}
+                  style={({ pressed }) => [
+                    styles.dismissBtn,
+                    pressed && styles.btnPressed,
+                  ]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Dismiss notification"
+                  hitSlop={8}
+                >
+                  <X size={12} color={Palette.mutedLight} strokeWidth={2} />
+                </Pressable>
+              </Pressable>
+            );
+          })
         )}
       </ScrollView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: Palette.canvas,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.sm,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  title: {
-    fontFamily: Typography.display,
-    fontSize: 24,
-    fontWeight: '800',
-    color: Palette.ink,
-    letterSpacing: -0.4,
-  },
-  unreadBadge: {
-    backgroundColor: Palette.coralSoft,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: Radii.pill,
-  },
-  unreadBadgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: Palette.danger,
-  },
-  closeBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: Radii.pill,
-    backgroundColor: Palette.surfaceSubtle,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  actionsBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.xs,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingVertical: 4,
-  },
-  actionDisabled: {
-    opacity: 0.5,
-  },
-  actionText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: Palette.moss,
-  },
-  textDisabled: {
-    color: Palette.muted,
-  },
-  clearText: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: Palette.muted,
-  },
-  filterScroll: {
-    flexDirection: 'row',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm,
-    gap: 8,
-  },
-  filterChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: Radii.pill,
-    borderWidth: 1,
-  },
-  filterChipActive: {
-    backgroundColor: Palette.moss,
-    borderColor: Palette.moss,
-  },
-  filterChipInactive: {
-    backgroundColor: Palette.paper,
-    borderColor: Palette.line,
-  },
-  filterText: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  filterTextActive: {
-    color: '#FFFFFF',
-  },
-  filterTextInactive: {
-    color: Palette.inkSecondary,
-  },
-  listContent: {
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.xs,
-    paddingBottom: Spacing.xxl,
-    gap: 10,
-  },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: Palette.paper,
-    borderRadius: Radii.md,
-    borderWidth: 1,
-    borderColor: Palette.line,
-    padding: Spacing.md,
-    gap: 12,
-  },
-  cardUnread: {
-    borderColor: Palette.coralSoft,
-    backgroundColor: '#FFFFFF',
-    borderLeftWidth: 3.5,
-    borderLeftColor: Palette.coral,
-  },
-  iconBadge: {
-    width: 38,
-    height: 38,
-    borderRadius: Radii.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 2,
-  },
-  contentContainer: {
-    flex: 1,
-  },
-  rowTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 3,
-  },
-  itemTitle: {
-    fontFamily: Typography.body,
-    fontSize: 14.5,
-    fontWeight: '600',
-    color: Palette.ink,
-    flex: 1,
-    paddingRight: 6,
-  },
-  itemTitleUnread: {
-    fontWeight: '800',
-  },
-  dotIndicator: {
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
-    backgroundColor: Palette.coral,
-  },
-  itemMessage: {
-    fontFamily: Typography.body,
-    fontSize: 13,
-    color: Palette.muted,
-    lineHeight: 18,
-    marginBottom: 6,
-  },
-  itemTime: {
-    fontSize: 11,
-    fontWeight: '500',
-    color: Palette.mutedLight,
-  },
-  chevron: {
-    alignSelf: 'center',
-    marginLeft: 2,
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 60,
-    gap: 10,
-  },
-  emptyIconCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: Palette.surfaceSubtle,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 6,
-  },
-  emptyTitle: {
-    fontFamily: Typography.display,
-    fontSize: 18,
-    fontWeight: '700',
-    color: Palette.ink,
-  },
-  emptySubtitle: {
-    fontFamily: Typography.body,
-    fontSize: 13,
-    color: Palette.muted,
-    textAlign: 'center',
-    maxWidth: 240,
-    lineHeight: 18,
-  },
-  pressed: {
-    opacity: 0.9,
-  },
-});

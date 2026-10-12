@@ -9,9 +9,10 @@ import {
   RefreshControl,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Search, X, AlertCircle } from 'lucide-react-native';
+import { Search, X } from 'lucide-react-native';
 import { Palette, Spacing, Radii, Typography } from '@/constants/theme';
 import { SpeciesGridCard } from '@/components/ui';
+import { ExploreEmptyState } from '@/components/explore/ExploreEmptyState';
 import { SPECIES_CATALOG, SpeciesDetail } from '@/data/speciesData';
 import { fetchAllSpecies } from '@/data/api/logic';
 import { getFullImageUrl } from '@/data/api/api';
@@ -159,22 +160,10 @@ export default function ExploreScreen() {
             })}
           </View>
         ) : (
-          <View style={styles.emptyContainer}>
-            <View style={styles.emptyIconCircle}>
-              <AlertCircle size={28} color={Palette.muted} />
-            </View>
-            <Text style={styles.emptyTitle}>No matching species found</Text>
-            <Text style={styles.emptyMessage}>
-              We couldn’t find any spiders matching &ldquo;{searchQuery}&rdquo;. Try searching for
-              &ldquo;black widow&rdquo;, &ldquo;huntsman&rdquo;, or &ldquo;Morocco&rdquo;.
-            </Text>
-            <Pressable
-              onPress={() => setSearchQuery('')}
-              style={styles.clearSearchBtn}
-            >
-              <Text style={styles.clearSearchBtnText}>Clear search</Text>
-            </Pressable>
-          </View>
+          <ExploreEmptyState
+            searchQuery={searchQuery}
+            onClear={() => setSearchQuery('')}
+          />
         )}
       </ScrollView>
     </View>
@@ -268,52 +257,5 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     rowGap: Spacing.md,
     marginTop: Spacing.xs,
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: Spacing.xxl,
-    paddingHorizontal: Spacing.lg,
-    backgroundColor: Palette.paper,
-    borderRadius: Radii.lg,
-    borderWidth: 1,
-    borderColor: Palette.line,
-    marginTop: Spacing.sm,
-  },
-  emptyIconCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: Palette.surfaceSubtle,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: Spacing.md,
-  },
-  emptyTitle: {
-    fontFamily: Typography.display,
-    fontSize: 17,
-    fontWeight: '700',
-    color: Palette.ink,
-    marginBottom: 6,
-  },
-  emptyMessage: {
-    fontFamily: Typography.body,
-    fontSize: 13,
-    color: Palette.muted,
-    textAlign: 'center',
-    lineHeight: 19,
-    marginBottom: Spacing.lg,
-  },
-  clearSearchBtn: {
-    backgroundColor: Palette.moss,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: 10,
-    borderRadius: Radii.pill,
-  },
-  clearSearchBtnText: {
-    fontFamily: Typography.body,
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#FFFFFF',
   },
 });

@@ -39,9 +39,9 @@ export function EmergencyCard({
         style,
       ]}
     >
-      {/* Medical Cross Icon Badge */}
+      {/* Medical Cross Icon */}
       <View style={styles.crossWrap}>
-        <Plus size={24} color="#FFFFFF" strokeWidth={3.5} />
+        <Plus size={26} color={Colors.crimson} strokeWidth={3.5} />
       </View>
 
       <View style={styles.textCol}>
@@ -77,14 +77,9 @@ const styles = StyleSheet.create({
     transform: [{ translateY: 2 }],
   },
   crossWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: Radii.md,
-    backgroundColor: Colors.crimson,
     alignItems: 'center',
     justifyContent: 'center',
-    borderBottomWidth: 2,
-    borderBottomColor: Colors.crimsonDark,
+    backgroundColor: 'transparent',
   },
   textCol: {
     flex: 1,

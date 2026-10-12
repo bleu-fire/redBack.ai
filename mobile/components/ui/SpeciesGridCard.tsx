@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { MapPin } from 'lucide-react-native';
-import { Palette, Typography } from '@/constants/theme';
+import { Colors, Palette, Typography } from '@/constants/theme';
 
 interface SpeciesGridCardProps {
   id?: string;
@@ -115,9 +115,11 @@ export function SpeciesGridCard({
 const styles = StyleSheet.create({
   card: {
     width: '48%',
-    backgroundColor: Palette.paper,
-    borderWidth: 1,
-    borderColor: '#EAE4DC',
+    backgroundColor: Colors.card,
+    borderWidth: 1.5,
+    borderColor: Colors.borderLine,
+    borderBottomWidth: 3,
+    borderBottomColor: Colors.borderPressed,
     borderRadius: 20,
     overflow: 'hidden',
     shadowColor: '#17211F',
@@ -129,12 +131,15 @@ const styles = StyleSheet.create({
   cardPressed: {
     opacity: 0.92,
     transform: [{ scale: 0.985 }],
-    borderColor: Palette.moss,
+    borderColor: Colors.forestGreen,
   },
   imageWrapper: {
     width: '100%',
     height: 122,
-    backgroundColor: Palette.surfaceSubtle,
+    backgroundColor: Colors.canvas,
+    borderBottomWidth: 1.5,
+    borderBottomColor: Colors.borderLine,
+    overflow: 'hidden',
   },
   cardImage: {
     width: '100%',

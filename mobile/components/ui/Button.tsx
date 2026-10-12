@@ -164,17 +164,14 @@ const styles = StyleSheet.create({
   },
   arrowCircle: {
     marginLeft: 'auto',
-    width: 28,
-    height: 28,
-    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'transparent',
   },
   arrowCirclePrimary: {
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    backgroundColor: 'transparent',
   },
   arrowCircleSecondary: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'transparent',
   },
 });

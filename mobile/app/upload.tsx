@@ -81,7 +81,7 @@ export default function UploadImageScreen() {
           ) : (
             <>
               <View style={styles.photoIcon}>
-                <ImagePlus size={26} color={Palette.coral} />
+                <ImagePlus size={32} color={Palette.coral} />
               </View>
               <Text style={styles.photoTitle}>Choose a photo</Text>
               <Text style={styles.hint}>Select a clear picture from your library</Text>
@@ -139,12 +139,9 @@ const styles = StyleSheet.create({
   iconButton: {
     width: 40,
     height: 40,
-    borderRadius: Radii.pill,
-    backgroundColor: Palette.paper,
-    borderWidth: 1,
-    borderColor: Palette.line,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'transparent',
   },
   headerSpacer: { width: 40 },
   title: { fontFamily: Typography.display, fontSize: 18, fontWeight: '800', color: Palette.ink },
@@ -161,13 +158,10 @@ const styles = StyleSheet.create({
   },
   photo: { width: '100%', height: '100%' },
   photoIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: Palette.coralSoft,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.sm,
+    backgroundColor: 'transparent',
   },
   photoTitle: { fontFamily: Typography.display, fontSize: 17, fontWeight: '800', color: Palette.ink },
   hint: { marginTop: 5, fontFamily: Typography.body, fontSize: 13, color: Palette.muted },

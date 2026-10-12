@@ -36,13 +36,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconBadge: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: Palette.mossSoft,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,
+    backgroundColor: 'transparent',
   },
   info: {
     flex: 1,
