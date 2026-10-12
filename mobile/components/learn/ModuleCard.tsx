@@ -1,24 +1,33 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { ChevronRight, Sparkles } from 'lucide-react-native';
+import { ChevronRight, Sparkles, CheckCircle2 } from 'lucide-react-native';
 import { LearningModule } from '@/data/learningData';
+import { Palette } from '@/constants/theme';
 import { styles } from './learn.styles';
 
 interface ModuleCardProps {
   module: LearningModule;
   index: number;
+  isCompleted?: boolean;
   onPress: (module: LearningModule) => void;
 }
 
 export const ModuleCard: React.FC<ModuleCardProps> = ({
   module,
   index,
+  isCompleted = false,
   onPress,
 }) => {
+  const currentProgress = isCompleted ? 100 : module.progress;
+
   return (
     <Pressable
       onPress={() => onPress(module)}
-      style={({ pressed }) => [styles.moduleCard, pressed && styles.cardPressed]}
+      style={({ pressed }) => [
+        styles.moduleCard,
+        isCompleted && { borderColor: '#B2E2BB' },
+        pressed && styles.cardPressed,
+      ]}
       accessibilityRole="button"
       accessibilityLabel={`Lesson ${index + 1}: ${module.title}`}
     >
@@ -29,9 +38,25 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
             Lesson {index + 1} • {module.categoryBadge}
           </Text>
         </View>
-        <View style={styles.moduleXpPill}>
-          <Sparkles size={11} color="#B45309" />
-          <Text style={styles.moduleXpText}>+{module.xpReward} XP</Text>
+        <View
+          style={[
+            styles.moduleXpPill,
+            isCompleted && { backgroundColor: Palette.mossSoft },
+          ]}
+        >
+          {isCompleted ? (
+            <CheckCircle2 size={11} color={Palette.forestGreen} strokeWidth={2.5} />
+          ) : (
+            <Sparkles size={11} color="#B45309" />
+          )}
+          <Text
+            style={[
+              styles.moduleXpText,
+              isCompleted && { color: Palette.forestGreen },
+            ]}
+          >
+            {isCompleted ? `Claimed (+${module.xpReward} XP)` : `+${module.xpReward} XP`}
+          </Text>
         </View>
       </View>
 
@@ -48,11 +73,21 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
             <View
               style={[
                 styles.progressBarFill,
-                { width: `${module.progress}%` },
+                {
+                  width: `${currentProgress}%`,
+                  backgroundColor: isCompleted ? Palette.forestGreen : Palette.coral,
+                },
               ]}
             />
           </View>
-          <Text style={styles.progressPercent}>{module.progress}%</Text>
+          <Text
+            style={[
+              styles.progressPercent,
+              isCompleted && { color: Palette.forestGreen },
+            ]}
+          >
+            {isCompleted ? '100% Completed' : `${currentProgress}%`}
+          </Text>
           <Text style={styles.readTimeText}>• {module.readTime}</Text>
         </View>
 

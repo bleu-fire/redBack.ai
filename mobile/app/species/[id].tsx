@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, ScrollView, Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -22,24 +22,64 @@ import { ClinicalThreatMeter } from '@/components/speciesDetail/ClinicalThreatMe
 import { ActionProtocolsSection } from '@/components/speciesDetail/ActionProtocolsSection';
 import { LookAlikeSection } from '@/components/speciesDetail/LookAlikeSection';
 import { AskAiNaturalistButton } from '@/components/speciesDetail/AskAiNaturalistButton';
+import { fetchSpeciesById, speciesDtoToSpeciesDetail } from '@/data/api/logic';
+import { useStore } from '@/store/stores';
 import { styles } from '@/components/speciesDetail/speciesDetail.styles';
 
 export default function SpeciesDetailsScreen() {
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id?: string }>();
+  const storeSpeciesList = useStore((state) => state.speciesList);
 
   // Interactive benchmark & action path states
   const [activeAction, setActiveAction] = useState<ActionProtocol>('threat');
   const [showClinicalDetails, setShowClinicalDetails] = useState<boolean>(false);
+  const [liveSpecies, setLiveSpecies] = useState<SpeciesDetail | null>(null);
 
-  // Lookup species by ID, slug, or fallback to first catalog item
-  const species: SpeciesDetail = useMemo(() => {
+  // Initial species resolution from store or local catalog
+  const initialSpecies: SpeciesDetail = useMemo(() => {
     if (id) {
+      // 1. Search store loaded from backend
+      const inStore = storeSpeciesList.find(
+        (s) =>
+          s.id === id ||
+          s.id?.toString() === id ||
+          s.scientificName?.toLowerCase() === id.toLowerCase() ||
+          s.name?.toLowerCase() === id.toLowerCase()
+      );
+      if (inStore) return inStore;
+
+      // 2. Search local catalog
       const found = getSpeciesById(id);
       if (found) return found;
     }
     return SPECIES_CATALOG[0];
+  }, [id, storeSpeciesList]);
+
+  // Fetch fresh species data from backend by ID
+  useEffect(() => {
+    if (!id) return;
+    let isMounted = true;
+    (async () => {
+      try {
+        const fetched = await fetchSpeciesById(id);
+        if (fetched && isMounted) {
+          const adapted = speciesDtoToSpeciesDetail(fetched);
+          const localMatch = SPECIES_CATALOG.find(
+            (l) => l.scientificName.toLowerCase() === fetched.scientificName.toLowerCase()
+          );
+          setLiveSpecies(localMatch ? { ...localMatch, ...adapted } : adapted);
+        }
+      } catch {
+        // Fallback to initialSpecies
+      }
+    })();
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
+
+  const species = liveSpecies || initialSpecies;
 
   // Clinical profile and size benchmark
   const threat: ClinicalThreatProfile = useMemo(
@@ -57,7 +97,7 @@ export default function SpeciesDetailsScreen() {
       const fullUrl = getFullImageUrl(species.serverImage);
       if (fullUrl) return { uri: fullUrl };
     }
-    return species.localImageFallback;
+    return species.localImageFallback || require('@/assets/images/spider-3d.png');
   }, [species]);
 
   const handleActionSelect = (a: ActionProtocol) => {

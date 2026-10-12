@@ -34,13 +34,35 @@ export class IdentificationController {
         imageUrl: imageUrl,
         mimeType: file?.mimetype,
         userNotes: notes,
+        filename: file?.originalname,
       });
 
-      // 3. Database: Save the identification record to MongoDB
+      // 3. Persist file to uploads folder for permanent UGC serving
+      let finalImageUrl = imageUrl;
+      if (file && file.buffer) {
+        try {
+          const fs = await import('fs');
+          const path = await import('path');
+          const uploadsDir = path.resolve(__dirname, '../../../../images/uploads');
+          if (!fs.existsSync(uploadsDir)) {
+            fs.mkdirSync(uploadsDir, { recursive: true });
+          }
+          const ext = (file.mimetype && file.mimetype.split('/')[1]) || 'jpg';
+          const filename = `user-ugc-${Date.now()}-${Math.floor(Math.random() * 10000)}.${ext}`;
+          const filePath = path.join(uploadsDir, filename);
+          fs.writeFileSync(filePath, file.buffer);
+          finalImageUrl = `/images/uploads/${filename}`;
+        } catch (fsErr) {
+          console.warn('[IdentificationController] Failed saving UGC image to disk:', fsErr);
+          finalImageUrl = `/images/uploads/upload-${Date.now()}.jpg`;
+        }
+      }
+
+      // 4. Database: Save the identification record to MongoDB
       const userId = (req as any).user?._id || (req as any).user?.id || undefined;
       const savedRecord = await this.model.create({
         userId,
-        imageUrl: imageUrl || (file ? `upload-${Date.now()}.${file.mimetype.split('/')[1] || 'jpg'}` : 'specimen.jpg'),
+        imageUrl: finalImageUrl || 'specimen.jpg',
         status: 'completed',
         uncertaintyLevel: analysis.uncertaintyLevel,
         predictions: analysis.predictions,
@@ -73,7 +95,10 @@ export class IdentificationController {
    */
   createIdentification = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const record = await this.model.create(req.body);
+      const data = { ...req.body };
+      const userId = (req as any).user?._id || (req as any).user?.id || data.userId;
+      if (userId) data.userId = userId;
+      const record = await this.model.create(data);
       if (!record) {
         throw new AppError('Failed to create identification record', 400);
       }

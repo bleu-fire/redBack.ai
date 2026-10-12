@@ -124,14 +124,23 @@ export const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: Radii.pill,
     marginTop: Spacing.xs,
+    borderWidth: 1.5,
+    borderBottomWidth: 3,
+    borderColor: '#1E6332',
+    borderBottomColor: '#174E27',
   },
-  claimBtnDisabled: {
-    backgroundColor: Palette.muted,
+  claimBtnCompleted: {
+    backgroundColor: Palette.mossSoft,
+    borderColor: Palette.moss,
+    borderBottomColor: '#B2E2BB',
   },
   claimBtnText: {
     fontFamily: Typography.body,
     fontSize: 13.5,
     fontWeight: '800',
     color: '#FFFFFF',
+  },
+  claimBtnTextCompleted: {
+    color: Palette.forestGreen,
   },
 });

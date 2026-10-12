@@ -1,19 +1,13 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator, StyleSheet, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
-import {
-  Zap,
-  ZapOff,
-  Image as ImageIcon,
-  ArrowLeft,
-  Camera,
-  Plus,
-} from 'lucide-react-native';
+import { Zap, ZapOff, Image as ImageIcon, ArrowLeft, Camera, Plus } from 'lucide-react-native';
 import { Colors, Spacing } from '@/constants/theme';
+import { uploadSpiderImage } from '@/data/api/logic';
 import { styles } from '@/components/scanner/scanner.styles';
 
 export default function ScannerScreen() {
@@ -22,54 +16,72 @@ export default function ScannerScreen() {
   const cameraRef = useRef<CameraView>(null);
   const [flash, setFlash] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isCameraReady, setIsCameraReady] = useState(false);
 
-  // Capture photo from camera
-  const handleTakePhoto = async () => {
-    if (!cameraRef.current || isProcessing) return;
-
+  const processAndIdentify = async (uri: string) => {
+    setIsProcessing(true);
     try {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-      setIsProcessing(true);
-      const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
-      if (photo?.uri) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        router.push({
-          pathname: '/results',
-          params: { imageUri: photo.uri },
-        });
-      }
-    } catch (error) {
-      console.error('Failed to capture photo:', error);
+      const response = await uploadSpiderImage(uri);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.push({
+        pathname: '/results',
+        params: { imageUri: uri, identificationData: JSON.stringify(response) },
+      });
+    } catch (error: any) {
+      console.warn('Backend identification offline, navigating with photo:', error?.message);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      router.push({ pathname: '/results', params: { imageUri: uri } });
     } finally {
       setIsProcessing(false);
     }
   };
 
-  // Pick photo from gallery
+  const handleTakePhoto = async () => {
+    if (!cameraRef.current || isProcessing) return;
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      setIsProcessing(true);
+      const photo = await cameraRef.current.takePictureAsync({
+        quality: 0.7,
+        skipProcessing: true,
+      });
+      if (photo?.uri) {
+        await processAndIdentify(photo.uri);
+      } else {
+        setIsProcessing(false);
+      }
+    } catch (error: any) {
+      console.error('Failed to capture photo:', error);
+      setIsProcessing(false);
+      Alert.alert(
+        'Camera Busy',
+        'Could not capture image. You can try again or choose from your gallery.',
+        [
+          { text: 'OK', style: 'cancel' },
+          { text: 'Gallery', onPress: () => handlePickFromGallery() },
+        ]
+      );
+    }
+  };
+
   const handlePickFromGallery = async () => {
     if (isProcessing) return;
-
     try {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         allowsEditing: false,
-        quality: 1,
+        quality: 0.8,
       });
-
       if (!result.canceled && result.assets[0]?.uri) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        router.push({
-          pathname: '/results',
-          params: { imageUri: result.assets[0].uri },
-        });
+        await processAndIdentify(result.assets[0].uri);
       }
     } catch (error) {
       console.error('Failed to pick image from gallery:', error);
+      setIsProcessing(false);
     }
   };
 
-  // 1. Permission Loading State
   if (!permission) {
     return (
       <View style={[styles.permissionScreen, { paddingTop: insets.top }]}>
@@ -78,7 +90,6 @@ export default function ScannerScreen() {
     );
   }
 
-  // 2. Permission Denied State
   if (!permission.granted) {
     return (
       <View style={[styles.permissionScreen, { paddingTop: insets.top, paddingBottom: insets.bottom + 20 }]}>
@@ -88,9 +99,8 @@ export default function ScannerScreen() {
           </View>
           <Text style={styles.permissionTitle}>Field Camera Access</Text>
           <Text style={styles.permissionSubtitle}>
-            redBack.ai requires camera permissions to capture specimen morphology, detect danger levels, and provide offline first-aid protocols.
+            redBack.ai requires camera permissions to capture specimen morphology and danger levels.
           </Text>
-
           <Pressable
             onPress={() => requestPermission()}
             style={({ pressed }) => [styles.permissionBtn, pressed && styles.pressed]}
@@ -104,15 +114,15 @@ export default function ScannerScreen() {
 
   return (
     <View style={styles.container}>
-      {/* FULL SCREEN CAMERA VIEWPORT */}
       <CameraView
         ref={cameraRef}
         style={StyleSheet.absoluteFillObject}
         enableTorch={flash}
         facing="back"
+        mode="picture"
+        onCameraReady={() => setIsCameraReady(true)}
       />
 
-      {/* TOP TACTICAL HUD */}
       <View style={[styles.topHud, { paddingTop: insets.top + Spacing.sm }]}>
         <Pressable
           onPress={() => router.back()}
@@ -122,7 +132,6 @@ export default function ScannerScreen() {
           <ArrowLeft size={20} color="#FFFFFF" strokeWidth={2} />
         </Pressable>
 
-        {/* Flash Toggle Button */}
         <Pressable
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -143,10 +152,8 @@ export default function ScannerScreen() {
         </Pressable>
       </View>
 
-      {/* CENTER VIEWFINDER RETICLE */}
       <View style={styles.viewfinderContainer} pointerEvents="none">
         <View style={styles.reticleBox}>
-          {/* Tactical Corner Brackets */}
           <View style={[styles.reticleCorner, styles.cornerTL]} />
           <View style={[styles.reticleCorner, styles.cornerTR]} />
           <View style={[styles.reticleCorner, styles.cornerBL]} />
@@ -154,9 +161,7 @@ export default function ScannerScreen() {
         </View>
       </View>
 
-      {/* BOTTOM FIELD ACTION DECK */}
       <View style={[styles.bottomDeck, { paddingBottom: insets.bottom + Spacing.lg }]}>
-        {/* Gallery Import (Tactile Button) */}
         <Pressable
           onPress={handlePickFromGallery}
           disabled={isProcessing}
@@ -166,24 +171,17 @@ export default function ScannerScreen() {
           <ImageIcon size={22} color="#FFFFFF" strokeWidth={2} />
         </Pressable>
 
-        {/* Mega Shutter Button (72x72dp Forest Green Double Ring) */}
         <Pressable
           onPress={handleTakePhoto}
-          disabled={isProcessing}
+          disabled={isProcessing || !isCameraReady}
           accessibilityLabel="Capture Specimen Photo"
-          style={({ pressed }) => [
-            styles.shutterOuterRing,
-            pressed && styles.shutterPressed,
-          ]}
+          style={({ pressed }) => [styles.shutterOuterRing, pressed && styles.shutterPressed]}
         >
           <View style={styles.shutterInnerCircle}>
-            {isProcessing ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
-            ) : null}
+            {isProcessing ? <ActivityIndicator size="small" color="#FFFFFF" /> : null}
           </View>
         </Pressable>
 
-        {/* Direct Emergency SOS Trigger */}
         <Pressable
           onPress={() => {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);

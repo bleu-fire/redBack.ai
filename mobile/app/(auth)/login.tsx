@@ -5,7 +5,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   View,
@@ -13,11 +12,12 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, router } from 'expo-router';
 import { Lock, Mail, Eye, EyeOff } from 'lucide-react-native';
-import { Palette, Radii, Spacing, Typography } from '@/constants/theme';
-import { Button } from '@/components/ui';
+import { Palette } from '@/constants/theme';
+import { AppButton } from '@/components/ui';
 import { LoginUser } from '@/data/api/logic';
 import AsyncStorageManagement from "@/data/storage/asyncstorage";
 import { useStore, StoreState } from '@/store/stores';
+import { styles } from '@/components/auth/login.styles';
 
 export default function LoginScreen() {
   const login = useStore((state: StoreState) => state.login);
@@ -37,18 +37,14 @@ export default function LoginScreen() {
       const response = await LoginUser(email.trim(), password);
       const user = response.data?.user || { email: email.trim() };
 
-      // Update Zustand global store
       login(response.token, user);
-
-      // Save token and user details to storage
       await AsyncStorageManagement.setToken(response.token);
       await AsyncStorageManagement.setUserData(user);
 
       router.replace('/(tabs)');
     } catch (err: any) {
       console.error('Login error:', err);
-      const errorMessage =
-      err.response?.data?.message;
+      const errorMessage = err.response?.data?.message || 'Erreur de connexion';
       Alert.alert('Erreur de connexion', errorMessage);
     } finally {
       setLoading(false);
@@ -63,11 +59,8 @@ export default function LoginScreen() {
       >
         <ScrollView
           contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          
-          {/* Hero Editorial Heading */}
           <View style={styles.heroSection}>
             <Text style={styles.heroTitle}>Welcome back,{'\n'}explorer.</Text>
             <Text style={styles.heroSubtitle}>
@@ -76,9 +69,7 @@ export default function LoginScreen() {
             <Text style={styles.heroScript}>Small creatures big stories.</Text>
           </View>
 
-          {/* Input Fields */}
           <View style={styles.formContainer}>
-            {/* Email Field */}
             <View style={styles.inputCard}>
               <Mail size={20} color={Palette.muted} style={styles.inputIcon} />
               <TextInput
@@ -93,7 +84,6 @@ export default function LoginScreen() {
               />
             </View>
 
-            {/* Password Field */}
             <View style={styles.inputCard}>
               <Lock size={20} color={Palette.muted} style={styles.inputIcon} />
               <TextInput
@@ -118,19 +108,15 @@ export default function LoginScreen() {
               </Pressable>
             </View>
 
-            {/* Primary Action Button */}
-            <Button
+            <AppButton
               title="Log in"
               variant="primary"
-              size="lg"
-              showArrow={false}
               loading={loading}
               onPress={handleLogin}
               style={styles.loginButton}
             />
           </View>
 
-          {/* Footer Navigation */}
           <View style={styles.footerRow}>
             <Text style={styles.footerText}>New here? </Text>
             <Link href="/(auth)/register" asChild>
@@ -144,96 +130,3 @@ export default function LoginScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Palette.canvas,
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: Spacing.xxl,
-    paddingTop: Spacing.lg,
-    paddingBottom: Spacing.xl,
-    justifyContent: 'space-between',
-  },
-  heroSection: {
-    marginBottom: Spacing.xxxl,
-  },
-  heroTitle: {
-    fontFamily: Typography.display,
-    fontSize: 34,
-    lineHeight: 40,
-    fontWeight: '800',
-    color: Palette.ink,
-    letterSpacing: -0.8,
-  },
-  heroSubtitle: {
-    fontFamily: Typography.body,
-    fontSize: 14,
-    lineHeight: 21,
-    color: Palette.muted,
-    marginTop: Spacing.sm,
-  },
-  heroScript: {
-    fontFamily: Typography.display,
-    fontSize: 14,
-    fontStyle: 'italic',
-    color: Palette.inkSecondary,
-    marginTop: Spacing.md,
-  },
-  formContainer: {
-    gap: Spacing.md,
-    marginBottom: Spacing.xxl,
-  },
-  inputCard: {
-    backgroundColor: Palette.paper,
-    borderWidth: 1,
-    borderColor: Palette.line,
-    borderRadius: Radii.md,
-    height: 56,
-    paddingHorizontal: Spacing.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  inputIcon: {
-    marginRight: Spacing.md,
-  },
-  textInput: {
-    flex: 1,
-    fontFamily: Typography.body,
-    fontSize: 16,
-    color: Palette.ink,
-  },
-  eyeToggle: {
-    padding: Spacing.xs,
-  },
-  loginButton: {
-    marginTop: Spacing.sm,
-    shadowColor: Palette.coral,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 3,
-  },
-  footerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: Spacing.lg,
-  },
-  footerText: {
-    fontFamily: Typography.body,
-    fontSize: 14,
-    color: Palette.muted,
-  },
-  footerLink: {
-    fontFamily: Typography.body,
-    fontSize: 14,
-    fontWeight: '700',
-    color: Palette.coral,
-  },
-});

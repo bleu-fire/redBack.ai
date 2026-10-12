@@ -1,52 +1,56 @@
 import { embeddingService } from './embedding.service';
 import { visionAIService } from './vision.service';
-import mongoose from 'mongoose';
-import { config } from '../../config/env';
+import Species from '../../modules/species/species.model';
 
-async function testAIService() {
-  console.log('🧪 Testing AI Vector & Vision Services...');
+jest.mock('../../modules/species/species.model');
 
-  // 1. Test Deterministic Vector Embedding
-  const vec1 = embeddingService.generateDeterministicVector('Latrodectus hasselti redback spider danger venom');
-  const vec2 = embeddingService.generateDeterministicVector('Latrodectus redback female black red stripe');
-  const vec3 = embeddingService.generateDeterministicVector('Huntsman spider harmless grey tree bark');
-
-  console.log(`Generated vectors with dimension: ${vec1.length}`);
-
-  const simRelated = embeddingService.calculateCosineSimilarity(vec1, vec2);
-  const simUnrelated = embeddingService.calculateCosineSimilarity(vec1, vec3);
-
-  console.log(`Cosine similarity (Redback vs Redback variant): ${(simRelated * 100).toFixed(1)}%`);
-  console.log(`Cosine similarity (Redback vs Huntsman): ${(simUnrelated * 100).toFixed(1)}%`);
-
-  if (simRelated <= simUnrelated) {
-    throw new Error('Vector similarity test failed: related specimens should have higher similarity!');
-  }
-  console.log('✅ Embedding similarity ranking passed.');
-
-  // 2. Test Vision AI Analysis with DB
-  await mongoose.connect(config.mongoUri);
-  const result = await visionAIService.analyzeSpiderImage({
-    userNotes: 'Found a glossy black spider with a red stripe in the garden shed',
+describe('AI Vector & Vision Service Suite', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  console.log('\n🔍 Vision Analysis Result:');
-  console.log(`Top Prediction: ${result.topPrediction.commonName} (${result.topPrediction.scientificName})`);
-  console.log(`Confidence: ${(result.topPrediction.confidence * 100).toFixed(1)}% (${result.topPrediction.confidenceBand})`);
-  console.log(`Uncertainty Level: ${result.uncertaintyLevel}`);
-  console.log(`Medical Disclaimer: ${result.disclaimer}`);
-  console.log(`Visual Evidence: ${result.topPrediction.visualEvidence?.join('; ')}`);
+  it('generates consistent deterministic embeddings and preserves similarity', () => {
+    const vec1 = embeddingService.generateDeterministicVector(
+      'Latrodectus hasselti redback spider danger venom'
+    );
+    const vec2 = embeddingService.generateDeterministicVector(
+      'Latrodectus redback female black red stripe'
+    );
+    const vec3 = embeddingService.generateDeterministicVector(
+      'Huntsman spider harmless grey tree bark'
+    );
 
-  if (!result.topPrediction.scientificName) {
-    throw new Error('Vision analysis did not return a valid top prediction');
-  }
+    expect(vec1.length).toBe(512);
+    expect(vec2.length).toBe(512);
 
-  console.log('✅ AI Vision Analysis pipeline passed!');
-  await mongoose.disconnect();
-  process.exit(0);
-}
+    const simRelated = embeddingService.calculateCosineSimilarity(vec1, vec2);
+    const simUnrelated = embeddingService.calculateCosineSimilarity(vec1, vec3);
 
-testAIService().catch((err) => {
-  console.error('❌ Test failed:', err);
-  process.exit(1);
+    expect(simRelated).toBeGreaterThan(simUnrelated);
+  });
+
+  it('analyzes spider image metadata and outputs safety disclaimer & predictions', async () => {
+    (Species.find as any).mockReturnValue({
+      lean: jest.fn().mockResolvedValue([
+        {
+          _id: 'spec_1',
+          scientificName: 'Latrodectus tredecimguttatus',
+          commonName: 'Mediterranean Black Widow',
+          toxicityLevel: 'danger',
+          venomInfo: 'Neurotoxic alpha-latrotoxin',
+          habitat: 'Dry stony fields',
+        },
+      ]),
+    });
+
+    const result = await visionAIService.analyzeSpiderImage({
+      userNotes: 'Mediterranean Black Widow',
+    });
+
+    expect(result.topPrediction).toBeDefined();
+    expect(result.topPrediction.scientificName).toBe('Latrodectus tredecimguttatus');
+    expect(result.topPrediction.confidence).toBeGreaterThan(0.5);
+    expect(result.uncertaintyLevel).toBeDefined();
+    expect(result.disclaimer).toContain('redBack.ai provides educational species identification');
+  });
 });

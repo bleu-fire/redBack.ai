@@ -74,7 +74,23 @@ class SpeciesController {
   getSpeciesById = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-      const species = await Species.findById(id);
+      const mongoose = await import('mongoose');
+      let species = null;
+
+      if (mongoose.default.Types.ObjectId.isValid(id)) {
+        species = await Species.findById(id);
+      }
+
+      if (!species) {
+        const decoded = decodeURIComponent(id).replace(/[-_]/g, ' ');
+        species = await Species.findOne({
+          $or: [
+            { scientificName: new RegExp(`^${decoded}$`, 'i') },
+            { commonName: new RegExp(`^${decoded}$`, 'i') },
+            { scientificName: new RegExp(decoded, 'i') },
+          ],
+        });
+      }
 
       if (!species) {
         throw new AppError('Species not found', 404);

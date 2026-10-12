@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, Pressable, Modal } from 'react-native';
-import { Clock, CheckCircle2, X } from 'lucide-react-native';
+import { Clock, CheckCircle2, X, Sparkles } from 'lucide-react-native';
 import { Palette } from '@/constants/theme';
 import { LearningModule } from '@/data/learningData';
 import { LessonProtocolSection } from './LessonProtocolSection';
@@ -29,6 +29,8 @@ export const LessonModal: React.FC<LessonModalProps> = ({
   onClaimReward,
 }) => {
   if (!activeModule) return null;
+
+  const isClaimed = Boolean(claimedModules[activeModule.id]);
 
   return (
     <Modal
@@ -144,6 +146,36 @@ export const LessonModal: React.FC<LessonModalProps> = ({
               />
             )}
           </ScrollView>
+
+          {/* Bottom Fixed Action Deck for Complete Lesson */}
+          <View style={styles.modalBottomDeck}>
+            <Pressable
+              onPress={() => onClaimReward(activeModule.id, activeModule.xpReward)}
+              style={({ pressed }) => [
+                styles.completeLessonBtn,
+                isClaimed ? styles.completeLessonBtnCompleted : styles.completeLessonBtnActive,
+                pressed && styles.btnPressed,
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel={isClaimed ? 'Lesson completed' : 'Complete lesson'}
+            >
+              {isClaimed ? (
+                <>
+                  <CheckCircle2 size={19} color={Palette.forestGreen} strokeWidth={2.5} />
+                  <Text style={styles.completeLessonBtnTextCompleted}>
+                    Lesson Completed ✓ (+{activeModule.xpReward} XP)
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Sparkles size={18} color="#FFFFFF" strokeWidth={2} />
+                  <Text style={styles.completeLessonBtnTextActive}>
+                    Complete Lesson & Claim +{activeModule.xpReward} XP
+                  </Text>
+                </>
+              )}
+            </Pressable>
+          </View>
         </View>
       </View>
     </Modal>

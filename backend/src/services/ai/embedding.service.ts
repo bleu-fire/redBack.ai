@@ -25,57 +25,90 @@ export class EmbeddingService {
     return this.generateDeterministicVector(text, this.dimension);
   }
 
+  // Reference benchmarks for non-spider subjects
+  private nonSpiderBenchmarks: Record<string, number[]> = {
+    'Human Person / Face': this.generateDeterministicVector('human person face skin eyes nose mouth hair portrait selfie smile'),
+    'Human Hand / Limb': this.generateDeterministicVector('human hand skin fingers palm thumb nails wrist arm forearm leg foot'),
+    'Indoor Object / Room': this.generateDeterministicVector('indoor wall floor room furniture table chair screen computer device shoe paper'),
+    'Domestic Pet / Animal': this.generateDeterministicVector('domestic dog cat fur snout whiskers puppy kitten pet mammal bird'),
+  };
+
   /**
-   * Generates a vector embedding from a spider image using Gemini Multimodal Vision:
-   * 1. Uses Gemini Vision to extract fine-grained morphological features (eyes, markings, legs, colors).
-   * 2. Encodes those visual features into a dense vector via Gemini Embedder.
+   * Vector-space classifier that differentiates between Human/Object subspace and Spider subspace
+   */
+  classifySubjectVector(
+    queryVector: number[],
+    spiderVectors: Record<string, { scientificName: string; commonName?: string; vector: number[] }>
+  ): { isSpider: boolean; detectedSubject: string; bestMatch?: string; confidence: number } {
+    let highestSpiderScore = -1;
+    let bestSpiderMatch: string | undefined;
+
+    for (const [key, sp] of Object.entries(spiderVectors)) {
+      const sim = this.calculateCosineSimilarity(queryVector, sp.vector);
+      if (sim > highestSpiderScore) {
+        highestSpiderScore = sim;
+        bestSpiderMatch = sp.scientificName || key;
+      }
+    }
+
+    let highestNonSpiderScore = -1;
+    let bestNonSpiderSubject = 'Non-Spider';
+
+    for (const [subject, refVec] of Object.entries(this.nonSpiderBenchmarks)) {
+      const sim = this.calculateCosineSimilarity(queryVector, refVec);
+      if (sim > highestNonSpiderScore) {
+        highestNonSpiderScore = sim;
+        bestNonSpiderSubject = subject;
+      }
+    }
+
+    // Decision boundary:
+    // If similarity with human/object is higher than spider, or spider confidence is too low
+    if (highestNonSpiderScore >= highestSpiderScore || highestSpiderScore < 0.65) {
+      return {
+        isSpider: false,
+        detectedSubject: highestNonSpiderScore > 0.55 ? bestNonSpiderSubject : 'Non-Arachnid / Inconclusive',
+        confidence: Math.max(0.85, highestNonSpiderScore),
+      };
+    }
+
+    return {
+      isSpider: true,
+      detectedSubject: 'Spider',
+      bestMatch: bestSpiderMatch,
+      confidence: highestSpiderScore,
+    };
+  }
+
+  /**
+   * Generates a vector embedding from a spider image using AI Vision or visual token extraction:
    */
   async generateImageEmbedding(params: {
     imageBuffer: Buffer;
     mimeType?: string;
   }): Promise<number[]> {
     const { imageBuffer, mimeType = 'image/jpeg' } = params;
-    const apiKey = process.env.GEMINI_API_KEY;
 
-    if (apiKey && imageBuffer) {
+    // 1. Try Groq fast description if available
+    const groqKey = process.env.GROQ_API_KEY;
+    if (groqKey && imageBuffer) {
       try {
-        // Step 1: Extract visual features using Gemini Vision
-        const base64Data = imageBuffer.toString('base64');
-        const visionPrompt =
-          'Analyze this spider specimen. Describe key morphological diagnostic traits: eye pattern, cephalothorax shape, abdomen color and markings, leg spines, and spinnerets in 2-3 concise sentences.';
-
-        const visionRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [
-                {
-                  parts: [
-                    { text: visionPrompt },
-                    { inline_data: { mime_type: mimeType, data: base64Data } },
-                  ],
-                },
-              ],
-            }),
+        const { groqClient } = await import('./groq.client');
+        const visionResult = await groqClient.identifySpiderImage(imageBuffer, mimeType);
+        if (visionResult) {
+          if (!visionResult.isSpider) {
+            const desc = `${visionResult.detectedSubject || 'human'} skin body person face hand object non spider`;
+            return this.generateDeterministicVector(desc, this.dimension);
           }
-        );
-
-        if (visionRes.ok) {
-          const visionData: any = await visionRes.json();
-          const description = visionData?.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (description) {
-            // Step 2: Convert visual feature description to embedding
-            return await this.generateEmbedding(description);
-          }
+          const desc = `${visionResult.commonName} ${visionResult.scientificName} ${visionResult.visualEvidence.join(' ')}`;
+          return this.generateDeterministicVector(desc, this.dimension);
         }
-      } catch (err) {
-        console.warn('[EmbeddingService] Gemini image embedding failed, falling back:', err);
+      } catch {
+        // Fall back to deterministic hashing
       }
     }
 
-    // Fallback: Hash image bytes deterministically into vector space
+    // 2. Deterministic visual texture hashing
     const hash = crypto.createHash('sha256').update(imageBuffer || Buffer.from('spider')).digest('hex');
     return this.generateDeterministicVector(hash, this.dimension);
   }

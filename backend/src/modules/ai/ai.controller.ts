@@ -7,13 +7,13 @@ export class AIController {
 
   chatWithAI = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { message, context } = req.body;
+      const { message, context, history } = req.body;
 
       if (!message || typeof message !== 'string') {
         throw new AppError('Message is required and must be a string', 400);
       }
 
-      const reply = await this.service.askNaturalist(message, context);
+      const reply = await this.service.askNaturalist(message, context, history);
 
       return res.status(200).json({
         status: 'success',

@@ -1,17 +1,14 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Move, ShieldX, Bandage } from 'lucide-react-native';
-import { Colors, Spacing } from '@/constants/theme';
-import { AppButton } from '@/components/ui';
+import { Colors } from '@/constants/theme';
 import { styles } from './results.styles';
 
 interface SafetyTriageCardProps {
-  onOpenFirstAid: () => void;
+  onOpenFirstAid?: () => void;
 }
 
-export const SafetyTriageCard: React.FC<SafetyTriageCardProps> = ({
-  onOpenFirstAid,
-}) => {
+export const SafetyTriageCard: React.FC<SafetyTriageCardProps> = () => {
   return (
     <View style={styles.actionCard}>
       <View style={styles.actionHeaderRow}>
@@ -61,14 +58,6 @@ export const SafetyTriageCard: React.FC<SafetyTriageCardProps> = ({
           <Text style={styles.actionGridSubtitle}>Firm Bandage</Text>
         </View>
       </View>
-
-      {/* Large Crimson Emergency Action */}
-      <AppButton
-        title="Open Emergency First Aid Steps"
-        variant="danger"
-        onPress={onOpenFirstAid}
-        style={{ width: '100%', marginTop: Spacing.xs }}
-      />
     </View>
   );
 };

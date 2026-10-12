@@ -11,47 +11,26 @@ export const QUICK_PROMPTS = [
 export const getInitialMessages = (
   speciesName: string,
   scientificName: string
-): StructuredChatMessage[] => [
-  {
-    id: 'm1',
-    sender: 'user',
-    time: '9:42 AM',
-    text: `Why do you think this is a ${speciesName}? What features support this identification?`,
-  },
-  {
-    id: 'm2',
-    sender: 'bot',
-    time: '9:42 AM',
-    intro: `Based on your observation photo, these features support ${speciesName} (${scientificName}):`,
-    supportingPoints: [
-      'Distinct vivid red/orange abdominal dorsal marking pattern',
-      'Glossy spherical dark body shape typical of Latrodectus',
-      'Characteristic tangled irregular cobweb structure and posture',
-    ],
-    uncertainPoints: [
-      'Clearer view of ventral hourglass marking needed to confirm sex',
-      'Lighting makes leg segment spines less distinct',
-    ],
-  },
-  {
-    id: 'm3',
-    sender: 'user',
-    time: '9:44 AM',
-    text: 'What should I photograph next to confirm this with higher confidence?',
-  },
-  {
-    id: 'm4',
-    sender: 'bot',
-    time: '9:44 AM',
-    intro: 'To elevate identification confidence, try to capture:',
-    actionSteps: [
-      { number: 1, text: 'Clearer side-angle profile of abdomen and dorsal markings' },
-      { number: 2, text: 'Web structure (irregular tangled maze vs orb sheet)' },
-      { number: 3, text: 'Ventral underside to inspect hourglass pattern if safely visible' },
-    ],
-    tip: 'Maintain safe distance (20–30 cm). Use 2x or 3x optical zoom with daylight rather than getting close.',
-  },
-];
+): StructuredChatMessage[] => {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  return [
+    {
+      id: 'greeting-init',
+      sender: 'bot',
+      time: timeStr,
+      intro: `Hello! I am Naturalist AI (Reddy), your field arachnologist connected directly to the redBack.ai species database.`,
+      supportingPoints: [
+        `Specimen focus: ${speciesName} (${scientificName})`,
+        'Ask about clinical venom danger, triage, and emergency first aid',
+        'Inquire about eye pattern morphology and identification markers',
+        'Compare against similar local and international look-alikes',
+      ],
+      tip: 'Tap any of the quick prompt chips below or type your observation question.',
+    },
+  ];
+};
 
 export const parseAiResponse = (
   raw: string

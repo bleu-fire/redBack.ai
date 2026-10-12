@@ -119,18 +119,28 @@ export const LessonQuizSection: React.FC<LessonQuizSectionProps> = ({
       {/* Reward Claim Button */}
       <Pressable
         onPress={() => onClaimReward(moduleId, xpReward)}
-        disabled={claimedModules[moduleId]}
         style={[
           styles.claimBtn,
-          claimedModules[moduleId] && styles.claimBtnDisabled,
+          claimedModules[moduleId] && styles.claimBtnCompleted,
         ]}
+        accessibilityRole="button"
+        accessibilityLabel={claimedModules[moduleId] ? 'Lesson completed' : 'Complete lesson'}
       >
-        <Sparkles size={18} color="#FFFFFF" />
-        <Text style={styles.claimBtnText}>
-          {claimedModules[moduleId]
-            ? `Reward Claimed (+${xpReward} XP)`
-            : `Complete Lesson & Claim +${xpReward} XP`}
-        </Text>
+        {claimedModules[moduleId] ? (
+          <>
+            <CheckCircle2 size={18} color={Palette.forestGreen} strokeWidth={2.5} />
+            <Text style={[styles.claimBtnText, styles.claimBtnTextCompleted]}>
+              Lesson Completed ✓ (+{xpReward} XP)
+            </Text>
+          </>
+        ) : (
+          <>
+            <Sparkles size={18} color="#FFFFFF" />
+            <Text style={styles.claimBtnText}>
+              Complete Lesson & Claim +{xpReward} XP
+            </Text>
+          </>
+        )}
       </Pressable>
     </View>
   );

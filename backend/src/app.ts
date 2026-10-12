@@ -7,6 +7,7 @@ import identificationRoutes from './modules/Identification/identification.routes
 import { errorHandler } from './middlewares/error.middleware';
 
 import aiRoutes from './modules/ai/ai.routes';
+import learningRoutes from './modules/learning/learning.routes';
 
 const app: Application = express();
 
@@ -30,6 +31,7 @@ app.use('/api/species', speciesRoutes);
 app.use('/api/identification', identificationRoutes);
 app.use('/api/identifications', identificationRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/learning', learningRoutes);
 
 // 4. Global 
 app.use(errorHandler);

@@ -178,4 +178,50 @@ export const styles = StyleSheet.create({
     color: Palette.ink,
     lineHeight: 18,
   },
+
+  // Bottom Fixed Action Deck for Complete Lesson
+  modalBottomDeck: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: Palette.line,
+    backgroundColor: '#FFFFFF',
+  },
+  completeLessonBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    minHeight: 50,
+    borderRadius: Radii.pill,
+    paddingHorizontal: Spacing.lg,
+    borderWidth: 1.5,
+    borderBottomWidth: 3,
+  },
+  completeLessonBtnActive: {
+    backgroundColor: Palette.forestGreen,
+    borderColor: '#1E6332',
+    borderBottomColor: '#174E27',
+  },
+  completeLessonBtnCompleted: {
+    backgroundColor: Palette.mossSoft,
+    borderColor: Palette.moss,
+    borderBottomColor: '#B2E2BB',
+  },
+  completeLessonBtnTextActive: {
+    fontFamily: Typography.display,
+    fontSize: 14.5,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  completeLessonBtnTextCompleted: {
+    fontFamily: Typography.display,
+    fontSize: 14.5,
+    fontWeight: '800',
+    color: Palette.forestGreen,
+  },
+  btnPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.98 }],
+  },
 });

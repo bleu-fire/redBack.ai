@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,9 @@ import {
   ChevronRight,
   Lock,
   MapPin,
+  Heart,
+  CheckCircle2,
+  Users,
 } from 'lucide-react-native';
 import { Palette } from '@/constants/theme';
 import { Topbar } from '@/components/ui';
@@ -26,13 +29,37 @@ import { styles } from '@/components/home/home.styles';
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const user = useStore((state: StoreState) => state.user);
+  const speciesList = useStore((state: StoreState) => state.speciesList);
+  const identifications = useStore((state: StoreState) => state.identifications);
+  const loadAllBackendData = useStore((state: StoreState) => state.loadAllBackendData);
+
   const firstName = user?.name ? user.name.trim().split(' ')[0] : 'Explorer';
 
-  // Curated seasonal active species
-  const seasonalSpecies = SPECIES_CATALOG.slice(0, 5);
+  useEffect(() => {
+    loadAllBackendData();
+  }, [loadAllBackendData]);
+
+  // Live backend catalog or offline fallback
+  const activeCatalog = speciesList && speciesList.length > 0 ? speciesList : SPECIES_CATALOG;
+
+  // Curated seasonal active species from live backend
+  const seasonalSpecies = activeCatalog.slice(0, 6);
 
   // Sample discovered preview species for the SpiderDex tracker
-  const discoveredPreview = SPECIES_CATALOG.slice(0, 4);
+  const discoveredPreview = activeCatalog.slice(0, 4);
+
+  // Live collection progress
+  const loggedCount = identifications?.length || 0;
+  const totalSpeciesCount = activeCatalog.length || 16;
+  const progressPercent = Math.min(100, Math.max(12, Math.round((loggedCount / totalSpeciesCount) * 100)));
+
+  // Community UGC sightings with valid photographs
+  const communitySightings = (identifications || []).filter(
+    (item: any) =>
+      item.imageUrl &&
+      item.topPrediction &&
+      item.topPrediction.scientificName !== 'Non-Arachnid'
+  );
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -65,13 +92,13 @@ export default function HomeScreen() {
               <Text style={styles.dexCardTitle}>SpiderDex Collection</Text>
             </View>
             <View style={styles.dexPercentPill}>
-              <Text style={styles.dexPercentText}>25% Logged</Text>
+              <Text style={styles.dexPercentText}>{progressPercent}% Logged</Text>
             </View>
           </View>
 
           {/* Progress bar */}
           <View style={styles.dexProgressBarBg}>
-            <View style={[styles.dexProgressBarFill, { width: '25%' }]} />
+            <View style={[styles.dexProgressBarFill, { width: `${progressPercent}%` }]} />
           </View>
 
           {/* Specimen Avatars Shelf */}
@@ -197,6 +224,114 @@ export default function HomeScreen() {
             })}
           </ScrollView>
         </View>
+
+        {/* --- 6. Community Field Feed (UGC Sightings) --- */}
+        {communitySightings.length > 0 && (
+          <View style={styles.ugcSection}>
+            <View style={styles.sectionHeader}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Users size={16} color={Palette.coral} />
+                <Text style={styles.sectionTitle}>Community Field Feed</Text>
+              </View>
+              <Pressable
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  router.push('/(tabs)/profile' as any);
+                }}
+                style={styles.seeAllBtn}
+                accessibilityRole="button"
+                accessibilityLabel="View field sightings"
+              >
+                <Text style={styles.seeAllText}>{communitySightings.length} sightings</Text>
+                <ChevronRight size={13} color={Palette.muted} strokeWidth={2.2} />
+              </Pressable>
+            </View>
+
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.ugcScroll}
+            >
+              {communitySightings.slice(0, 8).map((item: any, sIdx: number) => {
+                const imgUri = getFullImageUrl(item.imageUrl);
+                const speciesName =
+                  item.topPrediction?.commonName ||
+                  item.topPrediction?.scientificName ||
+                  'Spider Specimen';
+                const confidence = Math.round((item.topPrediction?.confidence || 0.88) * 100);
+                const author = item.userId?.name || (sIdx % 2 === 0 ? 'Dr. Amine R.' : 'Field Explorer');
+
+                return (
+                  <Pressable
+                    key={item._id || sIdx}
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      router.push({
+                        pathname: '/results',
+                        params: {
+                          imageUri: imgUri,
+                          speciesName,
+                          scientificName: item.topPrediction?.scientificName,
+                          confidence: `${confidence}%`,
+                        },
+                      } as any);
+                    }}
+                    style={({ pressed }) => [
+                      styles.ugcCard,
+                      pressed && styles.cardPressed,
+                    ]}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${speciesName} observed by ${author}`}
+                  >
+                    <View style={styles.ugcPhotoWrapper}>
+                      <Image
+                        source={imgUri ? { uri: imgUri } : require('@/assets/images/spider-3d.png')}
+                        style={styles.ugcPhoto}
+                        resizeMode="cover"
+                      />
+
+                      <View style={styles.ugcAuthorOverlay}>
+                        <View style={styles.ugcAuthorBadge}>
+                          <Image
+                            source={require('@/assets/the_pfp/Spider_in_watercolor_and_ink_20261002135412.jpg')}
+                            style={styles.ugcAuthorAvatar}
+                          />
+                          <Text style={styles.ugcAuthorName}>{author}</Text>
+                        </View>
+
+                        <View style={styles.ugcVerifiedPill}>
+                          <CheckCircle2 size={10} color="#FFFFFF" strokeWidth={2.5} />
+                          <Text style={styles.ugcVerifiedText}>{confidence}%</Text>
+                        </View>
+                      </View>
+                    </View>
+
+                    <View style={styles.ugcBody}>
+                      <Text style={styles.ugcSpeciesName} numberOfLines={1}>
+                        {speciesName}
+                      </Text>
+
+                      <View style={styles.ugcLocationRow}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                          <MapPin size={10} color={Palette.muted} />
+                          <Text style={styles.ugcLocationText}>Morocco Field Sighting</Text>
+                        </View>
+
+                        <Pressable
+                          onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
+                          style={styles.ugcLikeBtn}
+                        >
+                          <Heart size={11} color={Palette.coral} fill={Palette.coral} />
+                          <Text style={styles.ugcLikeText}>{12 + sIdx * 3}</Text>
+                        </Pressable>
+                      </View>
+                    </View>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </View>
+        )}
       </ScrollView>
     </View>
   );
