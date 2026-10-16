@@ -17,6 +17,7 @@
     "search:morocco": "tsx src/scripts/search-species.ts",
     "ingest:inat-spiders": "tsx src/scripts/ingest-inaturalist-spiders.ts",
     "test": "jest",
+    "test:e2e": "tsx tests/e2e.test.ts",
     "test:species": "jest src/modules/species/species.test.ts",
     "test:identification": "jest src/modules/Identification/identification.controller.test.ts"
   },

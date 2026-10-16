@@ -33,12 +33,12 @@ export class AIController {
         throw new AppError('Unauthorized', 401);
       }
 
-      const { title, speciesContext, message } = req.body;
+      const { title, speciesContext, message, initialMessage } = req.body;
       const conversation = await this.service.createConversation(
         userId.toString(),
         title,
         speciesContext,
-        message
+        initialMessage || message
       );
 
       return res.status(201).json({
