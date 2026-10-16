@@ -12,7 +12,8 @@ import { Search, X } from 'lucide-react-native';
 import { Palette } from '@/constants/theme';
 import { SpeciesGridCard } from '@/components/ui';
 import { ExploreEmptyState } from '@/components/explore/ExploreEmptyState';
-import { SPECIES_CATALOG, SpeciesDetail } from '@/data/speciesData';
+import { ActivityIndicator } from 'react-native';
+import { SpeciesDetail } from '@/data/species/types';
 import { fetchAllSpecies, speciesDtoToSpeciesDetail } from '@/data/api/logic';
 import { getFullImageUrl } from '@/data/api/api';
 import { useStore } from '@/store/stores';
@@ -23,36 +24,25 @@ export default function ExploreScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const storeSpecies = useStore((state) => state.speciesList);
-  const [speciesList, setSpeciesList] = useState<SpeciesDetail[]>(
-    storeSpecies.length > 0 ? storeSpecies : SPECIES_CATALOG
-  );
+  const [loading, setLoading] = useState(storeSpecies.length === 0);
+  const [speciesList, setSpeciesList] = useState<SpeciesDetail[]>(storeSpecies);
 
   // Sync with live backend catalog
   const loadSpeciesFromBackend = useCallback(async () => {
     try {
       const response = await fetchAllSpecies();
       if (response && response.data && response.data.length > 0) {
-        const liveItems: SpeciesDetail[] = response.data.map((bItem) => {
-          const localMatch = SPECIES_CATALOG.find(
-            (l) => l.scientificName.toLowerCase() === bItem.scientificName.toLowerCase()
-          );
-          const adapted = speciesDtoToSpeciesDetail(bItem);
-          if (localMatch) {
-            return {
-              ...localMatch,
-              ...adapted,
-              serverImage: bItem.imageUrls?.[0] || localMatch.serverImage,
-              localImageFallback: localMatch.localImageFallback,
-            };
-          }
-          return adapted;
-        });
+        const liveItems: SpeciesDetail[] = response.data.map((bItem) =>
+          speciesDtoToSpeciesDetail(bItem)
+        );
 
         setSpeciesList(liveItems);
         useStore.getState().setSpeciesList(liveItems);
       }
-    } catch {
-      // Offline fallback preserved
+    } catch (err) {
+      console.warn('[ExploreScreen] Error fetching species from backend:', err);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -144,7 +134,14 @@ export default function ExploreScreen() {
           )}
         </View>
 
-        {filteredSpecies.length > 0 ? (
+        {loading && speciesList.length === 0 ? (
+          <View style={{ paddingVertical: 60, alignItems: 'center', justifyContent: 'center' }}>
+            <ActivityIndicator size="large" color={Palette.forestGreen} />
+            <Text style={{ marginTop: 12, color: Palette.muted, fontSize: 13, fontWeight: '500' }}>
+              Loading field specimens from database...
+            </Text>
+          </View>
+        ) : filteredSpecies.length > 0 ? (
           <View style={styles.grid}>
             {filteredSpecies.map((spider) => {
               const imageUrl = spider.serverImage

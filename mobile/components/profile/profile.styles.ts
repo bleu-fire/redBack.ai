@@ -2,10 +2,7 @@ import { StyleSheet } from 'react-native';
 import { Palette, Spacing, Radii, Typography } from '@/constants/theme';
 
 export const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: Palette.canvas,
-  },
+  screen: { flex: 1, backgroundColor: Palette.canvas },
   scrollContent: {
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.md,
@@ -44,10 +41,7 @@ export const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: Palette.forestGreen,
   },
-  userInfo: {
-    flex: 1,
-    gap: 3,
-  },
+  userInfo: { flex: 1, gap: 3 },
   userNameRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -61,17 +55,8 @@ export const styles = StyleSheet.create({
     fontWeight: '800',
     color: Palette.ink,
   },
-  userBio: {
-    fontFamily: Typography.body,
-    fontSize: 13,
-    color: Palette.muted,
-  },
-  userLocation: {
-    fontFamily: Typography.body,
-    fontSize: 11,
-    color: Palette.ink,
-    marginTop: 2,
-  },
+  userBio: { fontFamily: Typography.body, fontSize: 13, color: Palette.muted },
+  userLocation: { fontFamily: Typography.body, fontSize: 11, color: Palette.ink, marginTop: 2 },
   metricsCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -85,21 +70,9 @@ export const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.sm,
   },
-  metricItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  metricNumber: {
-    fontFamily: Typography.display,
-    fontSize: 22,
-    fontWeight: '800',
-    color: Palette.ink,
-  },
-  streakNumberRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-  },
+  metricItem: { alignItems: 'center', flex: 1 },
+  metricNumber: { fontFamily: Typography.display, fontSize: 22, fontWeight: '800', color: Palette.ink },
+  streakNumberRow: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   metricLabel: {
     fontFamily: Typography.body,
     fontSize: 11,
@@ -107,11 +80,7 @@ export const styles = StyleSheet.create({
     marginTop: 2,
     fontWeight: '600',
   },
-  metricDivider: {
-    width: 1,
-    height: 30,
-    backgroundColor: Palette.line,
-  },
+  metricDivider: { width: 1, height: 30, backgroundColor: Palette.line },
   signOutBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -124,9 +93,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 12,
     marginTop: Spacing.sm,
   },
-  signOutBtnPressed: {
-    backgroundColor: Palette.coralSoft,
-  },
+  signOutBtnPressed: { backgroundColor: Palette.coralSoft },
   signOutBtnText: {
     fontFamily: Typography.body,
     fontSize: 14,
@@ -135,10 +102,7 @@ export const styles = StyleSheet.create({
   },
 
   // UGC Field Observations Gallery
-  gallerySection: {
-    gap: Spacing.sm,
-    marginTop: Spacing.xs,
-  },
+  gallerySection: { gap: Spacing.sm, marginTop: Spacing.xs },
   galleryHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -156,11 +120,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: Radii.pill,
   },
-  galleryCountText: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: Palette.forestGreen,
-  },
+  galleryCountText: { fontSize: 11, fontWeight: '800', color: Palette.forestGreen },
   galleryGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -177,15 +137,8 @@ export const styles = StyleSheet.create({
     borderBottomColor: '#D8D0C5',
     overflow: 'hidden',
   },
-  galleryPhoto: {
-    width: '100%',
-    height: 125,
-    backgroundColor: '#EDE8DF',
-  },
-  galleryCardBody: {
-    padding: 8,
-    gap: 2,
-  },
+  galleryPhoto: { width: '100%', height: 125, backgroundColor: '#EDE8DF' },
+  galleryCardBody: { padding: 8, gap: 2 },
   gallerySpeciesName: {
     fontFamily: Typography.display,
     fontSize: 12.5,
@@ -198,15 +151,8 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 2,
   },
-  galleryConfidence: {
-    fontSize: 10.5,
-    fontWeight: '700',
-    color: Palette.forestGreen,
-  },
-  galleryDate: {
-    fontSize: 10,
-    color: Palette.muted,
-  },
+  galleryConfidence: { fontSize: 10.5, fontWeight: '700', color: Palette.forestGreen },
+  galleryDate: { fontSize: 10, color: Palette.muted },
   emptyGallery: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,

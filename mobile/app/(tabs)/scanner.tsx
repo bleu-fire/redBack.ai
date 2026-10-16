@@ -5,7 +5,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
-import { Zap, ZapOff, Image as ImageIcon, ArrowLeft, Camera, Plus } from 'lucide-react-native';
+import { Zap, ZapOff, Image as ImageIcon, ArrowLeft, Camera } from 'lucide-react-native';
 import { Colors, Spacing } from '@/constants/theme';
 import { uploadSpiderImage } from '@/data/api/logic';
 import { styles } from '@/components/scanner/scanner.styles';
@@ -123,13 +123,13 @@ export default function ScannerScreen() {
         onCameraReady={() => setIsCameraReady(true)}
       />
 
-      <View style={[styles.topHud, { paddingTop: insets.top + Spacing.sm }]}>
+      <View style={[styles.topHud, { paddingTop: Math.max(insets.top + Spacing.sm, 16) }]}>
         <Pressable
           onPress={() => router.back()}
           style={({ pressed }) => [styles.hudIconButton, pressed && styles.pressed]}
           accessibilityLabel="Back"
         >
-          <ArrowLeft size={20} color="#FFFFFF" strokeWidth={2} />
+          <ArrowLeft size={28} color="#FFFFFF" strokeWidth={2.4} />
         </Pressable>
 
         <Pressable
@@ -137,17 +137,13 @@ export default function ScannerScreen() {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             setFlash(!flash);
           }}
-          style={({ pressed }) => [
-            styles.hudIconButton,
-            flash && styles.hudIconButtonActive,
-            pressed && styles.pressed,
-          ]}
+          style={({ pressed }) => [styles.hudIconButton, pressed && styles.pressed]}
           accessibilityLabel="Toggle Torch"
         >
           {flash ? (
-            <Zap size={20} color={Colors.gold} strokeWidth={2.5} />
+            <Zap size={28} color={Colors.gold} strokeWidth={2.4} />
           ) : (
-            <ZapOff size={20} color="#FFFFFF" strokeWidth={2} />
+            <ZapOff size={28} color="#FFFFFF" strokeWidth={2.4} />
           )}
         </Pressable>
       </View>
@@ -168,7 +164,7 @@ export default function ScannerScreen() {
           style={({ pressed }) => [styles.sideDeckButton, pressed && styles.pressed]}
           accessibilityLabel="Import from Gallery"
         >
-          <ImageIcon size={22} color="#FFFFFF" strokeWidth={2} />
+          <ImageIcon size={30} color="#FFFFFF" strokeWidth={2.2} />
         </Pressable>
 
         <Pressable
@@ -182,17 +178,7 @@ export default function ScannerScreen() {
           </View>
         </Pressable>
 
-        <Pressable
-          onPress={() => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-            router.push('/(tabs)/learn' as any);
-          }}
-          style={({ pressed }) => [styles.sosDeckButton, pressed && styles.pressed]}
-          accessibilityLabel="Emergency Bite Protocol"
-        >
-          <Plus size={20} color="#FFFFFF" strokeWidth={3} />
-          <Text style={styles.sosText}>SOS</Text>
-        </Pressable>
+        <View style={styles.deckSpacer} />
       </View>
     </View>
   );

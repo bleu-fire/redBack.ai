@@ -1,13 +1,36 @@
 import https from 'https';
+import { GroqVisionResult, GROQ_VISION_PROMPT } from './groq.types';
 
-export interface GroqVisionResult {
-  isSpider: boolean;
-  detectedSubject?: string;
-  scientificName?: string;
-  commonName?: string;
-  confidence: number;
-  visualEvidence: string[];
-  rejectionReason?: string;
+export { GroqVisionResult };
+
+function postGroq(apiKey: string, payload: string, timeoutMs: number): Promise<{ statusCode?: number; headers: any; body: string }> {
+  return new Promise((resolve, reject) => {
+    const req = https.request(
+      {
+        hostname: 'api.groq.com',
+        path: '/openai/v1/chat/completions',
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(payload),
+        },
+        timeout: timeoutMs,
+      },
+      (res) => {
+        let body = '';
+        res.on('data', (c) => (body += c));
+        res.on('end', () => resolve({ statusCode: res.statusCode, headers: res.headers, body }));
+      }
+    );
+    req.on('error', reject);
+    req.on('timeout', () => {
+      req.destroy();
+      reject(new Error('Groq request timed out'));
+    });
+    req.write(payload);
+    req.end();
+  });
 }
 
 export class GroqClient {
@@ -16,70 +39,30 @@ export class GroqClient {
   }
 
   private getModel(type: 'vision' | 'chat'): string {
-    if (type === 'vision') {
-      return process.env.GROQ_VISION_MODEL || 'qwen/qwen3.8-27b';
-    }
+    if (type === 'vision') return process.env.GROQ_VISION_MODEL || 'qwen/qwen3.8-27b';
     return process.env.GROQ_CHAT_MODEL || 'qwen/qwen3.8-27b';
   }
 
   /**
    * Multimodal Vision Analysis using Groq
-   * Strictly distinguishes between spiders (Araneae) and humans/objects/animals.
    */
   async identifySpiderImage(
     imageBuffer: Buffer,
-    mimeType: string = 'image/jpeg'
+    mimeType: string = 'image/jpeg',
+    throwOnRateLimit = false
   ): Promise<GroqVisionResult | null> {
     const apiKey = this.getApiKey();
     if (!apiKey || !imageBuffer) return null;
 
     const base64Img = imageBuffer.toString('base64');
-    const prompt = `You are a strict computer vision and arachnid classification specialist for redBack.ai.
-STEP 1 - CLASSIFY SUBJECT:
-Determine whether this image actually contains a SPIDER (order Araneae), or if it is a HUMAN (person, face, skin, hand, fingers, body), PET, INSECT (fly, bee, ant), or INANIMATE OBJECT.
-
-CASE A: If the image is a HUMAN (face, hand, selfie, person, skin) or any NON-SPIDER object:
-Return:
-{
-  "isSpider": false,
-  "detectedSubject": "Human face" (or "Human hand", "Person", "Domestic object"),
-  "confidence": 0.98,
-  "visualEvidence": [
-    "Human skin texture and anatomical features observed",
-    "No chelicerae fangs, ocular arrangement, or 8-legged arachnid morphology"
-  ],
-  "rejectionReason": "This image contains a human/non-spider subject, not an arachnid."
-}
-
-CASE B: If the image DOES contain a SPIDER:
-Return:
-{
-  "isSpider": true,
-  "detectedSubject": "Spider",
-  "scientificName": "Scientific binomial name",
-  "commonName": "Standard English common name",
-  "confidence": 0.94,
-  "visualEvidence": [
-    "Specific trait observed (e.g. fangs, ocular layout, dorsal marking)",
-    "Another diagnostic marker"
-  ]
-}
-
-Respond in valid JSON only.`;
-
     const payload = JSON.stringify({
       model: this.getModel('vision'),
       messages: [
         {
           role: 'user',
           content: [
-            { type: 'text', text: prompt },
-            {
-              type: 'image_url',
-              image_url: {
-                url: `data:${mimeType};base64,${base64Img}`,
-              },
-            },
+            { type: 'text', text: GROQ_VISION_PROMPT },
+            { type: 'image_url', image_url: { url: `data:${mimeType};base64,${base64Img}` } },
           ],
         },
       ],
@@ -88,71 +71,39 @@ Respond in valid JSON only.`;
       max_tokens: 500,
     });
 
-    return new Promise((resolve) => {
-      const req = https.request(
-        {
-          hostname: 'api.groq.com',
-          path: '/openai/v1/chat/completions',
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(payload),
-          },
-          timeout: 12000,
-        },
-        (res) => {
-          let rawData = '';
-          res.on('data', (chunk) => (rawData += chunk));
-          res.on('end', () => {
-            try {
-              if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
-                const data = JSON.parse(rawData);
-                const content = data?.choices?.[0]?.message?.content;
-                if (content) {
-                  const parsed = JSON.parse(content);
-                  const conf = typeof parsed.confidence === 'number' 
-                    ? parsed.confidence 
-                    : parseFloat(parsed.confidence) || 0.90;
-                  
-                  const isSpider = Boolean(parsed.isSpider);
+    try {
+      const res = await postGroq(apiKey, payload, 12000);
+      if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+        const data = JSON.parse(res.body);
+        const content = data?.choices?.[0]?.message?.content;
+        if (content) {
+          const parsed = JSON.parse(content);
+          const conf = typeof parsed.confidence === 'number'
+            ? parsed.confidence
+            : parseFloat(parsed.confidence) || 0.9;
+          const isSpider = Boolean(parsed.isSpider);
 
-                  resolve({
-                    isSpider,
-                    detectedSubject: parsed.detectedSubject || (isSpider ? 'Spider' : 'Non-spider'),
-                    scientificName: parsed.scientificName || undefined,
-                    commonName: parsed.commonName || undefined,
-                    confidence: Math.min(0.99, Math.max(0.6, conf > 1 ? conf / 100 : conf)),
-                    visualEvidence: Array.isArray(parsed.visualEvidence) ? parsed.visualEvidence : [],
-                    rejectionReason: parsed.rejectionReason || undefined,
-                  });
-                  return;
-                }
-              } else {
-                console.warn(`[GroqClient] Vision error ${res.statusCode}: ${rawData.slice(0, 150)}`);
-              }
-            } catch (err) {
-              console.warn('[GroqClient] Parse error:', err);
-            }
-            resolve(null);
-          });
+          return {
+            isSpider,
+            detectedSubject: parsed.detectedSubject || (isSpider ? 'Spider' : 'Non-spider'),
+            scientificName: parsed.scientificName || undefined,
+            commonName: parsed.commonName || undefined,
+            confidence: Math.min(0.99, Math.max(0.6, conf > 1 ? conf / 100 : conf)),
+            visualEvidence: Array.isArray(parsed.visualEvidence) ? parsed.visualEvidence : [],
+            rejectionReason: parsed.rejectionReason || undefined,
+          };
         }
-      );
-
-      req.on('error', (err) => {
-        console.warn('[GroqClient] Request error:', err.message);
-        resolve(null);
-      });
-
-      req.on('timeout', () => {
-        req.destroy();
-        console.warn('[GroqClient] Vision request timed out');
-        resolve(null);
-      });
-
-      req.write(payload);
-      req.end();
-    });
+      } else if (res.statusCode === 429 && throwOnRateLimit) {
+        const retryAfter = Number(res.headers['retry-after']);
+        const error: any = new Error('Groq vision rate limit reached');
+        error.retryAfterMs = Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter * 1000 : undefined;
+        throw error;
+      }
+    } catch (err: any) {
+      if (throwOnRateLimit && err?.retryAfterMs) throw err;
+      console.warn('[GroqClient] Vision request failed:', err?.message || err);
+    }
+    return null;
   }
 
   /**
@@ -167,7 +118,6 @@ Respond in valid JSON only.`;
     if (!apiKey) return null;
 
     const messages: any[] = [{ role: 'system', content: systemPrompt }];
-
     if (history && Array.isArray(history)) {
       for (const msg of history.slice(-6)) {
         messages.push({
@@ -176,7 +126,6 @@ Respond in valid JSON only.`;
         });
       }
     }
-
     messages.push({ role: 'user', content: userMessage });
 
     const payload = JSON.stringify({
@@ -186,52 +135,17 @@ Respond in valid JSON only.`;
       max_tokens: 600,
     });
 
-    return new Promise((resolve) => {
-      const req = https.request(
-        {
-          hostname: 'api.groq.com',
-          path: '/openai/v1/chat/completions',
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(payload),
-          },
-          timeout: 10000,
-        },
-        (res) => {
-          let rawData = '';
-          res.on('data', (chunk) => (rawData += chunk));
-          res.on('end', () => {
-            try {
-              if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
-                const data = JSON.parse(rawData);
-                const text = data?.choices?.[0]?.message?.content;
-                resolve(text ? text.trim() : null);
-                return;
-              }
-            } catch (err) {
-              console.warn('[GroqClient] Chat parse error:', err);
-            }
-            resolve(null);
-          });
-        }
-      );
-
-      req.on('error', (err) => {
-        console.warn('[GroqClient] Chat request error:', err.message);
-        resolve(null);
-      });
-
-      req.on('timeout', () => {
-        req.destroy();
-        console.warn('[GroqClient] Chat request timed out');
-        resolve(null);
-      });
-
-      req.write(payload);
-      req.end();
-    });
+    try {
+      const res = await postGroq(apiKey, payload, 10000);
+      if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+        const data = JSON.parse(res.body);
+        const text = data?.choices?.[0]?.message?.content;
+        return text ? text.trim() : null;
+      }
+    } catch (err: any) {
+      console.warn('[GroqClient] Chat request error:', err?.message || err);
+    }
+    return null;
   }
 }
 

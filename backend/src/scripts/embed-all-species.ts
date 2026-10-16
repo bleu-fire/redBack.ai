@@ -36,7 +36,7 @@ async function embedAllSpecies() {
       commonName: sp.commonName,
       vector,
     };
-    console.log(`  🕷️ Embedded: ${sp.commonName} (${sp.scientificName}) [${vector.length}-D]`);
+    console.log(`   Embedded: ${sp.commonName} (${sp.scientificName}) [${vector.length}-D]`);
   }
 
   const outDir = path.resolve(__dirname, '../../data');

@@ -2,15 +2,10 @@ import { StyleSheet } from 'react-native';
 import { Colors, Spacing, Radii, Typography } from '@/constants/theme';
 
 export const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: Colors.canvas,
-  },
-  container: {
-    flex: 1,
-  },
+  screen: { flex: 1, backgroundColor: Colors.canvas },
+  container: { flex: 1 },
 
-  // ================= 1. TACTILE 3D TOP BAR =================
+  // Header & Top Bar
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -21,23 +16,9 @@ export const styles = StyleSheet.create({
     borderBottomWidth: 1.5,
     borderBottomColor: Colors.borderLine,
   },
-  backBtn: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
-  },
-  backBtnPressed: {
-    opacity: 0.7,
-  },
-  reddyProfileWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    flex: 1,
-    marginLeft: 8,
-  },
+  backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent' },
+  backBtnPressed: { opacity: 0.7 },
+  reddyProfileWrap: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1, marginLeft: 8 },
   reddyAvatarContainer: {
     width: 40,
     height: 40,
@@ -50,10 +31,7 @@ export const styles = StyleSheet.create({
     overflow: 'hidden',
     position: 'relative',
   },
-  reddyAvatarImg: {
-    width: '100%',
-    height: '100%',
-  },
+  reddyAvatarImg: { width: '100%', height: '100%' },
   onlineBadgeRing: {
     position: 'absolute',
     bottom: 1,
@@ -65,27 +43,12 @@ export const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: Colors.card,
   },
-  headerTitleGroup: {
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    fontFamily: Typography.displayBold,
-    fontSize: 16,
-    fontWeight: '800',
-    color: Colors.inkPrimary,
-    letterSpacing: -0.2,
-  },
-  headerSubtitle: {
-    fontFamily: Typography.body,
-    fontSize: 11,
-    color: Colors.inkMuted,
-    fontWeight: '600',
-  },
-  headerRightSpacer: {
-    width: 40,
-  },
+  headerTitleGroup: { justifyContent: 'center' },
+  headerTitle: { fontFamily: Typography.displayBold, fontSize: 16, fontWeight: '800', color: Colors.inkPrimary, letterSpacing: -0.2 },
+  headerSubtitle: { fontFamily: Typography.body, fontSize: 11, color: Colors.inkMuted, fontWeight: '600' },
+  headerRightSpacer: { width: 40 },
 
-  // ================= 2. TACTILE 3D CONTEXT CARD =================
+  // Context Card
   contextBannerCard: {
     marginHorizontal: Spacing.md,
     marginTop: 8,
@@ -101,60 +64,18 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    shadowColor: '#17211F',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
     elevation: 2,
   },
-  contextBannerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    flex: 1,
-  },
-  contextThumbMini: {
-    width: 26,
-    height: 26,
-    borderRadius: 8,
-    backgroundColor: Colors.canvas,
-    borderWidth: 1,
-    borderColor: Colors.borderLine,
-  },
-  contextBannerText: {
-    fontFamily: Typography.body,
-    fontSize: 12.5,
-    fontWeight: '700',
-    color: Colors.inkPrimary,
-  },
-  contextMutedDot: {
-    color: Colors.inkMuted,
-    fontWeight: '400',
-  },
-  contextDismissBtn: {
-    padding: 6,
-    marginLeft: 6,
-    borderRadius: 12,
-  },
-  contextPressed: {
-    backgroundColor: '#FAF7F2',
-    transform: [{ translateY: 1.5 }],
-    borderBottomWidth: 1.5,
-  },
+  contextBannerLeft: { flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 },
+  contextThumbMini: { width: 26, height: 26, borderRadius: 8, backgroundColor: Colors.canvas, borderWidth: 1, borderColor: Colors.borderLine },
+  contextBannerText: { fontFamily: Typography.body, fontSize: 12.5, fontWeight: '700', color: Colors.inkPrimary },
+  contextMutedDot: { color: Colors.inkMuted, fontWeight: '400' },
+  contextDismissBtn: { padding: 6, marginLeft: 6, borderRadius: 12 },
+  contextPressed: { backgroundColor: '#FAF7F2', transform: [{ translateY: 1.5 }], borderBottomWidth: 1.5 },
 
-  // ================= 3. MESSAGE STREAM =================
-  messagesList: {
-    paddingHorizontal: Spacing.md,
-    paddingTop: 12,
-    paddingBottom: 12,
-    gap: 14,
-  },
-  loadingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 4,
-  },
+  // Message Stream
+  messagesList: { paddingHorizontal: Spacing.md, paddingTop: 12, paddingBottom: 12, gap: 14 },
+  loadingContainer: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 },
   botAvatarLoading: {
     width: 28,
     height: 28,
@@ -177,21 +98,11 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
   },
-  loadingText: {
-    fontFamily: Typography.body,
-    fontSize: 12,
-    color: Colors.inkMuted,
-    fontWeight: '600',
-  },
+  loadingText: { fontFamily: Typography.body, fontSize: 12, color: Colors.inkMuted, fontWeight: '600' },
 
-  // ================= 4. TACTILE 3D QUICK PROMPT CHIPS =================
-  quickPromptsBar: {
-    paddingVertical: 6,
-  },
-  quickPromptsScroll: {
-    paddingHorizontal: Spacing.md,
-    gap: 8,
-  },
+  // Quick Prompt Chips
+  quickPromptsBar: { paddingVertical: 6 },
+  quickPromptsScroll: { paddingHorizontal: Spacing.md, gap: 8 },
   quickChip: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -206,19 +117,10 @@ export const styles = StyleSheet.create({
     borderRadius: Radii.pill,
     minHeight: 36,
   },
-  quickChipPressed: {
-    backgroundColor: '#FAF7F2',
-    transform: [{ translateY: 2 }],
-    borderBottomWidth: 1.5,
-  },
-  quickChipLabel: {
-    fontFamily: Typography.body,
-    fontSize: 12,
-    fontWeight: '700',
-    color: Colors.inkPrimary,
-  },
+  quickChipPressed: { backgroundColor: '#FAF7F2', transform: [{ translateY: 2 }], borderBottomWidth: 1.5 },
+  quickChipLabel: { fontFamily: Typography.body, fontSize: 12, fontWeight: '700', color: Colors.inkPrimary },
 
-  // ================= 5. TACTILE 3D INPUT BAR =================
+  // Input Bar
   inputDeck: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -230,16 +132,8 @@ export const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: Colors.borderLine,
   },
-  cameraBtn: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
-  },
-  cameraBtnPressed: {
-    opacity: 0.7,
-  },
+  cameraBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent' },
+  cameraBtnPressed: { opacity: 0.7 },
   inputWrapper: {
     flex: 1,
     flexDirection: 'row',
@@ -253,47 +147,19 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 14,
     height: 44,
   },
-  inputWrapperFocused: {
-    borderColor: Colors.forestGreen,
-    borderBottomColor: Colors.forestDark,
-  },
-  textInput: {
-    flex: 1,
-    height: '100%',
-    fontFamily: Typography.body,
-    fontSize: 13.5,
-    color: Colors.inkPrimary,
-    paddingVertical: 0,
-  },
-  micInlineBtn: {
-    padding: 6,
-  },
-  sendButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  inputWrapperFocused: { borderColor: Colors.forestGreen, borderBottomColor: Colors.forestDark },
+  textInput: { flex: 1, height: '100%', fontFamily: Typography.body, fontSize: 13.5, color: Colors.inkPrimary, paddingVertical: 0 },
+  micInlineBtn: { padding: 6 },
+  sendButton: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
   sendButtonActive: {
     backgroundColor: Colors.forestGreen,
     borderWidth: 1.5,
     borderColor: '#389A4B',
     borderBottomWidth: 3.5,
     borderBottomColor: Colors.forestDark,
-    shadowColor: Colors.forestDark,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
     elevation: 3,
   },
-  sendButtonPressed: {
-    transform: [{ translateY: 2 }],
-    borderBottomWidth: 1.5,
-    backgroundColor: Colors.forestDark,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 1,
-  },
+  sendButtonPressed: { transform: [{ translateY: 2 }], borderBottomWidth: 1.5, backgroundColor: Colors.forestDark, elevation: 1 },
   sendButtonInactive: {
     backgroundColor: '#E4DDD3',
     borderWidth: 1.5,
@@ -302,11 +168,6 @@ export const styles = StyleSheet.create({
     borderBottomColor: '#CEC6BA',
     opacity: 0.7,
   },
-  sendButtonDisabled: {
-    opacity: 0.5,
-  },
-
-  pressedSubtle: {
-    opacity: 0.85,
-  },
+  sendButtonDisabled: { opacity: 0.5 },
+  pressedSubtle: { opacity: 0.85 },
 });

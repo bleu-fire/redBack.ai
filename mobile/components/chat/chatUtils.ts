@@ -20,14 +20,7 @@ export const getInitialMessages = (
       id: 'greeting-init',
       sender: 'bot',
       time: timeStr,
-      intro: `Hello! I am Naturalist AI (Reddy), your field arachnologist connected directly to the redBack.ai species database.`,
-      supportingPoints: [
-        `Specimen focus: ${speciesName} (${scientificName})`,
-        'Ask about clinical venom danger, triage, and emergency first aid',
-        'Inquire about eye pattern morphology and identification markers',
-        'Compare against similar local and international look-alikes',
-      ],
-      tip: 'Tap any of the quick prompt chips below or type your observation question.',
+      intro: `### Field Arachnologist Ready\nHello! I am **Naturalist AI (Reddy)**, your field arachnologist connected directly to the **redBack.ai** species database.\n\n### Specimen Focus\n- Focus: **${speciesName}** (*${scientificName}*)\n- Inquire about ++clinical venom danger++, triage, and emergency first aid\n- Inquire about ++eye pattern morphology++ and identification markers\n- Compare against similar local and international look-alikes`,
     },
   ];
 };
@@ -35,24 +28,35 @@ export const getInitialMessages = (
 export const parseAiResponse = (
   raw: string
 ): { intro: string; points?: string[]; tip?: string } => {
-  const lines = raw.split('\n').map((l) => l.trim()).filter(Boolean);
-  const points: string[] = [];
-  const introLines: string[] = [];
+  if (!raw) return { intro: '' };
+
+  // Convert || and ~ to ++ (green highlight) and strip stray delimiter symbols
+  let text = raw
+    .replace(/\|\|([^|\n]+)\|\|/g, '++$1++')
+    .replace(/~~([^~\n]+)~~/g, '++$1++')
+    .replace(/~([^~\n]+)~/g, '++$1++')
+    .replace(/[|~]/g, '');
+
+  const lines = text.split('\n');
+  const bodyLines: string[] = [];
   let tipText: string | undefined;
 
-  for (const line of lines) {
-    if (line.toLowerCase().startsWith('tip:') || line.toLowerCase().startsWith('note:')) {
-      tipText = line.replace(/^(tip:|note:)\s*/i, '');
-    } else if (line.startsWith('- ') || line.startsWith('* ') || line.startsWith('• ')) {
-      points.push(line.replace(/^[-*•]\s*/, ''));
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) {
+      bodyLines.push('');
+      continue;
+    }
+
+    if (/^\*?(Tip|Note):\s*/i.test(line)) {
+      tipText = line.replace(/^\*?(Tip|Note):\s*/i, '').replace(/\*+$/, '').trim();
     } else {
-      introLines.push(line);
+      bodyLines.push(line);
     }
   }
 
   return {
-    intro: introLines.join('\n\n') || raw,
-    points: points.length > 0 ? points : undefined,
+    intro: bodyLines.join('\n').trim(),
     tip: tipText,
   };
 };

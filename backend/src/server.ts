@@ -6,6 +6,25 @@ const startServer = async () => {
   try {
     await connectDB();
 
+    const hasVisionProvider = Boolean(
+      process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY
+    );
+    const hasChatProvider = Boolean(
+      process.env.DEEPSEEK_API_KEY ||
+        process.env.GROQ_API_KEY ||
+        process.env.GEMINI_API_KEY
+    );
+    if (!hasVisionProvider || !hasChatProvider) {
+      const missingFeatures = [
+        !hasVisionProvider && 'image identification',
+        !hasChatProvider && 'Naturalist AI chat',
+      ].filter(Boolean);
+      console.warn(
+        `[AI setup] No provider key configured for ${missingFeatures.join(' and ')}. ` +
+          'Add provider keys to backend/.env and restart the backend.'
+      );
+    }
+
     const server = app.listen(config.port, () => {
       console.log(`Server khddam f port: http://localhost:${config.port}`);
       console.log(`Environment: ${config.nodeEnv}`);

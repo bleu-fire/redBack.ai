@@ -43,7 +43,7 @@ export class IdentificationController {
         try {
           const fs = await import('fs');
           const path = await import('path');
-          const uploadsDir = path.resolve(__dirname, '../../../../images/uploads');
+          const uploadsDir = path.resolve(__dirname, '../../../images/uploads');
           if (!fs.existsSync(uploadsDir)) {
             fs.mkdirSync(uploadsDir, { recursive: true });
           }

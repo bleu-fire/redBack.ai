@@ -1,0 +1,118 @@
+export const moroccanSpidersPart2 = [
+  {
+    scientificName: 'Argiope lobata',
+    commonName: 'Lobed argiope / Silver sun spider',
+    family: 'Araneidae',
+    genus: 'Argiope',
+    toxicityLevel: 'harmless' as const,
+    description:
+      'Striking large orb-weaver with a silver-white scalloped, lobed abdomen. Spins massive vertical circular webs in open sunny scrubland with silk zigzag stabilimenta.',
+    habitat: 'Coastal dunes, arid scrub, prickly pear cacti, and olive orchards.',
+    distribution: 'Common throughout coastal and semi-arid regions of Morocco (Essaouira, Agadir, Souss valley).',
+    behavior: 'Sits head-down at the web center with legs arranged in pairs forming an X.',
+    venomInfo: 'Harmless to humans. Beneficial predator controlling grasshoppers and flies.',
+    firstAid: 'Clean site with soap and water if accidentally bitten.',
+    conservationStatus: 'Least Concern',
+    morphology: {
+      eyePattern: '8 eyes in curved rows',
+      bodyLengthMm: '18–25 mm (female)',
+      colors: ['Silver white', 'Yellow and black markings', 'Lobed edges'],
+      keyFeatures: [
+        'Unique deeply scalloped lobed abdominal margins',
+        'Brilliant silvery reflective dorsal surface',
+        'Large circular orb web with zigzag silk cross',
+      ],
+    },
+    imageUrls: [
+      '/images/morocco/lobed-argiope/lobed-argiope-1.jpg',
+      '/images/morocco/lobed-argiope/lobed-argiope-2.jpg',
+    ],
+  },
+  {
+    scientificName: 'Eusparassus dufouri',
+    commonName: 'Mediterranean huntsman spider',
+    family: 'Sparassidae',
+    genus: 'Eusparassus',
+    toxicityLevel: 'mild' as const,
+    description:
+      'Large, flat, exceptionally fast huntsman spider. Lives under bark and rock crevices, occasionally wandering onto house walls on warm summer nights.',
+    habitat: 'Stony arid areas, dry olive groves, stone walls, and rocky slopes.',
+    distribution: 'Widespread across Morocco, including Mediterranean and Atlantic coasts and pre-Saharan zones.',
+    behavior: 'Nocturnal ambush hunter that catches beetles and roaches. Fast crab-like sideways sprint.',
+    venomInfo: 'Mild venom. Bite is non-lethal and causes temporary mild local ache.',
+    firstAid: 'Wash with soap and apply ice compress.',
+    conservationStatus: 'Least Concern',
+    morphology: {
+      eyePattern: 'Two forward rows of 4 eyes',
+      bodyLengthMm: '20–28 mm',
+      colors: ['Sandy fawn', 'Grey mottled with dark spots', 'Black band on ventral abdomen'],
+      keyFeatures: [
+        'Laterigrade crab-style legs',
+        'Flattened profile adapted for narrow crevices',
+        'Prominent black marking on belly',
+      ],
+    },
+    imageUrls: [
+      '/images/morocco/moroccan-huntsman/moroccan-huntsman-1.jpg',
+      '/images/morocco/moroccan-huntsman/moroccan-huntsman-2.jpg',
+    ],
+  },
+  {
+    scientificName: 'Menemerus semilimbatus',
+    commonName: 'Mediterranean jumping spider',
+    family: 'Salticidae',
+    genus: 'Menemerus',
+    toxicityLevel: 'harmless' as const,
+    description:
+      'Charming, inquisitive small jumping spider commonly seen patrolling sunlit exterior walls of Moroccan houses. Recognizable by its huge forward-facing camera-like eyes and fuzzy white facial mustache.',
+    habitat: 'Sunlit stucco walls, window sills, tree trunks, and garden fences.',
+    distribution: 'Found across all Moroccan urban and rural areas.',
+    behavior: 'Diurnal active hunter with 360-degree vision. Stalks flies and leaps with precision.',
+    venomInfo: 'Completely non-venomous and harmless to humans.',
+    firstAid: 'No treatment necessary.',
+    conservationStatus: 'Least Concern',
+    morphology: {
+      eyePattern: 'Two massive forward-facing central eyes providing stereoscopic color vision',
+      bodyLengthMm: '6–9 mm',
+      colors: ['Grey-brown', 'White crescent borders', 'White pedipalps'],
+      keyFeatures: [
+        'Huge expressive forward-facing eyes',
+        'Flat hairy body hugging wall surfaces',
+        'Agile jumping movement without webs',
+      ],
+    },
+    imageUrls: [
+      '/images/morocco/jumping-spider/jumping-spider-1.jpg',
+      '/images/morocco/jumping-spider/jumping-spider-2.jpg',
+    ],
+  },
+  {
+    scientificName: 'Uroctea durandi',
+    commonName: 'Mediterranean star spider',
+    family: 'Oecobiidae',
+    genus: 'Uroctea',
+    toxicityLevel: 'harmless' as const,
+    description:
+      'Unique, flattened Mediterranean spider that constructs tent-like silk canopies under stones with radial tripwires. Its dark rounded abdomen displays five distinct bright yellow/orange spots resembling a star pattern.',
+    habitat: 'Under flat stones and rock slabs in sunny Mediterranean hillsides and maquis.',
+    distribution: 'Mediterranean Morocco and Atlas mountains.',
+    behavior: 'Constructs a silk tent with 5–6 exits; ambushes passing ants and beetles.',
+    venomInfo: 'Non-toxic to humans.',
+    firstAid: 'Wash with water if bitten.',
+    conservationStatus: 'Least Concern',
+    morphology: {
+      eyePattern: 'Compact eye group on anterior carapace',
+      bodyLengthMm: '12–16 mm',
+      colors: ['Velvety dark brown/black', '5 pale yellow/orange round spots'],
+      keyFeatures: [
+        'Distinctive 5 yellow spots on dark abdomen',
+        'Tent-like silk canopy under rocks',
+        'Large feathered anal tubercle with spinnerets',
+      ],
+    },
+    imageUrls: [
+      '/images/morocco/star-spider/star-spider-1.jpg',
+      '/images/morocco/star-spider/star-spider-2.jpg',
+    ],
+  },
+];

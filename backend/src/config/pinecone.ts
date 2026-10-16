@@ -17,6 +17,7 @@ export interface PineconeQueryOptions {
   topK?: number;
   filter?: Record<string, any>;
   includeMetadata?: boolean;
+  namespace?: string;
 }
 
 export class PineconeService {
@@ -39,7 +40,7 @@ export class PineconeService {
     vector: number[],
     options: PineconeQueryOptions = {}
   ): Promise<PineconeMatch[]> {
-    const { topK = 5, filter, includeMetadata = true } = options;
+    const { topK = 5, filter, includeMetadata = true, namespace } = options;
 
     if (!this.isConfigured()) {
       console.warn('[Pinecone] PINECONE_API_KEY not configured, skipping vector query');
@@ -60,6 +61,7 @@ export class PineconeService {
           topK,
           filter,
           includeMetadata,
+          ...(namespace ? { namespace } : {}),
         }),
       });
 
@@ -83,7 +85,8 @@ export class PineconeService {
       id: string;
       values: number[];
       metadata?: Record<string, any>;
-    }>
+    }>,
+    namespace?: string
   ): Promise<boolean> {
     if (!this.isConfigured()) {
       console.warn('[Pinecone] PINECONE_API_KEY not configured, skipping vector upsert');
@@ -98,7 +101,7 @@ export class PineconeService {
           'Api-Key': this.apiKey,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ vectors }),
+        body: JSON.stringify({ vectors, ...(namespace ? { namespace } : {}) }),
       });
 
       if (!response.ok) {
@@ -111,6 +114,37 @@ export class PineconeService {
       console.error('[Pinecone] Error upserting vectors:', error);
       return false;
     }
+  }
+
+  /** Embed image descriptions with the same 1024-D model used for the iNaturalist index. */
+  async embedTexts(texts: string[], inputType: 'query' | 'passage' = 'passage'): Promise<number[][]> {
+    if (!this.apiKey) throw new Error('PINECONE_API_KEY is not configured');
+    if (texts.length === 0) return [];
+
+    const response = await fetch('https://api.pinecone.io/embed', {
+      method: 'POST',
+      headers: {
+        'Api-Key': this.apiKey,
+        'Content-Type': 'application/json',
+        'X-Pinecone-Api-Version': '2025-10',
+      },
+      body: JSON.stringify({
+        model: 'llama-text-embed-v2',
+        inputs: texts.map((text) => ({ text })),
+        parameters: { input_type: inputType, truncate: 'END' },
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Pinecone embedding failed with status ${response.status}: ${(await response.text()).slice(0, 200)}`);
+    }
+
+    const data: any = await response.json();
+    const embeddings = data.data?.map((item: any) => item.values);
+    if (!Array.isArray(embeddings) || embeddings.length !== texts.length) {
+      throw new Error('Pinecone returned an unexpected embedding response');
+    }
+    return embeddings;
   }
 }
 

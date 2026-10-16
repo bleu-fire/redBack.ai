@@ -18,3 +18,7 @@ export * from '../modules/Identification/observation.model';
 // Learning & Education Domain
 export * from '../modules/learning/learning-topic.model';
 export * from '../modules/learning/quiz.model';
+
+// AI Chat & Persistent Conversation Domain
+export * from '../modules/ai/conversation.model';
+

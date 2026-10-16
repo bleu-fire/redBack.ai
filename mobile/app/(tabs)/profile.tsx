@@ -10,10 +10,9 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { LogOut, Camera, CheckCircle2 } from 'lucide-react-native';
+import { LogOut } from 'lucide-react-native';
 import { Palette } from '@/constants/theme';
 import { useStore, StoreState } from '@/store/stores';
-import { getFullImageUrl } from '@/data/api/api';
 import AsyncStorageManagement from '@/data/storage/asyncstorage';
 import { styles } from '@/components/profile/profile.styles';
 
@@ -87,89 +86,6 @@ export default function ProfileScreen() {
             <Text style={styles.metricNumber}>{Math.max(1, spiderSightings.length || 1)}</Text>
             <Text style={styles.metricLabel}>Day Streak</Text>
           </View>
-        </View>
-
-        {/* --- UGC Observations Gallery --- */}
-        <View style={styles.gallerySection}>
-          <View style={styles.galleryHeaderRow}>
-            <Text style={styles.galleryTitle}>My Field Observations</Text>
-            <View style={styles.galleryCountPill}>
-              <Text style={styles.galleryCountText}>
-                {spiderSightings.length} photos
-              </Text>
-            </View>
-          </View>
-
-          {spiderSightings.length > 0 ? (
-            <View style={styles.galleryGrid}>
-              {spiderSightings.map((item: any, idx: number) => {
-                const imgUri = getFullImageUrl(item.imageUrl);
-                const spName =
-                  item.topPrediction?.commonName ||
-                  item.topPrediction?.scientificName ||
-                  'Spider Specimen';
-                const conf = Math.round((item.topPrediction?.confidence || 0.85) * 100);
-                const dateStr = item.createdAt
-                  ? new Date(item.createdAt).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                    })
-                  : 'Oct 12';
-
-                return (
-                  <Pressable
-                    key={item._id || idx}
-                    onPress={() => {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                      router.push({
-                        pathname: '/results',
-                        params: {
-                          imageUri: imgUri,
-                          speciesName: spName,
-                          scientificName: item.topPrediction?.scientificName,
-                          confidence: `${conf}%`,
-                        },
-                      } as any);
-                    }}
-                    style={styles.galleryCard}
-                    accessibilityRole="button"
-                    accessibilityLabel={`${spName}, logged on ${dateStr}`}
-                  >
-                    <Image
-                      source={
-                        imgUri
-                          ? { uri: imgUri }
-                          : require('@/assets/images/spider-3d.png')
-                      }
-                      style={styles.galleryPhoto}
-                      resizeMode="cover"
-                    />
-
-                    <View style={styles.galleryCardBody}>
-                      <Text style={styles.gallerySpeciesName} numberOfLines={1}>
-                        {spName}
-                      </Text>
-
-                      <View style={styles.galleryConfidenceRow}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-                          <CheckCircle2 size={10} color={Palette.forestGreen} strokeWidth={2.5} />
-                          <Text style={styles.galleryConfidence}>{conf}%</Text>
-                        </View>
-                        <Text style={styles.galleryDate}>{dateStr}</Text>
-                      </View>
-                    </View>
-                  </Pressable>
-                );
-              })}
-            </View>
-          ) : (
-            <View style={styles.emptyGallery}>
-              <Camera size={28} color={Palette.muted} />
-              <Text style={styles.emptyGalleryText}>
-                No field observations yet. Scan a specimen in the field to log it here!
-              </Text>
-            </View>
-          )}
         </View>
 
         <Pressable

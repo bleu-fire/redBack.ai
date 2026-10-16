@@ -102,17 +102,18 @@ describe('Species Controller - Jest Tests', () => {
   // 3. TEST: getSpeciesById
   describe('getSpeciesById', () => {
     it('should return species by ID with status 200', async () => {
+      const validId = '507f1f77bcf86cd799439011';
       const mockSpider = {
-        _id: 'spider_123',
+        _id: validId,
         commonName: 'Redback Spider',
       };
 
-      req.params = { id: 'spider_123' };
+      req.params = { id: validId };
       (Species.findById as any).mockResolvedValue(mockSpider);
 
       await speciesController.getSpeciesById(req as Request, res as Response, next);
 
-      expect(Species.findById).toHaveBeenCalledWith('spider_123');
+      expect(Species.findById).toHaveBeenCalledWith(validId);
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         status: 'success',
@@ -121,8 +122,9 @@ describe('Species Controller - Jest Tests', () => {
     });
 
     it('should call next with error if findById fails', async () => {
+      const validId = '507f1f77bcf86cd799439011';
       const error = new Error('Database error');
-      req.params = { id: 'spider_123' };
+      req.params = { id: validId };
       (Species.findById as any).mockRejectedValue(error);
 
       await speciesController.getSpeciesById(req as Request, res as Response, next);

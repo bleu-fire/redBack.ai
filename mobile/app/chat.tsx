@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   FlatList,
@@ -13,7 +13,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Colors } from '@/constants/theme';
-import { askNaturalistAI } from '@/data/api/logic';
+import {
+  askNaturalistAI,
+  createConversation,
+  fetchConversationById,
+  sendConversationMessage,
+} from '@/data/api/logic';
 import { StructuredChatMessage } from '@/components/chat/chat.types';
 import { getInitialMessages, parseAiResponse } from '@/components/chat/chatUtils';
 import { ChatHeader } from '@/components/chat/ChatHeader';
@@ -29,12 +34,16 @@ export default function ChatScreen() {
     speciesName?: string;
     scientificName?: string;
     confidence?: string;
+    conversationId?: string;
   }>();
 
   const speciesName = params.speciesName || 'Redback Spider';
   const scientificName = params.scientificName || 'Latrodectus hasselti';
   const confidenceText = params.confidence || '82% match';
 
+  const [conversationId, setConversationId] = useState<string | null>(
+    params.conversationId || null
+  );
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [showContextBanner, setShowContextBanner] = useState(true);
@@ -44,6 +53,45 @@ export default function ChatScreen() {
   const [messages, setMessages] = useState<StructuredChatMessage[]>(() =>
     getInitialMessages(speciesName, scientificName)
   );
+
+  useEffect(() => {
+    if (!params.conversationId) return;
+
+    fetchConversationById(params.conversationId)
+      .then((conv) => {
+        if (conv?.messages && conv.messages.length > 0) {
+          const loaded: StructuredChatMessage[] = conv.messages.map((m: any, idx: number) => {
+            if (m.role === 'user') {
+              return {
+                id: `history-${idx}`,
+                sender: 'user',
+                time: m.timestamp
+                  ? new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                  : '',
+                text: m.content,
+              };
+            }
+            const parsed = parseAiResponse(m.content);
+            return {
+              id: `history-${idx}`,
+              sender: 'bot',
+              time: m.timestamp
+                ? new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                : '',
+              intro: parsed.intro,
+              supportingPoints: parsed.points,
+              sources: m.sources,
+              tip: parsed.tip,
+            };
+          });
+          setMessages(loaded);
+          setConversationId(conv._id);
+        }
+      })
+      .catch((err) => {
+        console.warn('Failed to load conversation history', err);
+      });
+  }, [params.conversationId]);
 
   const handleSend = async (overrideText?: string) => {
     const textToSend = overrideText || inputText;
@@ -66,10 +114,42 @@ export default function ChatScreen() {
     setLoading(true);
 
     try {
-      const reply = await askNaturalistAI(textToSend, {
-        name: speciesName,
-        scientific: scientificName,
-      });
+      let reply = '';
+      let sources: any[] = [];
+
+      if (conversationId) {
+        const res = await sendConversationMessage(conversationId, textToSend);
+        reply = res.reply;
+        sources = res.sources || [];
+      } else {
+        try {
+          const conv = await createConversation(
+            `Discussion: ${speciesName}`,
+            { name: speciesName, scientific: scientificName },
+            textToSend
+          );
+          if (conv?._id) {
+            setConversationId(conv._id);
+            const lastMsg = conv.messages?.[conv.messages.length - 1];
+            reply = lastMsg?.content || '';
+            sources = lastMsg?.sources || [];
+          } else {
+            const fallbackRes = await askNaturalistAI(textToSend, {
+              name: speciesName,
+              scientific: scientificName,
+            });
+            reply = fallbackRes.reply;
+            sources = fallbackRes.sources || [];
+          }
+        } catch {
+          const fallbackRes = await askNaturalistAI(textToSend, {
+            name: speciesName,
+            scientific: scientificName,
+          });
+          reply = fallbackRes.reply;
+          sources = fallbackRes.sources || [];
+        }
+      }
 
       const parsed = parseAiResponse(reply);
 
@@ -79,6 +159,7 @@ export default function ChatScreen() {
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         intro: parsed.intro,
         supportingPoints: parsed.points,
+        sources: sources && sources.length > 0 ? sources : undefined,
         tip: parsed.tip,
       };
 
@@ -125,7 +206,7 @@ export default function ChatScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={0}
     >
-      <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+      <View style={[styles.container, { paddingBottom: insets.bottom }]}>
         <ChatHeader
           speciesName={speciesName}
           confidenceText={confidenceText}

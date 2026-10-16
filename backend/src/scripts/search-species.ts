@@ -14,7 +14,7 @@ const rawData: Record<string, IndexedSpecies> = JSON.parse(fs.readFileSync(vecto
 const speciesList = Object.values(rawData);
 
 async function findClosestSpecies(userQuery: string, topK = 3) {
-  console.log(`\n🔍 Searching: "${userQuery}"`);
+  console.log(`\n Searching: "${userQuery}"`);
   const queryVector = await embeddingService.generateEmbedding(userQuery);
 
   const scores = speciesList.map((species) => {

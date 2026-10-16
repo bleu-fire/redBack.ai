@@ -19,7 +19,10 @@ export class VectorMatcherService {
       const queryVector = await embeddingService.generateImageEmbedding({ imageBuffer, mimeType });
 
       if (pineconeService.isConfigured()) {
-        const matches = await pineconeService.queryVector(queryVector, { topK: 1 });
+        const matches = await pineconeService.queryVector(queryVector, {
+          topK: 1,
+          namespace: process.env.INAT_PINECONE_NAMESPACE || 'inaturalist-spiders',
+        });
         if (matches.length > 0 && matches[0].metadata?.scientificName) {
           return {
             isSpider: true,
@@ -27,6 +30,7 @@ export class VectorMatcherService {
             score: matches[0].score || 0.88,
           };
         }
+        return null;
       }
 
       const allVectorsPath = path.resolve(__dirname, '../../data/all-species-vectors.json');

@@ -4,7 +4,6 @@ import {
   CheckCircle2,
   CheckCheck,
   HelpCircle,
-  Camera,
   ThumbsUp,
   ThumbsDown,
   Copy,
@@ -13,6 +12,8 @@ import {
 import { Palette } from '@/constants/theme';
 import { StructuredChatMessage } from './chat.types';
 import { styles } from './ChatMessageItem.styles';
+
+import { MarkdownContent, renderInlineSpans } from './MarkdownContent';
 
 interface ChatMessageItemProps {
   item: StructuredChatMessage;
@@ -57,8 +58,8 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
 
       <View style={styles.botCardContainer}>
         <View style={styles.botBubble}>
-          {Boolean(item.intro) && (
-            <Text style={styles.botIntroText}>{item.intro}</Text>
+          {Boolean(item.intro || item.text) && (
+            <MarkdownContent content={item.intro || item.text || ''} />
           )}
 
           {/* Supporting Points / Key Evidence */}
@@ -71,7 +72,7 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
                     color={Palette.forestGreen}
                     style={styles.listIcon}
                   />
-                  <Text style={styles.cleanListText}>{pt}</Text>
+                  <Text style={styles.cleanListText}>{renderInlineSpans(pt)}</Text>
                 </View>
               ))}
             </View>
@@ -83,7 +84,7 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
               {item.uncertainPoints.map((pt, i) => (
                 <View key={i} style={styles.cleanListRow}>
                   <HelpCircle size={13} color="#D97706" style={styles.listIcon} />
-                  <Text style={styles.uncertainListText}>{pt}</Text>
+                  <Text style={styles.uncertainListText}>{renderInlineSpans(pt)}</Text>
                 </View>
               ))}
             </View>
@@ -97,19 +98,13 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
                   <View style={styles.stepNumCircle}>
                     <Text style={styles.stepNumCircleText}>{step.number}</Text>
                   </View>
-                  <Text style={styles.cleanListText}>{step.text}</Text>
+                  <Text style={styles.cleanListText}>{renderInlineSpans(step.text)}</Text>
                 </View>
               ))}
             </View>
           )}
 
-          {/* Field Photography Tip */}
-          {Boolean(item.tip) && (
-            <View style={styles.cleanTipStrip}>
-              <Camera size={13} color={Palette.forestGreen} />
-              <Text style={styles.cleanTipText}>{item.tip}</Text>
-            </View>
-          )}
+
 
           <Text style={styles.botTimestamp}>{item.time}</Text>
         </View>

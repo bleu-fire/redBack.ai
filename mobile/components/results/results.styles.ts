@@ -2,10 +2,7 @@ import { StyleSheet } from 'react-native';
 import { Colors, Spacing, Radii, Typography, TouchTargets } from '@/constants/theme';
 
 export const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: Colors.canvas,
-  },
+  screen: { flex: 1, backgroundColor: Colors.canvas },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -22,17 +19,8 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'transparent',
   },
-  headerTitle: {
-    fontSize: Typography.bodyStyle.fontSize,
-    fontWeight: '800',
-    color: Colors.inkPrimary,
-  },
-  scrollContent: {
-    paddingHorizontal: 10,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.xxxl,
-    gap: Spacing.lg,
-  },
+  headerTitle: { fontSize: Typography.bodyStyle.fontSize, fontWeight: '800', color: Colors.inkPrimary },
+  scrollContent: { paddingHorizontal: 10, paddingTop: Spacing.md, paddingBottom: Spacing.xxxl, gap: Spacing.lg },
 
   // Specimen Photo Card
   specimenCard: {
@@ -44,17 +32,8 @@ export const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: Colors.borderLine,
   },
-  specimenImageWrapper: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 20,
-    overflow: 'hidden',
-    backgroundColor: Colors.canvas,
-  },
-  specimenImage: {
-    width: '100%',
-    height: '100%',
-  },
+  specimenImageWrapper: { width: '100%', height: '100%', borderRadius: 20, overflow: 'hidden', backgroundColor: Colors.canvas },
+  specimenImage: { width: '100%', height: '100%' },
 
   // Specimen Identity Block
   speciesInfoBlock: {
@@ -66,31 +45,11 @@ export const styles = StyleSheet.create({
     borderBottomWidth: 3,
     borderBottomColor: Colors.borderPressed,
   },
-  speciesHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: Spacing.sm,
-  },
-  speciesNameWrap: {
-    flex: 1,
-    paddingRight: Spacing.xs,
-  },
-  confidenceNumber: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: Colors.forestGreen,
-  },
-  commonName: {
-    fontSize: Typography.h2.fontSize,
-    fontWeight: '800',
-    color: Colors.inkPrimary,
-  },
-  scientificName: {
-    fontSize: Typography.bodyStyle.fontSize,
-    fontStyle: 'italic',
-    color: Colors.inkMuted,
-  },
+  speciesHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Spacing.sm },
+  speciesNameWrap: { flex: 1, paddingRight: Spacing.xs },
+  confidenceNumber: { fontSize: 20, fontWeight: '800', color: Colors.forestGreen },
+  commonName: { fontSize: Typography.h2.fontSize, fontWeight: '800', color: Colors.inkPrimary },
+  scientificName: { fontSize: Typography.bodyStyle.fontSize, fontStyle: 'italic', color: Colors.inkMuted },
 
   // Immediate Safety Triage Card
   actionCard: {
@@ -103,50 +62,14 @@ export const styles = StyleSheet.create({
     padding: Spacing.lg,
     gap: Spacing.md,
   },
-  actionHeaderRow: {
-    marginBottom: 2,
-  },
-  actionCardTitle: {
-    fontSize: Typography.bodyStyle.fontSize,
-    fontWeight: '800',
-    color: Colors.inkPrimary,
-  },
-  actionGridRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: Spacing.xs,
-  },
-  actionGridCol: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-    paddingVertical: 2,
-  },
-  actionIconWrap: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 2,
-    backgroundColor: 'transparent',
-  },
-  actionGridTitle: {
-    fontSize: 11.5,
-    fontWeight: '800',
-    color: Colors.inkPrimary,
-    textAlign: 'center',
-  },
-  actionGridSubtitle: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: Colors.inkMuted,
-    textAlign: 'center',
-  },
-  actionGridDivider: {
-    width: 1,
-    height: 36,
-    backgroundColor: Colors.borderLine,
-  },
+  actionHeaderRow: { marginBottom: 2 },
+  actionCardTitle: { fontSize: Typography.bodyStyle.fontSize, fontWeight: '800', color: Colors.inkPrimary },
+  actionGridRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: Spacing.xs },
+  actionGridCol: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 2 },
+  actionIconWrap: { alignItems: 'center', justifyContent: 'center', marginBottom: 2, backgroundColor: 'transparent' },
+  actionGridTitle: { fontSize: 11.5, fontWeight: '800', color: Colors.inkPrimary, textAlign: 'center' },
+  actionGridSubtitle: { fontSize: 10, fontWeight: '600', color: Colors.inkMuted, textAlign: 'center' },
+  actionGridDivider: { width: 1, height: 36, backgroundColor: Colors.borderLine },
 
   // Identification & Look-Alike Card
   evidenceCard: {
@@ -159,16 +82,8 @@ export const styles = StyleSheet.create({
     padding: Spacing.lg,
     gap: Spacing.md,
   },
-  evidenceHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  evidenceHeaderTitle: {
-    fontSize: Typography.bodyStyle.fontSize,
-    fontWeight: '800',
-    color: Colors.inkPrimary,
-  },
+  evidenceHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  evidenceHeaderTitle: { fontSize: Typography.bodyStyle.fontSize, fontWeight: '800', color: Colors.inkPrimary },
   confidencePill: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -178,83 +93,21 @@ export const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: Radii.pill,
   },
-  confidencePillText: {
-    fontSize: 10.5,
-    fontWeight: '800',
-    color: Colors.forestGreen,
-  },
-  comparisonGridRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    paddingVertical: 2,
-  },
-  comparisonCol: {
-    flex: 1,
-    gap: 3,
-  },
-  colRoleBadge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 7,
-    paddingVertical: 2.5,
-    borderRadius: Radii.pill,
-    marginBottom: 2,
-  },
-  colRoleBadgeMatch: {
-    backgroundColor: Colors.sageSubtle,
-  },
-  colRoleBadgeLookalike: {
-    backgroundColor: Colors.amberSoft,
-  },
-  colRoleTextMatch: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: Colors.forestGreen,
-    letterSpacing: 0.6,
-  },
-  colRoleTextLookalike: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: Colors.amber,
-    letterSpacing: 0.6,
-  },
-  speciesTitle: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: Colors.inkPrimary,
-    lineHeight: 18,
-  },
-  scientificText: {
-    fontSize: 10.5,
-    fontStyle: 'italic',
-    color: Colors.inkMuted,
-    marginBottom: 4,
-  },
-  traitsWrap: {
-    gap: 3,
-  },
-  traitRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-  },
-  traitBullet: {
-    fontSize: 11,
-    color: Colors.inkMuted,
-    fontWeight: '700',
-  },
-  traitText: {
-    fontSize: 10.5,
-    fontWeight: '600',
-    color: Colors.inkPrimary,
-    flexShrink: 1,
-  },
-  comparisonDivider: {
-    width: 1,
-    alignSelf: 'stretch',
-    backgroundColor: Colors.borderLine,
-    marginHorizontal: Spacing.sm,
-  },
+  confidencePillText: { fontSize: 10.5, fontWeight: '800', color: Colors.forestGreen },
+  comparisonGridRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', paddingVertical: 2 },
+  comparisonCol: { flex: 1, gap: 3 },
+  colRoleBadge: { alignSelf: 'flex-start', paddingHorizontal: 7, paddingVertical: 2.5, borderRadius: Radii.pill, marginBottom: 2 },
+  colRoleBadgeMatch: { backgroundColor: Colors.sageSubtle },
+  colRoleBadgeLookalike: { backgroundColor: Colors.amberSoft },
+  colRoleTextMatch: { fontSize: 9, fontWeight: '800', color: Colors.forestGreen, letterSpacing: 0.6 },
+  colRoleTextLookalike: { fontSize: 9, fontWeight: '800', color: Colors.amber, letterSpacing: 0.6 },
+  speciesTitle: { fontSize: 14, fontWeight: '800', color: Colors.inkPrimary, lineHeight: 18 },
+  scientificText: { fontSize: 10.5, fontStyle: 'italic', color: Colors.inkMuted, marginBottom: 4 },
+  traitsWrap: { gap: 3 },
+  traitRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  traitBullet: { fontSize: 11, color: Colors.inkMuted, fontWeight: '700' },
+  traitText: { fontSize: 10.5, fontWeight: '600', color: Colors.inkPrimary, flexShrink: 1 },
+  comparisonDivider: { width: 1, alignSelf: 'stretch', backgroundColor: Colors.borderLine, marginHorizontal: Spacing.sm },
 
   // Key Field Difference Callout
   diffCallout: {
@@ -267,26 +120,12 @@ export const styles = StyleSheet.create({
     borderRadius: Radii.lg,
     padding: Spacing.sm,
   },
-  diffCalloutText: {
-    flex: 1,
-    fontSize: 11.5,
-    color: Colors.inkPrimary,
-    lineHeight: 16,
-  },
-  diffCalloutBold: {
-    fontWeight: '800',
-    color: Colors.forestGreen,
-  },
+  diffCalloutText: { flex: 1, fontSize: 11.5, color: Colors.inkPrimary, lineHeight: 16 },
+  diffCalloutBold: { fontWeight: '800', color: Colors.forestGreen },
 
-  // Bottom Buttons
-  bottomDeckRow: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-  },
-  pressed: {
-    opacity: 0.85,
-    transform: [{ scale: 0.96 }],
-  },
+  // Bottom Buttons & States
+  bottomDeckRow: { flexDirection: 'row', gap: Spacing.md },
+  pressed: { opacity: 0.85, transform: [{ scale: 0.96 }] },
 
   // Non-Spider Triage Card
   nonSpiderCard: {
@@ -299,11 +138,7 @@ export const styles = StyleSheet.create({
     padding: Spacing.lg,
     gap: Spacing.md,
   },
-  nonSpiderHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
+  nonSpiderHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   nonSpiderBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -313,21 +148,9 @@ export const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: Radii.pill,
   },
-  nonSpiderBadgeText: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: Colors.forestGreen,
-  },
-  nonSpiderTitle: {
-    fontSize: 17,
-    fontWeight: '800',
-    color: Colors.inkPrimary,
-  },
-  nonSpiderDescription: {
-    fontSize: 13,
-    color: Colors.inkMuted,
-    lineHeight: 18,
-  },
+  nonSpiderBadgeText: { fontSize: 11, fontWeight: '800', color: Colors.forestGreen },
+  nonSpiderTitle: { fontSize: 17, fontWeight: '800', color: Colors.inkPrimary },
+  nonSpiderDescription: { fontSize: 13, color: Colors.inkMuted, lineHeight: 18 },
   nonSpiderEvidenceBox: {
     backgroundColor: Colors.canvas,
     borderRadius: Radii.lg,
@@ -336,22 +159,9 @@ export const styles = StyleSheet.create({
     borderColor: Colors.borderLine,
     gap: 6,
   },
-  evidenceItemRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 6,
-  },
-  evidenceBullet: {
-    fontSize: 12,
-    color: Colors.forestGreen,
-    fontWeight: '800',
-  },
-  evidenceText: {
-    flex: 1,
-    fontSize: 12,
-    color: Colors.inkPrimary,
-    lineHeight: 16,
-  },
+  evidenceItemRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 6 },
+  evidenceBullet: { fontSize: 12, color: Colors.forestGreen, fontWeight: '800' },
+  evidenceText: { flex: 1, fontSize: 12, color: Colors.inkPrimary, lineHeight: 16 },
   scanningTipBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -362,10 +172,5 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.borderLine,
   },
-  scanningTipText: {
-    flex: 1,
-    fontSize: 11.5,
-    color: Colors.inkPrimary,
-    lineHeight: 16,
-  },
+  scanningTipText: { flex: 1, fontSize: 11.5, color: Colors.inkPrimary, lineHeight: 16 },
 });

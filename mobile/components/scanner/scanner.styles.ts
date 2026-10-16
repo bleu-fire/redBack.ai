@@ -2,10 +2,7 @@ import { StyleSheet } from 'react-native';
 import { Colors, Spacing, Radii, Typography, TouchTargets } from '@/constants/theme';
 
 export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000000',
-  },
+  container: { flex: 1, backgroundColor: '#000000' },
 
   // HUD Top
   topHud: {
@@ -16,18 +13,19 @@ export const styles = StyleSheet.create({
     zIndex: 10,
   },
   hudIconButton: {
-    width: TouchTargets.iconBtn,
-    height: TouchTargets.iconBtn,
-    borderRadius: Radii.pill,
-    backgroundColor: 'rgba(24, 32, 30, 0.65)',
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.25)',
+    width: 48,
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'transparent',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1.5 },
+    shadowOpacity: 0.6,
+    shadowRadius: 3,
+    elevation: 3,
   },
   hudIconButtonActive: {
-    backgroundColor: 'rgba(250, 176, 5, 0.25)',
-    borderColor: Colors.gold,
+    backgroundColor: 'transparent',
   },
 
   // Viewfinder
@@ -37,45 +35,12 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     zIndex: 5,
   },
-  reticleBox: {
-    width: 270,
-    height: 270,
-    position: 'relative',
-  },
-  reticleCorner: {
-    position: 'absolute',
-    width: 28,
-    height: 28,
-    borderColor: '#FFFFFF',
-  },
-  cornerTL: {
-    top: 0,
-    left: 0,
-    borderTopWidth: 3.5,
-    borderLeftWidth: 3.5,
-    borderTopLeftRadius: 10,
-  },
-  cornerTR: {
-    top: 0,
-    right: 0,
-    borderTopWidth: 3.5,
-    borderRightWidth: 3.5,
-    borderTopRightRadius: 10,
-  },
-  cornerBL: {
-    bottom: 0,
-    left: 0,
-    borderBottomWidth: 3.5,
-    borderLeftWidth: 3.5,
-    borderBottomLeftRadius: 10,
-  },
-  cornerBR: {
-    bottom: 0,
-    right: 0,
-    borderBottomWidth: 3.5,
-    borderRightWidth: 3.5,
-    borderBottomRightRadius: 10,
-  },
+  reticleBox: { width: 270, height: 270, position: 'relative' },
+  reticleCorner: { position: 'absolute', width: 28, height: 28, borderColor: '#FFFFFF' },
+  cornerTL: { top: 0, left: 0, borderTopWidth: 3.5, borderLeftWidth: 3.5, borderTopLeftRadius: 10 },
+  cornerTR: { top: 0, right: 0, borderTopWidth: 3.5, borderRightWidth: 3.5, borderTopRightRadius: 10 },
+  cornerBL: { bottom: 0, left: 0, borderBottomWidth: 3.5, borderLeftWidth: 3.5, borderBottomLeftRadius: 10 },
+  cornerBR: { bottom: 0, right: 0, borderBottomWidth: 3.5, borderRightWidth: 3.5, borderBottomRightRadius: 10 },
 
   // Bottom Action Deck
   bottomDeck: {
@@ -85,40 +50,25 @@ export const styles = StyleSheet.create({
     right: 0,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-around',
-    paddingHorizontal: Spacing.xxl,
+    justifyContent: 'space-between',
+    paddingHorizontal: 36,
     zIndex: 10,
   },
   sideDeckButton: {
-    width: TouchTargets.iconBtn,
-    height: TouchTargets.iconBtn,
-    borderRadius: Radii.md,
-    backgroundColor: 'rgba(24, 32, 30, 0.8)',
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    borderBottomWidth: 3,
-    borderBottomColor: '#121816',
+    width: 48,
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'transparent',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1.5 },
+    shadowOpacity: 0.6,
+    shadowRadius: 3,
+    elevation: 3,
   },
-  sosDeckButton: {
-    width: TouchTargets.iconBtn,
-    height: TouchTargets.iconBtn,
-    borderRadius: Radii.md,
-    backgroundColor: Colors.crimson,
-    borderWidth: 1.5,
-    borderColor: '#EE4A4A',
-    borderBottomWidth: 3,
-    borderBottomColor: Colors.crimsonDark,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 1,
-  },
-  sosText: {
-    fontSize: 8.5,
-    fontWeight: '900',
-    color: '#FFFFFF',
-    letterSpacing: 0.5,
+  deckSpacer: {
+    width: 48,
+    height: 48,
   },
 
   // Mega Shutter
@@ -144,9 +94,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  shutterPressed: {
-    transform: [{ scale: 0.94 }],
-  },
+  shutterPressed: { transform: [{ scale: 0.94 }] },
 
   // Permissions
   permissionScreen: {
@@ -168,11 +116,7 @@ export const styles = StyleSheet.create({
     gap: Spacing.md,
     width: '100%',
   },
-  permissionIconBadge: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
-  },
+  permissionIconBadge: { alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent' },
   permissionTitle: {
     fontSize: Typography.h3.fontSize,
     fontWeight: '800',
@@ -198,14 +142,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: Spacing.sm,
   },
-  permissionBtnText: {
-    fontSize: 15,
-    fontWeight: '800',
-    color: '#FFFFFF',
-  },
+  permissionBtnText: { fontSize: 15, fontWeight: '800', color: '#FFFFFF' },
 
-  pressed: {
-    opacity: 0.85,
-    transform: [{ scale: 0.96 }],
-  },
+  pressed: { opacity: 0.85, transform: [{ scale: 0.96 }] },
 });

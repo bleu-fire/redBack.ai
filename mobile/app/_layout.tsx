@@ -56,14 +56,6 @@ export default function RootLayout() {
           <Stack.Screen name="chat" options={{ headerShown: false, animation: 'slide_from_right' }} />
           <Stack.Screen name="upload" options={{ headerShown: false, animation: 'slide_from_right' }} />
           <Stack.Screen name="settings" options={{ headerShown: false, animation: 'slide_from_right' }} />
-          <Stack.Screen
-            name="modal"
-            options={{
-              presentation: 'modal',
-              headerShown: false,
-              animation: 'slide_from_bottom',
-            }}
-          />
         </Stack>
 
         {/* Brand Splash Screen Overlay */}

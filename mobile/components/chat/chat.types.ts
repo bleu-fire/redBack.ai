@@ -1,3 +1,5 @@
+import { SourceReference } from '@/data/api/types';
+
 export interface StructuredChatMessage {
   id: string;
   sender: 'user' | 'bot';
@@ -7,5 +9,7 @@ export interface StructuredChatMessage {
   supportingPoints?: string[];
   uncertainPoints?: string[];
   actionSteps?: { number: number; text: string }[];
+  sources?: SourceReference[];
   tip?: string;
 }
+

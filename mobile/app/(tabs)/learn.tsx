@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, RefreshControl } from 'react-native';
+import { View, Text, ScrollView, RefreshControl, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { LEARNING_MODULES, LearningModule } from '@/data/learningData';
+import { LearningModule } from '@/data/learning/types';
 import { fetchLearningModules } from '@/data/api/logic';
 import { useStore } from '@/store/stores';
 import { Palette } from '@/constants/theme';
@@ -16,9 +16,8 @@ export default function LearnScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const storeModules = useStore((state) => state.learningModules);
-  const [modules, setModules] = useState<LearningModule[]>(
-    storeModules.length > 0 ? storeModules : LEARNING_MODULES
-  );
+  const [loading, setLoading] = useState(storeModules.length === 0);
+  const [modules, setModules] = useState<LearningModule[]>(storeModules);
 
   const loadModulesFromBackend = async () => {
     try {
@@ -27,8 +26,10 @@ export default function LearnScreen() {
         setModules(data);
         useStore.getState().setLearningModules(data);
       }
-    } catch {
-      // Fallback preserved
+    } catch (err) {
+      console.warn('[LearnScreen] Failed loading modules from backend:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -94,17 +95,26 @@ export default function LearnScreen() {
           </Text>
         </View>
 
-        <View style={styles.modulesList}>
-          {filteredModules.map((mod, idx) => (
-            <ModuleCard
-              key={mod.id}
-              module={mod}
-              index={idx}
-              isCompleted={Boolean(claimedModules[mod.id])}
-              onPress={handleOpenModule}
-            />
-          ))}
-        </View>
+        {loading && modules.length === 0 ? (
+          <View style={{ paddingVertical: 60, alignItems: 'center', justifyContent: 'center' }}>
+            <ActivityIndicator size="large" color={Palette.forestGreen} />
+            <Text style={{ marginTop: 12, color: Palette.muted, fontSize: 13, fontWeight: '500' }}>
+              Loading interactive modules from backend...
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.modulesList}>
+            {filteredModules.map((mod, idx) => (
+              <ModuleCard
+                key={mod.id}
+                module={mod}
+                index={idx}
+                isCompleted={Boolean(claimedModules[mod.id])}
+                onPress={handleOpenModule}
+              />
+            ))}
+          </View>
+        )}
       </ScrollView>
 
       {/* Interactive Lesson & Quiz Reader Modal */}

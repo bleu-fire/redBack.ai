@@ -134,26 +134,7 @@ export const styles = StyleSheet.create({
     fontWeight: '900',
     color: '#FFFFFF',
   },
-  cleanTipStrip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: Colors.canvas,
-    borderWidth: 1,
-    borderColor: Colors.borderLine,
-    borderRadius: 12,
-    padding: 10,
-    marginTop: 2,
-  },
-  cleanTipText: {
-    flex: 1,
-    fontFamily: Typography.body,
-    fontSize: 12,
-    fontStyle: 'italic',
-    color: Colors.inkPrimary,
-    lineHeight: 16.5,
-    fontWeight: '500',
-  },
+
   botTimestamp: {
     fontFamily: Typography.body,
     fontSize: 10,

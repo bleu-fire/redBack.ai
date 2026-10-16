@@ -2,10 +2,8 @@ import Species from '../../modules/species/species.model';
 import { IPrediction } from '../../modules/Identification/identification.model';
 import { geminiVisionClient } from './gemini-vision.client';
 import { vectorMatcherService } from './vector-matcher.service';
-import {
-  VISION_CONFIG,
-  VisionAnalysisResult,
-} from './vision.types';
+import { VISION_CONFIG, VisionAnalysisResult } from './vision.types';
+import { buildNonSpiderResult } from './vision.helpers';
 
 export { VISION_CONFIG, VisionAnalysisResult };
 
@@ -30,53 +28,20 @@ export class VisionAIService {
         const { groqClient } = await import('./groq.client');
         const groqMatch = await groqClient.identifySpiderImage(imageBuffer, mimeType);
 
-        // Case: Non-spider subject detected (Human, pet, object)
         if (groqMatch && groqMatch.isSpider === false) {
           const subject = groqMatch.detectedSubject || 'Human / Non-Arachnid';
-          const rejection = groqMatch.rejectionReason || 'No spider detected in image.';
-          return {
-            topPrediction: {
-              scientificName: 'Non-Arachnid',
-              commonName: subject,
-              confidence: groqMatch.confidence || 0.98,
-              confidenceBand: 'high',
-              rank: 1,
-              visualEvidence: groqMatch.visualEvidence.length > 0
-                ? groqMatch.visualEvidence
-                : [
-                    `Subject classified as: ${subject}`,
-                    rejection,
-                  ],
-            },
-            predictions: [],
-            uncertaintyLevel: 'high',
-            disclaimer: 'No spider detected. redBack.ai is designed specifically for identifying spiders. Please position the camera over an arachnid specimen.',
-            notes: `Subject identified as: ${subject}. Zero spider bite risk.`,
-            speciesDetails: {
-              commonName: subject,
-              scientificName: 'Non-Arachnida',
-              family: 'Non-Arachnida',
-              genus: 'None',
-              habitat: 'Human or domestic environments',
-              distribution: 'Global',
-              behavior: 'Non-arachnid subject',
-              venomInfo: 'This is not a spider. Zero arachnid envenomation risk.',
-              toxicityLevel: 'harmless',
-              firstAid: 'No spider bite detected.',
-              morphology: {
-                keyFeatures: [
-                  `Detected: ${subject}`,
-                  'No spider fangs, ocular arrangement, or 8-legged morphology detected.',
-                ],
-              },
-            },
-          };
+          return buildNonSpiderResult({
+            subject,
+            confidence: groqMatch.confidence || 0.98,
+            visualEvidence: groqMatch.visualEvidence.length > 0 ? groqMatch.visualEvidence : undefined,
+            rejectionReason: groqMatch.rejectionReason,
+          });
         }
 
         if (groqMatch?.isSpider && (groqMatch?.scientificName || groqMatch?.commonName)) {
           const sName = (groqMatch.scientificName || '').toLowerCase();
           const cName = (groqMatch.commonName || '').toLowerCase();
-          
+
           matchedSpecies = speciesCatalog.find(
             (s) =>
               (sName && s.scientificName.toLowerCase().includes(sName)) ||
@@ -89,7 +54,6 @@ export class VisionAIService {
           confidence = groqMatch.confidence || 0.93;
           visualEvidence = groqMatch.visualEvidence || [];
 
-          // If it's a spider not in catalog, construct dynamically from AI vision
           if (!matchedSpecies) {
             matchedSpecies = {
               scientificName: groqMatch.scientificName || 'Araneae sp.',
@@ -102,9 +66,7 @@ export class VisionAIService {
               venomInfo: 'Standard spider venom. Keep safe distance and observe without contact.',
               toxicityLevel: 'harmless',
               firstAid: 'Wash area with soap and water. Apply cold compress if bitten.',
-              morphology: {
-                keyFeatures: visualEvidence,
-              },
+              morphology: { keyFeatures: visualEvidence },
             };
           }
         }
@@ -138,41 +100,14 @@ export class VisionAIService {
         const vectorMatch = await vectorMatcherService.matchWithVectorDatabase(imageBuffer, mimeType);
         if (vectorMatch && vectorMatch.isSpider === false) {
           const subject = vectorMatch.detectedSubject || 'Human / Non-Arachnid';
-          return {
-            topPrediction: {
-              scientificName: 'Non-Arachnid',
-              commonName: subject,
-              confidence: vectorMatch.score || 0.94,
-              confidenceBand: 'high',
-              rank: 1,
-              visualEvidence: [
-                `Visual vector space classifier matched benchmark: ${subject}`,
-                'Subject does not display 8-legged chelicerate morphology',
-              ],
-            },
-            predictions: [],
-            uncertaintyLevel: 'high',
-            disclaimer: 'No spider detected. redBack.ai is designed specifically for identifying spiders.',
-            notes: `Subject identified as: ${subject}. Zero spider bite risk.`,
-            speciesDetails: {
-              commonName: subject,
-              scientificName: 'Non-Arachnida',
-              family: 'Non-Arachnida',
-              genus: 'None',
-              habitat: 'Human or domestic environments',
-              distribution: 'Global',
-              behavior: 'Non-arachnid subject',
-              venomInfo: 'This is not a spider. Zero arachnid envenomation risk.',
-              toxicityLevel: 'harmless',
-              firstAid: 'No spider bite detected.',
-              morphology: {
-                keyFeatures: [
-                  `Detected: ${subject}`,
-                  'No spider fangs, ocular arrangement, or 8-legged morphology detected.',
-                ],
-              },
-            },
-          };
+          return buildNonSpiderResult({
+            subject,
+            confidence: vectorMatch.score || 0.94,
+            visualEvidence: [
+              `Visual vector space classifier matched benchmark: ${subject}`,
+              'Subject does not display 8-legged chelicerate morphology',
+            ],
+          });
         }
 
         if (vectorMatch && vectorMatch.scientificName) {
@@ -213,41 +148,15 @@ export class VisionAIService {
 
     // Step 4: No spider confirmed (strictly reject non-spider, human, or object)
     if (!matchedSpecies) {
-      return {
-        topPrediction: {
-          scientificName: 'Non-Arachnid',
-          commonName: 'No Spider Detected',
-          confidence: 0.96,
-          confidenceBand: 'low',
-          rank: 1,
-          visualEvidence: [
-            'No chelicerae fangs, eye arrangement, or 8-legged morphology detected',
-            'Image does not match any known spider profile in the species vector database',
-          ],
-        },
-        predictions: [],
-        uncertaintyLevel: 'high',
+      return buildNonSpiderResult({
+        subject: 'No Spider Detected',
+        confidence: 0.96,
+        visualEvidence: [
+          'No chelicerae fangs, eye arrangement, or 8-legged morphology detected',
+          'Image does not match any known spider profile in the species vector database',
+        ],
         disclaimer: 'No spider detected. redBack.ai is calibrated specifically for spider identification. Please point the camera directly at an arachnid specimen.',
-        notes: 'Subject does not exhibit spider anatomy. Zero spider bite or envenomation risk.',
-        speciesDetails: {
-          commonName: 'No Spider Detected',
-          scientificName: 'Non-Arachnid',
-          family: 'Non-Arachnida',
-          genus: 'None',
-          habitat: 'Not applicable',
-          distribution: 'Global',
-          behavior: 'Non-spider subject',
-          venomInfo: 'This is not a spider. Zero spider venom risk.',
-          toxicityLevel: 'harmless',
-          firstAid: 'No spider bite detected.',
-          morphology: {
-            keyFeatures: [
-              'No arachnid diagnostic traits observed',
-              'Please scan a spider specimen for identification',
-            ],
-          },
-        },
-      };
+      });
     }
 
     // Step 5: Format response
